@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.45 2002-09-06 21:33:01 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.46 2002-11-11 23:40:03 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -49,15 +49,15 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.62, 6 September 2002}
+\date{Version 0.63, ?? December 2002}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.62.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.63.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.62.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.63.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
@@ -323,11 +323,16 @@ void gl2psNumShadeColors( GLint nr, GLint ng, GLint nb )
 
 \subsubsection{Description}
 
-\dd{gl2psNumShadeColors} sets the number of colors to use when approximating
-shaded triangles with small flat-shaded ones (either when the \dd{shfill}
-operator is not supported by the system, or when the
-\dd{GL2PS_NO_PS3_SHADING} option is set). The last call before
-\dd{gl2psEndPage} is the one that counts.
+\dd{gl2psNumShadeColors} controls the number flat-shaded (sub-)triangles
+used to approximate a smooth-shaded triangle when the \dd{shfill} operator
+is not supported by the system, or when the \dd{GL2PS_NO_PS3_SHADING} option
+is set. The arguments \dd{nr}, \dd{ng} and \dd{nb} represent the number of
+values used for interpolating the full range of red, green and blue color
+components. A triangle is thus recursively subdivided until the color
+difference between to vertices is smaller that $1/\mathtt{nr}$ for the red
+component, $1/\mathtt{ng}$ for the green component and $1/\mathtt{nb}$ for
+the blue component. The last call before \dd{gl2psEndPage} is the one taken
+into account.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -430,6 +435,7 @@ PostScript files; optimized drawing of shaded primitives; new
 \dd{GL2PS_NO_PS3_SHADING} option and \dd{gl2psNumShadeColors} function to
 control the use of the PostScript level 3 \dd{shfill} operator (usually not
 well handled when converting to PDF).
+\item[0.63] (Dec ??, 2002) Changed GLvoid to void; revised documentation.
 \end{description}
 
 % Occlusion culling... In version 9.99? :-(
