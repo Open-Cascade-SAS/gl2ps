@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.161 2004-03-06 04:05:12 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.162 2004-03-06 17:10:20 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -357,21 +357,20 @@ void gl2psListActionInverse(GL2PSlist *list, void (*action)(void *data)){
 
 GL2PSimage* gl2psCopyPixmap(GL2PSimage* im){
   int size;
-  GL2PSimage* image = (GL2PSimage*)gl2psMalloc(sizeof(GL2PSimage));
+  GL2PSimage *image = (GL2PSimage*)gl2psMalloc(sizeof(GL2PSimage));
   
   image->width = im->width;
   image->height = im->height;
   image->format = im->format;
   image->type = im->type;
 
-  /* FIXME: handle other types/formats */
   switch(image->format){
   case GL_RGBA:
-    size = image->height*image->width*4*sizeof(GLfloat);
+    size = image->height * image->width * 4 * sizeof(GLfloat);
     break;
   case GL_RGB:
   default:
-    size = image->height*image->width*3*sizeof(GLfloat);
+    size = image->height * image->width * 3 * sizeof(GLfloat);
     break;
   }
 
@@ -389,7 +388,7 @@ void gl2psFreePixmap(GL2PSimage* im){
 }
 
 GL2PSstring* gl2psCopyText(GL2PSstring* t){
-  GL2PSstring* text = (GL2PSstring*)gl2psMalloc(sizeof(GL2PSstring));
+  GL2PSstring *text = (GL2PSstring*)gl2psMalloc(sizeof(GL2PSstring));
   text->str = (char*)gl2psMalloc((strlen(t->str)+1)*sizeof(char));
   strcpy(text->str, t->str); 
   text->fontname = (char*)gl2psMalloc((strlen(t->fontname)+1)*sizeof(char));
@@ -409,7 +408,7 @@ void gl2psFreeText(GL2PSstring* text){
 }
 
 GL2PSprimitive* gl2psCopyPrimitive(GL2PSprimitive* p){
-  GL2PSprimitive* prim;
+  GL2PSprimitive *prim;
 
   if(!p)
     return NULL;
@@ -477,7 +476,8 @@ void gl2psSetLastColor(GL2PSrgba rgba){
   }
 }
 
-/* returns TRUE if gl2ps supports the argument combination */
+/* returns TRUE if gl2ps supports the argument combination: only two
+   blending modes have been implemented so far */
 
 GLboolean gl2psSupportedBlendMode(GLenum sfactor, GLenum dfactor){
   if( (sfactor == GL_SRC_ALPHA && dfactor == GL_ONE_MINUS_SRC_ALPHA) || 
@@ -1698,7 +1698,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GL2PSimage *im){
   GLsizei width = im->width;
   GLsizei height = im->height;
 
-  /* FIXME: define an option for these? */
+  /* FIXME: should we define an option for these? */
   int greyscale = 0; /* set to 1 to output greyscale image */
   int nbits = 8; /* number of bits per color compoment (2, 4 or 8) */
 
@@ -2411,7 +2411,7 @@ void gl2psPDFstacksInit(void){
   gl2ps->mshader_stack = 0; 
 }
 
-void gl2psPDFgroupObjectInit(GL2PSpdfgroup* gro){
+void gl2psPDFgroupObjectInit(GL2PSpdfgroup *gro){
   if(!gro)
     return;
   
@@ -2517,7 +2517,7 @@ void gl2psPDFgroupListInit(void){
   }
 }
 
-void gl2psSortOutTrianglePDFgroup(GL2PSpdfgroup* gro){
+void gl2psSortOutTrianglePDFgroup(GL2PSpdfgroup *gro){
   GL2PStriangle t;
   GL2PSprimitive *prim = NULL;
   
@@ -2845,7 +2845,7 @@ int gl2psPDFgroupListWriteFontResources(void){
 
 void gl2psPDFgroupListDelete(void){
   int i;
-  GL2PSpdfgroup* gro = 0;
+  GL2PSpdfgroup *gro = NULL;
   
   if(!gl2ps->pdfgrouplist)
     return;
@@ -3728,7 +3728,7 @@ GLint gl2psPrintPrimitives(void){
   GL2PSbsptree *root;
   GL2PSxyz eye = {0.0F, 0.0F, 100000.0F};
   GLint used;
-  void (*pprim)(void *data) = 0;
+  void (*pprim)(void *data) = NULL;
 
   used = glRenderMode(GL_RENDER);
 
@@ -4105,13 +4105,16 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
   prim->data.image->height = height;
   prim->data.image->format = format;
   prim->data.image->type = type;
-  /* FIXME: handle other types/formats */
+
   switch(format){
   case GL_RGBA:
-    if(GL_TRUE == glIsEnabled(GL_BLEND))
-      size = height * width * 4 * sizeof(GLfloat);
-    /* special case: blending turned off */
+    if(GL_TRUE == glIsEnabled(GL_BLEND)){
+      size = height * width * 4;
+      prim->data.image->pixels = (GLfloat*)gl2psMalloc(size * sizeof(GLfloat));
+      memcpy(prim->data.image->pixels, pixels, size * sizeof(GLfloat));
+    }
     else{
+      /* special case: blending turned off */
       prim->data.image->format = GL_RGB;
       size = height * width * 3;
       prim->data.image->pixels = (GLfloat*)gl2psMalloc(size * sizeof(GLfloat));
@@ -4121,18 +4124,15 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
         if(!((i+1)%3))
           ++piv;
       }   
-      gl2psListAdd(gl2ps->primitives, &prim);
-      return GL2PS_SUCCESS;
     }
-    size = height * width * 4 * sizeof(GLfloat);
     break;
   case GL_RGB:
   default:
-    size = height*width*3*sizeof(GLfloat);
+    size = height * width * 3;
+    prim->data.image->pixels = (GLfloat*)gl2psMalloc(size * sizeof(GLfloat));
+    memcpy(prim->data.image->pixels, pixels, size * sizeof(GLfloat));
     break;
   }
-  prim->data.image->pixels = (GLfloat*)gl2psMalloc(size);
-  memcpy(prim->data.image->pixels, pixels, size);
 
   gl2psListAdd(gl2ps->primitives, &prim);
 
@@ -4210,7 +4210,6 @@ GL2PSDLL_API GLint gl2psLineWidth(GLfloat value){
 GL2PSDLL_API GLint gl2psBlendFunc(GLenum sfactor, GLenum dfactor){
   if(!gl2ps) return GL2PS_UNINITIALIZED;
 
-  /* Only two blending modes have been implemented so far */
   if(GL_FALSE == gl2psSupportedBlendMode(sfactor, dfactor))
     return GL2PS_WARNING;
 

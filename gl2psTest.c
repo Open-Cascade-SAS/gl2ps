@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.52 2004-03-06 03:45:39 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.53 2004-03-06 17:10:20 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -267,7 +267,7 @@ void text(void){
   glRasterPos2d(x, y); y -= dy;
   printstring("  v: to alternate between single and multiple viewport modes");
   glRasterPos2d(x, y); y -= dy;
-  printstring("  b: to change the blending mode");
+  printstring("  b: to change the blending mode (transparency)");
   glRasterPos2d(x, y); y -= dy;
   printstring("  q: to quit");
   glRasterPos2d(x, y); y -= dy;

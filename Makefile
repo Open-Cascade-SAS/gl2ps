@@ -1,4 +1,5 @@
 RELEASE = 1.2.0
+UNAME = `uname -s`
 
 default:
 	rm -rf gl2ps-${RELEASE}/ gl2ps-${RELEASE}.tar* gl2ps-${RELEASE}.zip*
@@ -12,22 +13,23 @@ default:
 	cd gl2ps-${RELEASE} && zip -r gl2ps-${RELEASE}.zip *
 	mv gl2ps-${RELEASE}/gl2ps-${RELEASE}.zip .
 
-linux:
-	gcc -Wall -g -O3 -I/usr/X11R6/include -o gl2psTest gl2psTest.c gl2ps.c\
-            -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm
-
-linuxz:
-	gcc -DHAVE_ZLIB -Wall -g -O3 -I/usr/X11R6/include -o gl2psTest gl2psTest.c gl2ps.c\
-            -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm -lz
+clean:
+	rm -f *.tex *.ps *.eps *.pdf gl2psTest a.out *~
+	cd doc && ${MAKE} clean
 
 mac:
 	gcc -Wall -g -o gl2psTest gl2psTest.c gl2ps.c\
             -framework OpenGL -framework GLUT -framework Cocoa
 
+linux:
+	gcc -Wall -g -O3 -I/usr/X11R6/include -o gl2psTest gl2psTest.c gl2ps.c\
+            -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm
+
 macz:
 	gcc -DHAVE_ZLIB -Wall -g -O2 -o gl2psTest gl2psTest.c gl2ps.c\
             -framework OpenGL -framework GLUT -framework Cocoa -lz
 
-clean:
-	rm -f *.tex *.ps *.eps *.pdf gl2psTest a.out *~
-	cd doc && ${MAKE} clean
+linuxz:
+	gcc -DHAVE_ZLIB -Wall -g -O3 -I/usr/X11R6/include -o gl2psTest gl2psTest.c gl2ps.c\
+            -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm -lz
+
