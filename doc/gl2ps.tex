@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.34 2002-03-12 00:43:07 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.35 2002-06-04 21:38:26 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -49,15 +49,15 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.53, 11 March 2002}
+\date{Version 0.6, 4 June 2002}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.53.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.6.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.53.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.6.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
@@ -388,6 +388,10 @@ outside the viewport.
 \item[0.52] (Feb 14, 2002) New \dd{GL2PS_LANDSCAPE} option.
 \item[0.53] (Mar 11, 2002) New \dd{GL2PSDLL} compilation flag to allow the
 generation of a Windows dll.
+\item[0.6] (Jun 4, 2002) Fixed some incoherences in string allocation; fixed
+sorting of text objects; removed (non functional) occlusion culling code;
+fixed handling of color and line width attributes when gl2ps was called
+multiple times inside the same program;
 \end{description}
 
 % Occlusion culling... In version 9.99? :-(
