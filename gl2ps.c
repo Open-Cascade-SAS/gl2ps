@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.191 2004-12-17 01:49:21 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.192 2004-12-17 01:57:13 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -2564,7 +2564,7 @@ static void gl2psResetPostScriptColor(void)
 
 static int gl2psPrintDash(GLushort pattern, GLint factor, char *str)
 {
-  int len = 0, i, n, on[5] = {0, 0, 0, 0}, off[5] = {0, 0, 0, 0};
+  int len = 0, i, n, on[5] = {0, 0, 0, 0, 0}, off[5] = {0, 0, 0, 0, 0};
   char tmp[16];
 
   if(pattern == gl2ps->lastpattern && factor == gl2ps->lastfactor)
@@ -2583,18 +2583,18 @@ static int gl2psPrintDash(GLushort pattern, GLint factor, char *str)
       tmp[n] = (char)(pattern & 0x01);
       pattern >>= 1;
     }
-    /* compute the off/on pixel sequence */
+    /* compute the on/off pixel sequence (since the PostScript
+       specification allows for at most 11 elements in the on/off
+       array, we limit ourselves to 5 couples of on/off states) */
     n = 0;
     for(i = 0; i < 5; i++){
       while(n < 16 && !tmp[n]){ off[i]++; n++; }
       while(n < 16 && tmp[n]){ on[i]++; n++; }
       if(n > 15) break;
     }
-    /* print the on/off array. Since the PostScript specification
-       allows for at most 11 elements in the array, we limit ourselves
-       to 5 couples of on/off states. The array is printed right to
-       left, starting with off pixels, i.e., the longest possible
-       array is: [on4 off4 on3 off3 on2 off2 on1 off1 on0 off0] */
+    /* print the on/off array from right to left, starting with off
+       pixels (the longest possible array is: [on4 off4 on3 off3 on2
+       off2 on1 off1 on0 off0]) */
     len += gl2psPrintf("[");
     for(n = i; n >= 0; n--){
       len += gl2psPrintf("%d %d", factor * on[n], factor * off[n]);
