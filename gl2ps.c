@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.124 2003-10-25 01:56:16 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.125 2003-10-25 02:05:43 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -2397,8 +2397,7 @@ void gl2psPrintPDFPrimitive(void *a, void *b){
   case GL2PS_PIXMAP :
     image = gl2psCopyPixmap(prim->image);
     gl2psListAdd(gl2ps->ilist, &image);
-    gl2ps->streamlength += zprintf(
-				   "q\n"
+    gl2ps->streamlength += zprintf("q\n"
 				   "%d 0 0 %d %f %f cm\n"
 				   "/Im%d Do\n"
 				   "Q\n",
@@ -2410,8 +2409,7 @@ void gl2psPrintPDFPrimitive(void *a, void *b){
     str = gl2psCopyText(prim->text);
     gl2psListAdd(gl2ps->slist, &str);
     gl2ps->streamlength += gl2psPrintPDFFillColor(prim->verts[0].rgba);
-    gl2ps->streamlength += zprintf(
-				   "BT\n"
+    gl2ps->streamlength += zprintf("BT\n"
 				   "/F%d %d Tf\n"
 				   "%f %f Td\n"
 				   "(%s) Tj\n"
@@ -2489,7 +2487,7 @@ int gl2psClosePDFDataStream(){
 #ifdef GL2PS_HAVE_ZLIB
   if(gl2ps->options & GL2PS_COMPRESS){
     if (Z_OK != gl2psDeflate())
-      gl2psMsg(GL2PS_ERROR, "gl2ps: zlib deflate error !");
+      gl2psMsg(GL2PS_ERROR, "gl2ps: zlib deflate error!");
     else
       fwrite(gl2ps->zstream->dest, gl2ps->zstream->destLen, 1, gl2ps->stream);
     gl2ps->streamlength += gl2ps->zstream->destLen;
@@ -3004,16 +3002,14 @@ void gl2psPrintPDFBeginViewport(GLint viewport[4]){
       rgba[2] = gl2ps->colormap[index][2];
       rgba[3] = 0.;
     }
-    offs += zprintf(
-		    "%f %f %f rg\n"
+    offs += zprintf("%f %f %f rg\n"
 		    "%d %d %d %d re\n"
 		    "W\n"
 		    "f\n",
 		    rgba[0], rgba[1], rgba[2], x, y, w, h);
   }
   else{
-    offs += zprintf(
-		    "%d %d %d %d re\n"
+    offs += zprintf("%d %d %d %d re\n"
 		    "W\n"   
 		    "n\n",
 		    x, y, w, h);		
