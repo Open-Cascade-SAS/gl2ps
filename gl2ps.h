@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.67 2003-10-28 07:15:01 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.68 2003-10-31 21:50:41 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -116,10 +116,10 @@
 
 /* Magic numbers */
 
-#define GL2PS_EPSILON             5.e-3
-#define GL2PS_DEPTH_FACT          1000.0
-#define GL2PS_SIMPLE_OFFSET       0.05
-#define GL2PS_SIMPLE_OFFSET_LARGE 1.0
+#define GL2PS_EPSILON             5.0e-3F
+#define GL2PS_DEPTH_FACT          1000.0F
+#define GL2PS_SIMPLE_OFFSET       0.05F
+#define GL2PS_SIMPLE_OFFSET_LARGE 1.0F
 #define GL2PS_ZERO(arg)           (fabs(arg)<1.e-20)
 #define GL2PS_FIXED_XREF_ENTRIES  7 
 
@@ -233,7 +233,7 @@ typedef struct {
 
 typedef struct {
 #ifdef GL2PS_HAVE_ZLIB
-  Bytef* dest, *src, *start;
+  Bytef *dest, *src, *start;
   uLongf destLen, srcLen;
 #else
   int dummy;
