@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.182 2004-11-22 06:46:47 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.183 2004-11-22 07:29:14 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -1304,7 +1304,7 @@ static void gl2psSetPrecisionAndApplyOffsets()
   }
 
   /* set precision */
-  gl2ps->epsilon = (maxZ - minZ) / 10000.0F;
+  gl2ps->epsilon = (maxZ - minZ) / 5000.0F;
 
   /* apply offsets */
   if(gl2ps->options & GL2PS_SIMPLE_LINE_OFFSET){
