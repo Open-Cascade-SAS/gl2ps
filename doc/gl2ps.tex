@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2001  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.25 2001-11-19 11:23:25 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.26 2001-11-20 08:06:16 geuzaine Exp $
 % 
 %  E-mail: Christophe.Geuzaine@advalvas.be
 %  URL: http://www.geuz.org/gl2ps/
@@ -59,7 +59,7 @@
 %%tth: or as a 
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.5.zip}{zip}
 %%tth: archive. These archives contain both a
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{postscript}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.pdf}{pdf}
 %%tth: version of the documentation.
@@ -68,7 +68,7 @@
 
 \section{Introduction}
 
-GL2PS is a library for creating postscript output from any OpenGL
+GL2PS is a library for creating PostScript output from any OpenGL
 application. Though it was primarily designed for three-dimensional geometry,
 mesh and post-processing visualization, it may be useful every time high quality
 vector output is desired. The main difference between GL2PS and other similar
@@ -87,6 +87,8 @@ GL2PS begin with \dd{GL2PS}.
 
 \section{Usage}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \subsection{\texttt{gl2psBeginPage} and \texttt{gl2psEndPage}}
 
 \subsubsection{Specification}
@@ -103,28 +105,96 @@ void gl2psBeginPage( char *title, char *producer, GLint format,
 void gl2psEndPage( void )
 \end{verbatim}
 
-\subsubsection{Parameters}
+\subsubsection{Description}
+
+\dd{gl2psBeginPage} and \dd{gl2psEndPage} delimit the OpenGL commands that
+will be caught in the feedback buffer and output to \dd{stream}. The
+parameters given to \dd{gl2psBeginPage} determine the way primitives are
+handled:
 
 \begin{description}
-\item[\dd{title}] Specifies the plot title. For PostScript output, this string
-is placed in the \texttt{\%\%Title} field.
 
-\item[\dd{producer}] Specifies the plot producer. For PostScript output, this
-string is placed in the \texttt{\%\%For} field.
+\item[\dd{title}] Specifies the plot title. For PostScript output, this
+string is placed in the \texttt{\%\%Title} field.
 
-\item[\dd{format}] Specifies the output format, chosen among: \dd{GL2PS_PS},
-\dd{GL2PS_TEX}. \dd{GL2PS_TEX} produces a \LaTeX\ file containing the text
-strings of the plot and including a graphic file having the same basename as
-\dd{filename}. In order to avoid duplicate text strings, the graphic file
-should be generated with the \dd{GL2PS_NO_TEXT} option.
+\item[\dd{producer}] Specifies the plot producer. For PostScript output,
+this string is placed in the \texttt{\%\%For} field.
+
+\item[\dd{format}] Specifies the output format, chosen among:
+
+\begin{description}
+
+\item[\dd{GL2PS_PS}] The output stream will be a PostScript file. 
+
+\item[\dd{GL2PS_TEX}] The output stream will be a \LaTeX\ file, containing
+only the text strings of the plot (cf.\ section~\ref{sec:gl2psText}), as
+well as an \verb+\includegraphics+ command permitting to include a graphic
+file having the same basename as \dd{filename}.\footnote{The two steps to
+generate a \LaTeX\ plot with GL2PS are thus:
+\begin{enumerate}
+\item generate the PostScript file (e.g.\ \dd{file.ps}) with no text
+strings, using the \dd{GL2PS_PS} format combined with the \dd{GL2PS_NO_TEXT}
+option;
+\item generate the \LaTeX\ file \dd{file.tex}, using the \dd{GL2PS_TEX}
+format and specifying \dd{file.tex} as the \dd{filename} argument to
+\dd{gl2psBeginPage}.
+\end{enumerate}
+You can of course combine the \LaTeX\ output with other graphic formats than
+PostScript. For example, you may transform \dd{file.ps} into \dd{file.pdf}
+and use pdf\LaTeX\ with the same \dd{file.tex} as for PostScript. You may
+also use a bitmap image (e.g.\ Jpeg or png) and still combine it with
+\dd{file.tex}.}
+
+\end{description}
 
 \item[\dd{sort}] Specifies the sorting algorithm, chosen among:
-\dd{GL2PS_NO_SORT}, \dd{GL2PS_SIMPLE_SORT}, \dd{GL2PS_BSP_SORT}.
 
-\item[\dd{options}] Sets global plot options, chosen among: \dd{GL2PS_NONE},
-\dd{GL2PS_DRAW_BACKGROUND}, \dd{GL2PS_SIMPLE_LINE_OFFSET},
-\dd{GL2PS_SILENT}, \dd{GL2PS_BEST_ROOT}, \dd{GL2PS_NO_TEXT}. Multiple
-options are combined with the bitwise inclusive OR symbol,~\dd{|}.
+\begin{description}
+
+\item[\dd{GL2PS_NO_SORT}] The primitives are not sorted, and are output in
+\dd{stream} in the order they appear in the feedback buffer.
+
+\item[\dd{GL2PS_SIMPLE_SORT}] The primitives are sorted according to their
+barycenter. This can be sufficient for simple scenes.
+
+\item[\dd{GL2PS_BSP_SORT}] The primitives are inserted in a BSP tree. The
+tree is then traversed back to front in a painter-like algorithm. This
+should be used for complex three-dimensional scenes, but keep in mind that
+the BSP tree algorithm is quite memory hungry...
+
+\end{description}
+
+\item[\dd{options}] Sets global plot options, chosen among (multiple options
+can be combined with the bitwise inclusive OR symbol \dd{|}):
+
+\begin{description}
+
+\item[\dd{GL2PS_NONE}] No option.
+
+\item[\dd{GL2PS_DRAW_BACKGROUND}] The background frame is drawn.
+
+\item[\dd{GL2PS_SIMPLE_LINE_OFFSET}] A small offset is added in the z-buffer
+to all the lines in the plot. This is a simplified version of the
+\dd{GL2PS_POLYGON_OFFSET_FILL} functionality
+(cf. section~\ref{sec:gl2psEnable}), putting all the lines of the rendered
+image slightly in front of their actual position. This thus performs a
+simple anti-aliasing solution, e.g. for finite element like meshes.
+
+\item[\dd{GL2PS_SILENT}] All the messages written by GL2PS on the error
+stream are suppressed.
+
+\item[\dd{GL2PS_BEST_ROOT}] The construction of the BSP tree is optimized by
+choosing the root primitives leading to the minimum number of splits. This
+is (really) not efficient yet.
+
+\item[\dd{GL2PS_NO_TEXT}] All the text strings are suppressed from
+output. This is useful to produce the image part of a \LaTeX\ output.
+
+%\item[\dd{GL2PS_OCCLUSION_CULL}] All the hidden polygons are removed from
+%the output, thus substancially reducing the size of the output file. This
+%is not functional yet.
+
+\end{description}
 
 \item[\dd{colormode}] Specifies the color mode: \dd{GL_RGBA} or
 \dd{GL_COLOR_INDEX}.
@@ -142,51 +212,13 @@ options are combined with the bitwise inclusive OR symbol,~\dd{|}.
 
 \item[\dd{filename}] Specifies a name for the stream to which data is
 printed.
+
 \end{description}
 
-\subsubsection{Description}
-
-\dd{gl2psBeginPage} and \dd{gl2psEndPage} delimit the OpenGL commands that will
-be caught in the feedback buffer and output to \dd{stream}. The parameters
-given to \dd{gl2psBeginPage} determine the way primitives are handled:
-
-\begin{description}
-\item[\dd{GL2PS_NO_SORT}] The primitives are not sorted, and are output in
-\dd{stream} in the order they appear in the feedback buffer.
-
-\item[\dd{GL2PS_SIMPLE_SORT}] The primitives are sorted according to their
-barycenter. This can be sufficient for simple scenes.
-
-\item[\dd{GL2PS_BSP_SORT}] The primitives are inserted in a BSP tree. The
-tree is then traversed back to front in a painter-like algorithm. This
-should be used for complex three-dimensional scenes, but keep in mind that
-the BSP tree algorithm is quite memory hungry...
-
-\item[\dd{GL2PS_DRAW_BACKGROUND}] The background frame is drawn.
-
-\item[\dd{GL2PS_SIMPLE_LINE_OFFSET}] Adds a small offset in the z-buffer to all
-lines. This is a simplified version of the \dd{GL2PS_POLYGON_OFFSET_FILL}
-functionality (cf. section~\ref{sec:gl2psEnable}), putting all lines of the
-rendered image slightly in front of their actual position. This thus performs a
-simple anti-aliasing solution, e.g. for finite element like meshes.
-
-\item[\dd{GL2PS_SILENT}] Suppresses all messages written by GL2PS on the error
-stream.
-
-\item[\dd{GL2PS_BEST_ROOT}] Try to optimize the BSP tree by choosing as root
-primitives those leading to the minimum number of splits. This is (really) not
-efficient yet.
-
-\item[\dd{GL2PS_NO_TEXT}] Suppress all text strings from output. Useful to
-produce the image part of a \TeX\ output.
-
-%\item[\dd{GL2PS_OCCLUSION_CULL}] Removes (well, tries to remove) all hidden
-%polygons from the output, thus substancially reducing the size of the output
-%file. This is not functional yet.
-\end{description}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{\texttt{gl2psText}}
+\label{sec:gl2psText}
 
 \subsubsection{Specification}
 
@@ -194,23 +226,28 @@ produce the image part of a \TeX\ output.
 void gl2psText( char *string, char *fontname, GLint fontsize )
 \end{verbatim}
 
-\subsubsection{Parameters}
+\subsubsection{Description}
+
+\dd{gl2psText} permits to include text in the PostScript or \LaTeX\ output
+in a very simple way. The text is inserted at the current raster position
+(set by one of the \dd{glRasterPos} OpenGL commands). Beware that text will
+be sorted according to the position of the leftmost element of the string
+only. The parameters are:
 
 \begin{description}
 \item[\dd{string}] Specifies the text string to print.
 
-\item[\dd{fontname}] Specifies the name of a valid postscript font (for example
-\dd{"Times"} or \dd{"HelveticaBoldItalic"}).
+\item[\dd{fontname}] Specifies the name of a valid PostScript font (for
+example \dd{"Times"} or \dd{"HelveticaBoldItalic"}). This parameter has no
+influence for \LaTeX\ output.
 
-\item[\dd{fontsize}] Specifies the size of the font.
+\item[\dd{fontsize}] Specifies the size of the font. This parameter has no
+influence for \LaTeX\ output.
 \end{description}
 
-\subsubsection{Description}
 
-\dd{gl2psText} permits to include text in the postscript output in a very
-simple way. The text is inserted at the current raster position (set by one
-of the \dd{glRasterPos} OpenGL commands). Beware that text will be sorted
-according to the position of the leftmost element of the string only.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{\texttt{gl2psEnable} and \texttt{gl2psDisable}}
 \label{sec:gl2psEnable}
@@ -225,19 +262,10 @@ void gl2psEnable( GLint mode )
 void gl2psDisable( GLint mode )
 \end{verbatim}
 
-\subsubsection{Parameters}
-
-\begin{description}
-\item[\dd{mode}] Specifies the mode to enable, chosen between
-\dd{GL2PS_POLYGON_OFFSET_FILL}, \dd{GL2PS_POLYGON_BOUNDARY},
-\dd{GL2PS_LINE_STIPPLE}.
-\end{description}
-
 \subsubsection{Description}
 
 \dd{gl2psEnable} and \dd{gl2psDisable} delimit OpenGL commands to which a local
-mode is applied. These modes are:
-
+\dd{mode} is applied. These modes are:
 
 \begin{description}
 \item[\dd{GL2PS_POLYGON_OFFSET_FILL}] Tries to emulate the
@@ -250,6 +278,8 @@ the current value of the corresponding OpenGL offset (set with
 \item[\dd{GL2PS_LINE_STIPPLE}] Tries to emulate the \dd{GL_LINE_STIPPLE}
 functionality.
 \end{description}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{\texttt{gl2psPointSize} and \texttt{gl2psLineWidth}}
 \label{sec:gl2psPointSize}
@@ -264,12 +294,6 @@ void gl2psPointSize( GLfloat value )
 void gl2psLineWidth( GLfloat value )
 \end{verbatim}
 
-\subsubsection{Parameters}
-
-\begin{description}
-\item[\dd{value}] Specifies the size or the width of points and lines.
-\end{description}
-
 \subsubsection{Description}
 
 \dd{gl2psPointSize} and \dd{gl2psLineSize} emulate the standard
@@ -277,11 +301,13 @@ void gl2psLineWidth( GLfloat value )
 since the point sizes and line widths are not saved in the OpenGL feedback
 buffer.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \section{Example}
 
-Here is a typical calling sequence to produce BSP sorted postscript output in
-the file \dd{"MyFile"}, with all lines slightly shifted front in the
-z-buffer. The \dd{draw()} function contains all OpenGL instructions.
+Here is a typical calling sequence to produce BSP sorted PostScript output in
+the file \dd{"MyFile"}, with all the lines slightly shifted front in the
+z-buffer. The \dd{draw()} function contains all the OpenGL commands.
 
 \begin{verbatim}
 FILE *fp = fopen("MyFile", "w");
@@ -353,7 +379,7 @@ header cleaning. Better line width computation.
 \item[0.5] (Nov 19, 2001) New \dd{format} and \dd{filename} arguments for
 \dd{gl2psBeginPage}. Better PostScript handling of smooth shaded
 primitives. Fix handling of zero-length strings. New options for \LaTeX\
-output.
+output. Changed (again) the line width computation.
 \end{description}
 
 % Occlusion culling... In version 9.99? :-(
