@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to Postscript Printing Library
  * Copyright (C) 1999-2001  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.17 2001-08-06 12:22:19 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.18 2001-08-14 13:25:36 geuzaine Exp $
  *
  * E-mail: Christophe.Geuzaine@AdValvas.be
  * URL: http://www.geuz.org/gl2ps/
@@ -430,7 +430,7 @@ GLvoid gl2psDivideQuad(GL2PSprimitive *quad,
   (*t1)->boundary = ((quad->boundary & 4) ? 2 : 0) | ((quad->boundary & 4) ? 2 : 0);
 }
 
-int gl2psCompareDepth(const GLvoid *a, const GLvoid *b){
+int gl2psCompareDepth(const void *a, const void *b){
   GL2PSprimitive *q,*w;
   GLfloat        diff;
 
@@ -445,7 +445,7 @@ int gl2psCompareDepth(const GLvoid *a, const GLvoid *b){
     return 0;
 }
 
-GLint gl2psTrianglesFirst(const GLvoid *a, const GLvoid *b){
+int gl2psTrianglesFirst(const void *a, const void *b){
   GL2PSprimitive *q,*w;
 
   q = *(GL2PSprimitive**)a;
