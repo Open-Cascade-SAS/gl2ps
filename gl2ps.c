@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.169 2004-03-21 20:35:19 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.170 2004-05-09 03:58:38 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -438,6 +438,10 @@ static void gl2psFillTriangleFromPrimitive(GL2PStriangle* t, GL2PSprimitive* p,
 
 static void gl2psListRealloc(GL2PSlist *list, GLint n)
 {
+  if(!list){
+    gl2psMsg(GL2PS_ERROR, "Cannot reallocate NULL list");
+    return;
+  }
   if(n <= 0) return;
   if(!list->array){
     list->nmax = ((n - 1) / list->incr + 1) * list->incr;
@@ -470,17 +474,23 @@ static GL2PSlist *gl2psListCreate(GLint n, GLint incr, GLint size)
 
 static void gl2psListReset(GL2PSlist *list)
 {
+  if(!list) return;
   list->n = 0;
 }
 
 static void gl2psListDelete(GL2PSlist *list)
 {
+  if(!list) return;  
   gl2psFree(list->array);
   gl2psFree(list);
 }
 
 static void gl2psListAdd(GL2PSlist *list, void *data)
 {
+  if(!list){
+    gl2psMsg(GL2PS_ERROR, "Cannot add into unallocated list");
+    return;
+  }
   list->n++;
   gl2psListRealloc(list, list->n);
   memcpy(&list->array[(list->n - 1) * list->size], data, list->size);
@@ -488,31 +498,29 @@ static void gl2psListAdd(GL2PSlist *list, void *data)
 
 static int gl2psListNbr(GL2PSlist *list)
 {
+  if(!list)
+    return 0;
   return(list->n);
 }
 
 static void *gl2psListPointer(GL2PSlist *list, GLint index)
 {
+  if(!list){
+    gl2psMsg(GL2PS_ERROR, "Cannot point into unallocated list");
+    return NULL;
+  }
   if((index < 0) || (index >= list->n)){
     gl2psMsg(GL2PS_ERROR, "Wrong list index in gl2psListPointer");
-    return(&list->array[0]);
+    return NULL;
   }
   return(&list->array[index * list->size]);
-}
-
-static void gl2psListRead(GL2PSlist *list, GLint index, void *data)
-{
-  if((index < 0) || (index >= list->n)){
-    gl2psMsg(GL2PS_ERROR, "Wrong list index in gl2psListRead");
-  }
-  else{
-    memcpy(data, &list->array[index * list->size], list->size);
-  }
 }
 
 static void gl2psListSort(GL2PSlist *list,
                           int (*fcmp)(const void *a, const void *b))
 {
+  if(!list)
+    return;
   qsort(list->array, list->n, list->size, fcmp);
 }
 
@@ -596,8 +604,10 @@ static GL2PSprimitive *gl2psCopyPrimitive(GL2PSprimitive* p)
 {
   GL2PSprimitive *prim;
 
-  if(!p)
+  if(!p){
+    gl2psMsg(GL2PS_ERROR, "Trying to copy an empty primitive");
     return NULL;
+  }
 
   prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
   
@@ -626,16 +636,6 @@ static GL2PSprimitive *gl2psCopyPrimitive(GL2PSprimitive* p)
 }
 
 /* Helpers for rgba colors and PDF blending */
-
-static GLfloat gl2psColorDiff(GL2PSrgba rgba1, GL2PSrgba rgba2)
-{
-  int i;        
-  GLfloat res = 0;
-  for(i = 0; i < 3; ++i){
-    res += (rgba1[i] - rgba2[i]) * (rgba1[i] - rgba2[i]);
-  }
-  return res;
-}
 
 static GLboolean gl2psSameColor(GL2PSrgba rgba1, GL2PSrgba rgba2)
 {
@@ -1038,8 +1038,14 @@ static GLint gl2psFindRoot(GL2PSlist *primitives, GL2PSprimitive **root)
   GL2PSplane plane;
   GLint maxp;
 
+  if(!gl2psListNbr(primitives)){
+    gl2psMsg(GL2PS_ERROR, "Cannot fint root in empty primitive list");
+    return 0;
+  }
+
+  *root = *(GL2PSprimitive**)gl2psListPointer(primitives, 0);
+
   if(gl2ps->options & GL2PS_BEST_ROOT){
-    *root = *(GL2PSprimitive**)gl2psListPointer(primitives, 0);
     maxp = gl2psListNbr(primitives);
     if(maxp > gl2ps->maxbestroot){
       maxp = gl2ps->maxbestroot;
@@ -1066,7 +1072,6 @@ static GLint gl2psFindRoot(GL2PSlist *primitives, GL2PSprimitive **root)
     return index;
   }
   else{
-    *root = *(GL2PSprimitive**)gl2psListPointer(primitives, 0);
     return 0;
   }
 }
@@ -1637,13 +1642,12 @@ static void gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list)
 
 static void gl2psBuildPolygonBoundary(GL2PSbsptree *tree)
 {
-  GLint i, n;
+  GLint i;
   GL2PSprimitive *prim;
 
   if(!tree) return;
   gl2psBuildPolygonBoundary(tree->back);
-  n = gl2psListNbr(tree->primitives);
-  for(i = 0; i < n; i++){
+  for(i = 0; i < gl2psListNbr(tree->primitives); i++){
     prim = *(GL2PSprimitive**)gl2psListPointer(tree->primitives, i);
     if(prim->boundary) gl2psAddBoundaryInList(prim, tree->primitives);
   }
@@ -2694,9 +2698,6 @@ static void gl2psPDFgroupListInit(void)
 
   for(i = 0; i < gl2psListNbr(gl2ps->pdfprimlist); ++i){  
     p = *(GL2PSprimitive**)gl2psListPointer(gl2ps->pdfprimlist, i);
-    if(!p)
-      continue;
-
     switch(p->type){
     case GL2PS_PIXMAP:
       gl2psPDFgroupObjectInit(&gro);
@@ -2778,8 +2779,12 @@ static void gl2psSortOutTrianglePDFgroup(GL2PSpdfgroup *gro)
   if(!gro)
     return;
 
+  if(!gl2psListNbr(gro->ptrlist))
+    return;
+
   prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, 0);
-  if(!prim || prim->type != GL2PS_TRIANGLE)
+
+  if(prim->type != GL2PS_TRIANGLE)
     return;
 
   gl2psFillTriangleFromPrimitive(&t, prim, GL_TRUE);
@@ -2833,20 +2838,17 @@ static void gl2psPDFgroupListWriteMainStream(void)
 
   for(i = 0; i < gl2psListNbr(gl2ps->pdfgrouplist); ++i){
     gro = (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i);
+
     lastel = gl2psListNbr(gro->ptrlist) - 1;
     if(lastel < 0)
       continue;
 
     prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, 0);
-    if(!prim)
-      continue;
 
     switch(prim->type){
     case GL2PS_PIXMAP:
       for(j = 0; j <= lastel; ++j){
         prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
-        if(!prim)
-          continue;
         gl2psPutPDFImage(prim->data.image, gro->imno, prim->verts[0].xyz[0], 
                          prim->verts[0].xyz[1]);
       }
@@ -2854,8 +2856,6 @@ static void gl2psPDFgroupListWriteMainStream(void)
     case GL2PS_TEXT:
       for(j = 0; j <= lastel; ++j){  
         prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
-        if(!prim)
-          continue;
         gl2ps->streamlength += gl2psPrintPDFFillColor(prim->verts[0].rgba);
         gl2psPutPDFText(prim->data.text, gro->fontno, prim->verts[0].xyz[0],
                         prim->verts[0].xyz[1]);
@@ -2872,8 +2872,6 @@ static void gl2psPDFgroupListWriteMainStream(void)
       }
       for(j = 0; j <= lastel; ++j){  
         prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
-        if(!prim)
-          continue;
         gl2ps->streamlength += 
           gl2psPrintf("%f %f m %f %f l\n",
                       prim->verts[0].xyz[0], prim->verts[0].xyz[1],
@@ -2887,9 +2885,7 @@ static void gl2psPDFgroupListWriteMainStream(void)
       gl2ps->streamlength += gl2psPrintPDFStrokeColor(prim->verts[0].rgba);
       for(j = 0; j <= lastel; ++j){  
         prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
-        if(!prim)
-          continue;
-        gl2ps->streamlength += 
+        gl2ps->streamlength +=
           gl2psPrintf("%f %f m %f %f l\n",
                       prim->verts[0].xyz[0], prim->verts[0].xyz[1],
                       prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
@@ -2906,8 +2902,6 @@ static void gl2psPDFgroupListWriteMainStream(void)
         gl2ps->streamlength += gl2psPrintPDFFillColor(t.vertex[0].rgba);        
         for(j = 0; j <= lastel; ++j){  
           prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
-          if(!prim)
-            continue;
           gl2psFillTriangleFromPrimitive(&t, prim, GL_FALSE);
           gl2ps->streamlength 
             += gl2psPrintf("%f %f m\n"
@@ -2928,8 +2922,6 @@ static void gl2psPDFgroupListWriteMainStream(void)
         gl2ps->streamlength += gl2psPrintPDFFillColor(prim->verts[0].rgba);
         for(j = 0; j <= lastel; ++j){  
           prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
-          if(!prim)
-            continue;
           gl2psFillTriangleFromPrimitive(&t, prim, GL_FALSE);
           gl2ps->streamlength 
             += gl2psPrintf("%f %f m\n"
@@ -2953,8 +2945,6 @@ static void gl2psPDFgroupListWriteMainStream(void)
         gl2ps->streamlength += gl2psPrintPDFFillColor(prim->verts[0].rgba);
         for(j = 0; j <= lastel; ++j){  
           prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
-          if(!prim)
-            continue;
           gl2psFillTriangleFromPrimitive(&t, prim, GL_FALSE);
           gl2ps->streamlength 
             += gl2psPrintf("%f %f m\n"
@@ -3058,9 +3048,9 @@ static int gl2psPDFgroupListWriteXObjectResources(void)
 
   for(i = 0; i < gl2psListNbr(gl2ps->pdfgrouplist); ++i){  
     gro = (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i); 
-    p = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, 0);
-    if(!p)
+    if(!gl2psListNbr(gro->ptrlist))
       continue;
+    p = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, 0);
     switch(p->type){
     case GL2PS_PIXMAP:
       gro->imobjno = gl2ps->objects_stack++;
@@ -3838,10 +3828,9 @@ static int gl2psPDFgroupListWriteObjects(int entryoffs)
   
   for(i = 0; i < gl2psListNbr(gl2ps->pdfgrouplist); ++i){  
     gro = (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i); 
+    if(!gl2psListNbr(gro->ptrlist))
+      continue;
     p = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, 0);
-    if(!p)
-      continue;    
-    
     switch(p->type){
     case GL2PS_PIXMAP:
       gl2ps->xreflist[gro->imobjno] = offs;
@@ -3857,13 +3846,9 @@ static int gl2psPDFgroupListWriteObjects(int entryoffs)
       break;
     case GL2PS_TRIANGLE:
       size = gl2psListNbr(gro->ptrlist);
-      if(!size)
-        break;
       triangles = (GL2PStriangle*)gl2psMalloc(sizeof(GL2PStriangle) * size);
       for(j = 0; j < size; ++j){  
         p = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
-        if(!p)
-          continue;
         gl2psFillTriangleFromPrimitive(&triangles[j], p, GL_TRUE);
       }
       if(triangles[0].prop & T_VAR_COLOR){

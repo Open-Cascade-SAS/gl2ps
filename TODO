@@ -1,15 +1,7 @@
-$Id: TODO,v 1.12 2004-03-16 21:30:27 geuzaine Exp $
-
+$Id: TODO,v 1.13 2004-05-09 03:58:38 geuzaine Exp $
 
 * Apple's Preview.app doesn't support '/ShadingType 4'... Should we
 submit a bug report to Apple?
-
-------------------------------------------------------------------------
-
-* On Mac OS X, the feedback buffer sometimes screws up the
-shading. IIRC, a VTK user submitted a bug to Apple in Feb 2004.
-
-Should investigate this further.
 
 ------------------------------------------------------------------------
 
