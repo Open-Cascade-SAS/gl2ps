@@ -1,4 +1,4 @@
-RELEASE = 1.2.3
+RELEASE = 1.2.4
 DATE = `date "+%Y%m%d"`
 
 clean:
