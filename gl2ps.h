@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.93 2004-12-18 00:24:57 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.94 2004-12-19 01:59:30 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -179,7 +179,7 @@ GL2PSDLL_API GLint gl2psDrawImageMap(GLsizei width, GLsizei height,
                                      const unsigned char *imagemap);
 
 #if defined(__cplusplus)
-};
+}
 #endif
 
 #endif /* __GL2PS_H__ */
