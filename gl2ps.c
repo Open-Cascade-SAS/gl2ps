@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.89 2003-03-07 18:37:15 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.90 2003-03-08 00:11:42 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1898,72 +1898,68 @@ GLint gl2psPrintTeXEndViewport(void){
 GLint gl2psPrintPrimitives(void){
   GL2PSbsptree *root;
   GL2PSxyz eye = {0., 0., 100000.};
-  GLint shademodel, res;
+  GLint shademodel, res = GL2PS_SUCCESS;
   void (*pprim)(void *a, void *b) = 0;
 
   glGetIntegerv(GL_SHADE_MODEL, &shademodel);
   gl2ps->shade = (shademodel == GL_SMOOTH);
 
-  if(gl2ps->format == GL2PS_TEX){
-    res = GL2PS_SUCCESS;
-  }
-  else{
+  if(gl2ps->format == GL2PS_PS || gl2ps->format == GL2PS_EPS){
     res = gl2psParseFeedbackBuffer();
   }
 
-  if(res == GL2PS_SUCCESS){
+  if(res != GL2PS_SUCCESS){
+    return res;
+  }
 
-    switch(gl2ps->format){
-    case GL2PS_TEX :
-      pprim = gl2psPrintTeXPrimitive;
-      break;
-    case GL2PS_PS :
-    case GL2PS_EPS :
-      pprim = gl2psPrintPostScriptPrimitive;
-      break;
+  switch(gl2ps->format){
+  case GL2PS_TEX :
+    pprim = gl2psPrintTeXPrimitive;
+    break;
+  case GL2PS_PS :
+  case GL2PS_EPS :
+    pprim = gl2psPrintPostScriptPrimitive;
+    break;
+  }
+  
+  switch(gl2ps->sort){
+  case GL2PS_NO_SORT :
+    gl2psListAction(gl2ps->primitives, pprim);
+    gl2psListAction(gl2ps->primitives, gl2psFreePrimitive);
+    /* reset the primitive list, waiting for the next viewport */
+    gl2psListReset(gl2ps->primitives);
+    break;
+  case GL2PS_SIMPLE_SORT :
+    gl2psListSort(gl2ps->primitives, gl2psCompareDepth);
+    if(gl2ps->options & GL2PS_OCCLUSION_CULL){
+      gl2psListAction(gl2ps->primitives, gl2psAddInImageTree);
+      gl2psFreeBspImageTree(&gl2ps->imagetree);
     }
-
-    switch(gl2ps->sort){
-    case GL2PS_NO_SORT :
-      gl2psListAction(gl2ps->primitives, pprim);
-      gl2psListAction(gl2ps->primitives, gl2psFreePrimitive);
-      /* reset the primitive list, waiting for the next viewport */
-      gl2psListReset(gl2ps->primitives);
-      break;
-    case GL2PS_SIMPLE_SORT :
-      gl2psListSort(gl2ps->primitives, gl2psCompareDepth);
-      if(gl2ps->options & GL2PS_OCCLUSION_CULL){
-	gl2psListAction(gl2ps->primitives, gl2psAddInImageTree);
-        gl2psFreeBspImageTree(&gl2ps->imagetree);
-      }
-      gl2psListActionInverse(gl2ps->primitives, pprim);
-      gl2psListAction(gl2ps->primitives, gl2psFreePrimitive);
-      /* reset the primitive list, waiting for the next viewport */
-      gl2psListReset(gl2ps->primitives);
-      break;
-    case GL2PS_BSP_SORT :
-      root = (GL2PSbsptree*)gl2psMalloc(sizeof(GL2PSbsptree));
-      gl2psBuildBspTree(root, gl2ps->primitives);
-      if(gl2ps->boundary) gl2psBuildPolygonBoundary(root);
-      if(gl2ps->options & GL2PS_OCCLUSION_CULL){
-	gl2psTraverseBspTree(root, eye, -(float)GL2PS_EPSILON, gl2psLess,
-			     gl2psAddInImageTree);
-	gl2psFreeBspImageTree(&gl2ps->imagetree);
-      }
-      gl2psTraverseBspTree(root, eye, (float)GL2PS_EPSILON, gl2psGreater, 
-			   pprim);
-      gl2psFreeBspTree(&root);
-      /* reallocate the primitive list (it's been deleted by
-	 gl2psBuildBspTree) in case there is another viewport */
-      gl2ps->primitives = gl2psListCreate(500, 500, sizeof(GL2PSprimitive*));
-      break;
-    default :
-      gl2psMsg(GL2PS_ERROR, "Unknown sorting algorithm: %d", gl2ps->sort);
-      res = GL2PS_ERROR;
-      break;
+    gl2psListActionInverse(gl2ps->primitives, pprim);
+    gl2psListAction(gl2ps->primitives, gl2psFreePrimitive);
+    /* reset the primitive list, waiting for the next viewport */
+    gl2psListReset(gl2ps->primitives);
+    break;
+  case GL2PS_BSP_SORT :
+    root = (GL2PSbsptree*)gl2psMalloc(sizeof(GL2PSbsptree));
+    gl2psBuildBspTree(root, gl2ps->primitives);
+    if(gl2ps->boundary) gl2psBuildPolygonBoundary(root);
+    if(gl2ps->options & GL2PS_OCCLUSION_CULL){
+      gl2psTraverseBspTree(root, eye, -(float)GL2PS_EPSILON, gl2psLess,
+			   gl2psAddInImageTree);
+      gl2psFreeBspImageTree(&gl2ps->imagetree);
     }
-    fflush(gl2ps->stream);
-
+    gl2psTraverseBspTree(root, eye, (float)GL2PS_EPSILON, gl2psGreater, 
+			 pprim);
+    gl2psFreeBspTree(&root);
+    /* reallocate the primitive list (it's been deleted by
+       gl2psBuildBspTree) in case there is another viewport */
+    gl2ps->primitives = gl2psListCreate(500, 500, sizeof(GL2PSprimitive*));
+    break;
+  default :
+    gl2psMsg(GL2PS_ERROR, "Unknown sorting algorithm: %d", gl2ps->sort);
+    res = GL2PS_ERROR;
+    break;
   }
 
   return res;
