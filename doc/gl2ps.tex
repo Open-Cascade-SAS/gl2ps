@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.118 2003-09-17 08:28:33 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.119 2003-09-19 17:30:32 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine <geuz@geuz.org>
@@ -219,15 +219,16 @@ determine the way primitives are handled:
   \dd{GL_COLOR_INDEX}. This colormap must contain \dd{colorsize} elements of
   type \dd{GL2PSrgba}.
 \item[\dd{nr}, \dd{ng}, \dd{nb}] (for PostScript output only) Controls the
-  number flat-shaded (sub-)triangles used to approximate a smooth-shaded
-  triangle when the \dd{shfill} operator is not supported by the system, or
-  when the \dd{GL2PS_NO_PS3_SHADING} option is set. The arguments \dd{nr},
-  \dd{ng} and \dd{nb} specify the number of values used for interpolating
-  the full range of red, green and blue color components; that is, a
-  triangle is recursively subdivided until the color difference between two
-  of its vertices is smaller that $1/\mathtt{nr}$ for the red component,
-  $1/\mathtt{ng}$ for the green component and $1/\mathtt{nb}$ for the blue
-  component. If the arguments are set to zero, default values are used.
+  number flat-shaded \mbox{(sub-)triangles} used to approximate a
+  smooth-shaded triangle when the \dd{shfill} operator is not supported by
+  the system, or when the \dd{GL2PS_NO_PS3_SHADING} option is set. The
+  arguments \dd{nr}, \dd{ng} and \dd{nb} specify the number of values used
+  for interpolating the full range of red, green and blue color components;
+  that is, a triangle is recursively subdivided until the color difference
+  between two of its vertices is smaller that $1/\mathtt{nr}$ for the red
+  component, $1/\mathtt{ng}$ for the green component and $1/\mathtt{nb}$ for
+  the blue component. If the arguments are set to zero, default values are
+  used.
 \item[\dd{buffersize}] Specifies the size of the feedback buffer.
 \item[\dd{stream}] Specifies the stream to which data is printed.
 \item[\dd{filename}] Specifies a name for the stream to which data is
