@@ -1,8 +1,8 @@
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
- * Copyright (C) 1999-2002  Christophe Geuzaine 
+ * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.67 2003-01-22 04:18:30 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.68 2003-01-22 04:24:19 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1273,7 +1273,7 @@ void gl2psPrintPostScriptHeader(void){
 
   fprintf(gl2ps->stream,
 	  "%%%%BoundingBox: %d %d %d %d\n"
-	  "%%%%Copyright: GNU LGPL (C) 1999-2002 Christophe Geuzaine <geuz@geuz.org>\n"
+	  "%%%%Copyright: GNU LGPL (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>\n"
 	  "%%%%EndComments\n",
 	  (gl2ps->options & GL2PS_LANDSCAPE) ? viewport[1] : viewport[0],
 	  (gl2ps->options & GL2PS_LANDSCAPE) ? viewport[0] : viewport[1],
