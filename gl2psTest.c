@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.24 2003-06-02 18:13:08 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.25 2003-06-02 18:48:59 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -144,7 +144,7 @@ void objects(void){
   glPushMatrix();
   glRotatef(rotation, 2., 0., 1.);
   if(teapot){
-    glutSolidTeapot(0.6);
+    glutSolidTeapot(0.7);
   }
   else{
     glutSolidTorus(0.3, 0.6, 20, 20);
@@ -165,7 +165,7 @@ void printstring(char *string){
 }
 
 void text(){
-  double x = -1., y = -0.55, dy = 0.12;
+  double x = -1.25, y = -0.58, dy = 0.13;
 
   glDisable(GL_LIGHTING);
   glColor3f(1., 1., 0.);
@@ -274,7 +274,7 @@ void draw_multi(void){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho(-1.1,1.1, -1.1,1.1, -1.1,1.1);
+  glOrtho(-1.3,1.3, -1.3,1.3, -1.3,1.3);
   glMatrixMode(GL_MODELVIEW);
   
   triangles();
@@ -297,7 +297,7 @@ void draw_multi(void){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho(-1.1,1.1, -1.1,1.1, -1.1,1.1);
+  glOrtho(-1.3,1.3, -1.3,1.3, -1.3,1.3);
   glMatrixMode(GL_MODELVIEW);
 
   glPushMatrix();
@@ -328,7 +328,7 @@ void reshape(int w, int h){
   glViewport(0, 0, (GLsizei) window_w, (GLsizei) window_h);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho(-1.1,1.1, -1.1,1.1, -1.1,1.1);
+  glOrtho(-1.3,1.3, -1.3,1.3, -1.3,1.3);
   glMatrixMode(GL_MODELVIEW);
 
   glClearColor(0.7, 0.7, 0.7, 0.);
