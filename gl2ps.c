@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.154 2003-12-10 04:17:20 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.155 2003-12-17 19:25:13 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -1758,8 +1758,11 @@ void gl2psPrintPostScriptHeader(void){
               "/tryPS3shading %s def %% set to false to force subdivision\n"
               "/rThreshold %g def %% red component subdivision threshold\n"
               "/gThreshold %g def %% green component subdivision threshold\n"
-              "/bThreshold %g def %% blue component subdivision threshold\n"
-              "/BD { bind def } bind def\n"
+              "/bThreshold %g def %% blue component subdivision threshold\n",
+              (gl2ps->options & GL2PS_NO_PS3_SHADING) ? "false" : "true",
+              gl2ps->threshold[0], gl2ps->threshold[1], gl2ps->threshold[2]);
+
+  gl2psPrintf("/BD { bind def } bind def\n"
               "/C  { setrgbcolor } BD\n"
               "/G  { 0.082 mul exch 0.6094 mul add exch 0.3086 mul add neg 1.0 add setgray } BD\n"
               "/W  { setlinewidth } BD\n"
@@ -1768,9 +1771,7 @@ void gl2psPrintPostScriptHeader(void){
               "/P  { newpath 0.0 360.0 arc closepath fill } BD\n"
               "/L  { newpath moveto lineto stroke } BD\n"
               "/SL { C moveto C lineto stroke } BD\n"
-              "/T  { newpath moveto lineto lineto closepath fill } BD\n",
-              (gl2ps->options & GL2PS_NO_PS3_SHADING) ? "false" : "true",
-              gl2ps->threshold[0], gl2ps->threshold[1], gl2ps->threshold[2]);
+              "/T  { newpath moveto lineto lineto closepath fill } BD\n");
   
   /* Smooth-shaded triangle with PostScript level 3 shfill operator:
         x3 y3 r3 g3 b3 x2 y2 r2 g2 b2 x1 y1 r1 g1 b1 STshfill */
@@ -1806,23 +1807,29 @@ void gl2psPrintPostScriptHeader(void){
               "      4 index 15 index add 0.5 mul\n" /* r13 = (r1+r3)/2 */
               "      4 index 15 index add 0.5 mul\n" /* g13 = (g1+g3)/2 */
               "      4 index 15 index add 0.5 mul\n" /* b13 = (b1+b3)/2 */
-              "      5 copy 5 copy 25 15 roll\n"
-              /* stack : (V3) (V13) (V13) (V13) (V2) (V1) */
-              "      9 index 30 index add 0.5 mul\n" /* x23 = (x2+x3)/2 */
+              "      5 copy 5 copy 25 15 roll\n");
+
+  /* at his point, stack = (V3) (V13) (V13) (V13) (V2) (V1) */
+
+  gl2psPrintf("      9 index 30 index add 0.5 mul\n" /* x23 = (x2+x3)/2 */
               "      9 index 30 index add 0.5 mul\n" /* y23 = (y2+y3)/2 */
               "      9 index 30 index add 0.5 mul\n" /* r23 = (r2+r3)/2 */
               "      9 index 30 index add 0.5 mul\n" /* g23 = (g2+g3)/2 */
               "      9 index 30 index add 0.5 mul\n" /* b23 = (b2+b3)/2 */
-              "      5 copy 5 copy 35 5 roll 25 5 roll 15 5 roll\n"
-              /* stack : (V3) (V13) (V23) (V13) (V23) (V13) (V23) (V2) (V1) */
-              "      4 index 10 index add 0.5 mul\n" /* x12 = (x1+x2)/2 */
+              "      5 copy 5 copy 35 5 roll 25 5 roll 15 5 roll\n");
+
+  /* stack = (V3) (V13) (V23) (V13) (V23) (V13) (V23) (V2) (V1) */
+
+  gl2psPrintf("      4 index 10 index add 0.5 mul\n" /* x12 = (x1+x2)/2 */
               "      4 index 10 index add 0.5 mul\n" /* y12 = (y1+y2)/2 */
               "      4 index 10 index add 0.5 mul\n" /* r12 = (r1+r2)/2 */
               "      4 index 10 index add 0.5 mul\n" /* g12 = (g1+g2)/2 */
               "      4 index 10 index add 0.5 mul\n" /* b12 = (b1+b2)/2 */
-              "      5 copy 5 copy 40 5 roll 25 5 roll 15 5 roll 25 5 roll\n"
-              /* stack : (V3) (V13) (V23) (V13) (V12) (V23) (V13) (V1) (V12) (V23) (V12) (V2) */
-              "      STnoshfill STnoshfill STnoshfill STnoshfill } BD\n");
+              "      5 copy 5 copy 40 5 roll 25 5 roll 15 5 roll 25 5 roll\n");
+  
+  /* stack  = (V3) (V13) (V23) (V13) (V12) (V23) (V13) (V1) (V12) (V23) (V12) (V2) */
+
+  gl2psPrintf("      STnoshfill STnoshfill STnoshfill STnoshfill } BD\n");
   
   /* Gouraud shaded triangle using recursive subdivision until the difference
      between corner colors does not exceed the thresholds:
@@ -3158,6 +3165,11 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
                                   GLint nr, GLint ng, GLint nb, GLint buffersize,
                                   FILE *stream, const char *filename){
   int i;
+
+  if(gl2ps){
+    gl2psMsg(GL2PS_ERROR, "gl2psBeginPage called in wrong program state");
+    return GL2PS_ERROR;
+  }
 
   gl2ps = (GL2PScontext*)gl2psMalloc(sizeof(GL2PScontext));
   gl2ps->maxbestroot = 10;
