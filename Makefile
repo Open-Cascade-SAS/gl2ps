@@ -21,7 +21,7 @@ linuxz:
             -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm -lz
 
 mac:
-	gcc -Wall -g -O3 -o gl2psTest gl2psTest.c gl2ps.c\
+	gcc -Wall -g -o gl2psTest gl2psTest.c gl2ps.c\
             -framework OpenGL -framework GLUT -framework Cocoa
 
 macz:

@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.51 2004-03-06 02:32:34 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.52 2004-03-06 03:45:39 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -31,6 +31,7 @@
  * Contributors:
  *   Rouben Rostamian <rostamian@umbc.edu>
  *   Guy Barrand <barrand@lal.in2p3.fr>
+ *   Micha Bieber <bieber@traits.de>
  *
  * For the latest info about gl2ps, see http://www.geuz.org/gl2ps/.
  * Please report all bugs and problems to <gl2ps@geuz.org>.
@@ -60,6 +61,7 @@ static float rotation = -60.;
 static GLsizei window_w = 0; 
 static GLsizei window_h = 0;
 static GLboolean display_multi = GL_TRUE;
+static GLboolean blend = GL_FALSE;
 static GLboolean teapot = GL_FALSE;
 static char *pixmap[] = {
   "****************************************************************",
@@ -129,21 +131,8 @@ static char *pixmap[] = {
   "*..............................................................*",
   "****************************************************************"};
 
-void init(void){
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LESS);
-  glShadeModel(GL_SMOOTH);
-  glEnable(GL_LIGHT0);
-  glEnable(GL_SCISSOR_TEST);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glEnable(GL_COLOR_MATERIAL);
-}
-
 void triangles(void){
   /* two intersecting triangles */
-  /* gl2psDisable(GL2PS_BLEND);
-     gl2psBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
   glBegin(GL_TRIANGLES);
   
   glColor3f(1., 0., 0.);
@@ -262,8 +251,8 @@ void printstring(char *string){
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, string[i]);
 }
 
-void text(){
-  double x = -1.25, y = -0.46, dy = 0.13;
+void text(void){
+  double x = -1.25, y = -0.33, dy = 0.13;
 
   glColor3f(1., 1., 0.);
 
@@ -278,12 +267,14 @@ void text(){
   glRasterPos2d(x, y); y -= dy;
   printstring("  v: to alternate between single and multiple viewport modes");
   glRasterPos2d(x, y); y -= dy;
+  printstring("  b: to change the blending mode");
+  glRasterPos2d(x, y); y -= dy;
   printstring("  q: to quit");
   glRasterPos2d(x, y); y -= dy;
   printstring("Click and move the mouse to rotate the objects");
 }
 
-void cube(void) {
+void cube(void){
   glColor3d (0.0,1.0,0.);   
   glBegin(GL_POLYGON);
   glVertex3d( 0.5,-0.5,-0.5);
@@ -343,13 +334,13 @@ void image(float x, float y, GLboolean opaque){
       pixels[pos] = b; pos++;
 
       if(opaque)
-      	continue;
+        continue;
 
       switch(pixmap[row][col]){
       case '.' : pixels[pos] = col / (float)w ; break;
       case 'a' : pixels[pos] = 1 - col / ((float)w - 7)  ; break;
       default  : pixels[pos] = 1.  ; break;
-      }			 
+      }                  
       pos++;
     }
   }
@@ -438,6 +429,19 @@ void draw_multi(void){
 }
 
 void display(void){
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
+  glShadeModel(GL_SMOOTH);
+  glEnable(GL_LIGHT0);
+  glEnable(GL_SCISSOR_TEST);
+  glEnable(GL_COLOR_MATERIAL);
+  if(blend){
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  }
+  else{
+    glDisable(GL_BLEND);
+  }
   if(display_multi == GL_TRUE){
     draw_multi();
   }
@@ -527,6 +531,10 @@ void keyboard(unsigned char key, int x, int y){
     printf("Print format changed to '%s'\n",
            (format == GL2PS_EPS) ? "EPS" : "PDF");
     break;
+  case 'b':
+    blend = !blend;
+    display();
+    break;
   case 'v':
     display_multi = display_multi ? GL_FALSE : GL_TRUE;
     if(display_multi == GL_TRUE){
@@ -582,7 +590,6 @@ int main(int argc, char **argv){
   glutInitWindowSize(400, 600);
   glutInitWindowPosition(100, 100);
   glutCreateWindow(argv[0]);
-  init();
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);

@@ -1,4 +1,4 @@
-/* $Id: gl2psTestSimple.c,v 1.3 2004-03-06 02:32:34 geuzaine Exp $ */
+/* $Id: gl2psTestSimple.c,v 1.4 2004-03-06 03:45:39 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -103,9 +103,9 @@ void keyboard(unsigned char key, int x, int y){
     while(state == GL2PS_OVERFLOW){
       buffsize += 1024*1024;
       gl2psBeginPage("test", "test", NULL, GL2PS_EPS, 
-		     GL2PS_SIMPLE_SORT /* GL2PS_BSP_SORT */,
-		     GL2PS_DRAW_BACKGROUND | GL2PS_USE_CURRENT_VIEWPORT,
-		     GL_RGBA, 0, NULL, 0, 0, 0,  buffsize, fp, "test.eps");
+                     GL2PS_SIMPLE_SORT /* GL2PS_BSP_SORT */,
+                     GL2PS_DRAW_BACKGROUND | GL2PS_USE_CURRENT_VIEWPORT,
+                     GL_RGBA, 0, NULL, 0, 0, 0,  buffsize, fp, "test.eps");
       display();
       state = gl2psEndPage();
     }
