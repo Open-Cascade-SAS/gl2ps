@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.103 2003-06-10 22:24:28 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.104 2003-06-11 06:53:26 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1322,8 +1322,8 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
   unsigned char red, green, blue, b, grey;
 
   /* FIXME: define an option for these? */
-  int shade = 0; /* set to 1 for greyscale pixmap output */
-  int nbit = 4; /* number of bits per color compoment (2, 4 or 8) */
+  int greyscale = 0; /* set to 1 to output greyscale image */
+  int nbits = 8; /* number of bits per color compoment (2, 4 or 8) */
 
   if((width <= 0) || (height <= 0)) return;
 
@@ -1331,7 +1331,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
   fprintf(stream, "%.2f %.2f translate\n", x, y); 
   fprintf(stream, "%d %d scale\n", width, height); 
 
-  if(shade != 0){ /* grey */
+  if(greyscale){ /* greyscale, 8 bits per pixel */
     fprintf(stream, "/picstr %d string def\n", width); 
     fprintf(stream, "%d %d %d\n", width, height, 8); 
     fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", width, height, height); 
@@ -1349,7 +1349,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     nbhex = width * height * 2; 
     fprintf(stream, "%%%% nbhex digit          :%d\n", nbhex); 
   }
-  else if(nbit == 2){ /* 2 bit for r and g and b; rgbs following each other */
+  else if(nbits == 2){ /* color, 2 bits for r and g and b; rgbs following each other */
     nbyte2 = (width * 3)/4;
     nbyte2 /=3;
     nbyte2 *=3;
@@ -1397,13 +1397,13 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
       fprintf(stream, "\n");
     }
   }
-  else if(nbit == 4){ /* 4 bit for r and g and b; rgbs following each other */
+  else if(nbits == 4){ /* color, 4 bits for r and g and b; rgbs following each other */
     nbyte4 = (width  * 3)/2;
     nbyte4 /=3;
     nbyte4 *=3;
     col_max = (nbyte4 * 2)/3;
     fprintf(stream, "/rgbstr %d string def\n", nbyte4);
-    fprintf(stream, "%d %d %d\n", col_max, height,4);
+    fprintf(stream, "%d %d %d\n", col_max, height, 4);
     fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", col_max, height, height);
     fprintf(stream, "{ currentfile rgbstr readhexstring pop }\n");
     fprintf(stream, "false 3\n");
@@ -1425,7 +1425,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
       fprintf(stream, "\n");
     }
   }
-  else{ /* 8 bit for r and g and b */
+  else{ /* color, 8 bits for r and g and b; rgbs following each other */
     nbyte8 = width * 3;
     fprintf(stream, "/rgbstr %d string def\n", nbyte8);
     fprintf(stream, "%d %d %d\n", width, height, 8);
