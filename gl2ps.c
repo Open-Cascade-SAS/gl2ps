@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.123 2003-10-24 21:13:51 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.124 2003-10-25 01:56:16 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -2685,7 +2685,7 @@ int gl2psPrintPDFShaderStreamData(GL2PStriangle triangle,
 int gl2psPrintPDFShader(int obj, GL2PSlist* triangles, int idx, int cnt ){
   int offs = 0;
   int vertexbytes = 1+4+4+1+1+1;
-  int i;
+  int i, done = 0;
 	
   offs += fprintf(gl2ps->stream,
 		  "%d 0 obj\n"
@@ -2717,21 +2717,15 @@ int gl2psPrintPDFShader(int obj, GL2PSlist* triangles, int idx, int cnt ){
 		      (int)gl2ps->zstream->destLen);
       offs += gl2ps->zstream->destLen * fwrite(gl2ps->zstream->dest, gl2ps->zstream->destLen, 
 					       1, gl2ps->stream);
-    }
-    else{ /* too long after compression or compress2 error -> write non-compressed entry */
-      offs += fprintf(gl2ps->stream,
-		      "/Length %d "
-		      ">>\n"
-		      "stream\n",
-		      vertexbytes * 3 * cnt);
-      for(i = 0; i < cnt; ++i)
-	offs += gl2psPrintPDFShaderStreamData((GL2PSvertex*)gl2psListPointer(triangles, idx+i),
-					      gl2psWriteBigEndian);
+      done = 1;
     }
     gl2psFreeZstream();
   }
-  else{
 #endif
+
+  if(!done){
+    /* no compression, or too long after compression, or compress2 error
+       -> write non-compressed entry */
     offs += fprintf(gl2ps->stream,
 		    "/Length %d "
 		    ">>\n"
@@ -2740,9 +2734,7 @@ int gl2psPrintPDFShader(int obj, GL2PSlist* triangles, int idx, int cnt ){
     for(i = 0; i < cnt; ++i)
       offs += gl2psPrintPDFShaderStreamData((GL2PSvertex*)gl2psListPointer(triangles, idx+i),
 					    gl2psWriteBigEndian);
-#ifdef GL2PS_HAVE_ZLIB
   }
-#endif
   
   offs += fprintf(gl2ps->stream,
 		  "\nendstream\n"
@@ -2793,7 +2785,7 @@ int gl2psPrintPDFPixmapStreamData(GL2PSimage* im,
 }
 
 int gl2psPrintPDFPixmap(int obj, GL2PSimage* im){
-  int offs = 0;
+  int offs = 0, done = 0;
   
   offs += fprintf(gl2ps->stream,
 		  "%d 0 obj\n"
@@ -2821,29 +2813,23 @@ int gl2psPrintPDFPixmap(int obj, GL2PSimage* im){
 		      (int)gl2ps->zstream->destLen);
       offs += gl2ps->zstream->destLen * fwrite(gl2ps->zstream->dest, gl2ps->zstream->destLen,
 					       1, gl2ps->stream);
-    }
-    else{ /* too long after compression or compress2 error -> write non-compressed entry */
-      offs += fprintf(gl2ps->stream,
-		      "/Length %d "
-		      ">>\n"
-		      "stream\n",
-		      (int)(im->width * im->height * 3));
-      offs += gl2psPrintPDFPixmapStreamData(im, gl2psWriteBigEndian);
+      done = 1;
     }
     gl2psFreeZstream();
   }
-  else{
 #endif
+  
+  if(!done){
+    /* no compression, or too long after compression, or compress2 error
+       -> write non-compressed entry */
     offs += fprintf(gl2ps->stream,
 		    "/Length %d "
 		    ">>\n"
 		    "stream\n",
 		    (int)(im->width * im->height * 3));
     offs += gl2psPrintPDFPixmapStreamData(im, gl2psWriteBigEndian);
-#ifdef GL2PS_HAVE_ZLIB
   }
-#endif
-
+  
   offs += fprintf(gl2ps->stream,
 		  "\nendstream\n"
 		  "endobj\n");
