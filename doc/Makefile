@@ -16,7 +16,7 @@ gl2ps.pdf: gl2ps.tex
 
 gl2ps.html: gl2ps.tex gl2ps.ps
 	rm -f gl2ps.html
-	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">" >> gl2ps.html
+	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">" >> gl2ps.html
 	echo "<html>" >> gl2ps.html
 	echo "<head>" >> gl2ps.html
 	echo "<title>GL2PS: an OpenGL to PostScript printing library</title>" >> gl2ps.html
