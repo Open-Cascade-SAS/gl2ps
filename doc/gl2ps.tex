@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.162 2004-03-15 19:19:07 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.163 2004-03-16 00:29:21 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -206,7 +206,8 @@ determine the way primitives are handled:
 
 \begin{description}
 \item[\dd{GL2PS_NONE}] No option.
-\item[\dd{GL2PS_DRAW_BACKGROUND}] The background frame is drawn.
+\item[\dd{GL2PS_DRAW_BACKGROUND}] The background frame is drawn in the
+  output stream.
 \item[\dd{GL2PS_SIMPLE_LINE_OFFSET}] A small offset is added in the z-buffer
   to all the lines in the plot. This is a simplified version of the
   \dd{GL2PS_POLYGON_OFFSET_FILL} functionality
@@ -218,9 +219,11 @@ determine the way primitives are handled:
 \item[\dd{GL2PS_BEST_ROOT}] The construction of the BSP tree is optimized by
   choosing the root primitives leading to the minimum number of splits.
 \item[\dd{GL2PS_NO_TEXT}] All the text strings are suppressed from
-  output. This is useful to produce the image part of a \LaTeX\ output.
-\item[\dd{GL2PS_NO_PIXMAP}] All the pixmaps are suppressed from output.
-\item[\dd{GL2PS_LANDSCAPE}] Landscape orientation instead of portrait.
+  the output stream. This is useful to produce the image part of a \LaTeX\ plot.
+\item[\dd{GL2PS_NO_PIXMAP}] All the pixmaps are suppressed from the output
+  stream.
+\item[\dd{GL2PS_LANDSCAPE}] The plot is output in landscape orientation
+  instead of portrait.
 \item[\dd{GL2PS_NO_PS3_SHADING}] (for PostScript output only) No use is made
   of the \dd{shfill} PostScript level 3 operator (which can lead to problems
   when converting PostScript files to PDF files, instead of generating PDF
@@ -236,10 +239,10 @@ determine the way primitives are handled:
   with the zlib library (\url{http://www.gzip.org/zlib/}).
 
   A word of caution: PostScript files generated with this option turned on
- are simply compressed ``as a whole'', i.e., they are identical to regular
- files compressed with \dd{gzip}--and may thus not be readable by all
- interpreters. This is not the case for compressed PDF files, for which the
- compression is part of the official specification.
+  are simply compressed ``as a whole'', i.e., they are identical to regular
+  files compressed with the gzip program--and may thus not be readable by
+  all interpreters. This is not the case for compressed PDF files, for which
+  the compression is part of the official specification.
 \end{description}
 
 \item[\dd{colormode}] Specifies the color mode: \dd{GL_RGBA} or
@@ -268,12 +271,13 @@ determine the way primitives are handled:
 
 \subsubsection{Return value}
 
-\dd{gl2psBeginPage} returns:
+\noindent\dd{gl2psBeginPage} returns:
 \begin{description}
 \item[\dd{GL2PS_ERROR}] if an error occurred;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
-\dd{gl2psEndPage} returns:
+
+\noindent\dd{gl2psEndPage} returns:
 \begin{description}
 \item[\dd{GL2PS_NO_FEEDBACK}] if the feedback buffer is empty;
 \item[\dd{GL2PS_OVERFLOW}] if the size of the feedback buffer given to
@@ -323,7 +327,7 @@ string only. The arguments are:
 
 \subsubsection{Return value}
 
-\dd{gl2psText} returns:
+\noindent\dd{gl2psText} returns:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if \dd{string} is \dd{NULL} or if the
 library is not initialized;
@@ -368,7 +372,7 @@ position of the current raster position only. The arguments are:
 
 \subsubsection{Return value}
 
-\dd{gl2psDrawPixels} returns:
+\noindent\dd{gl2psDrawPixels} returns:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if \dd{pixels} is \dd{NULL} or if the
   library is not initialized;
@@ -409,7 +413,7 @@ GLint gl2psDisable( GLint mode )
 
 \subsubsection{Return value}
 
-\dd{gl2psEnable} and \dd{gl2psDisable} return:
+\noindent\dd{gl2psEnable} and \dd{gl2psDisable} return:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
@@ -440,7 +444,7 @@ buffer.
 
 \subsubsection{Return value}
 
-\dd{gl2psPointSize} and \dd{gl2psLineWidth} return:
+\noindent\dd{gl2psPointSize} and \dd{gl2psLineWidth} return:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
@@ -464,7 +468,7 @@ GLint gl2psBlendFunc( GLenum sfactor, GLenum dfactor )
 
 \subsubsection{Return value}
 
-\dd{gl2psBlendFunc} returns:
+\noindent\dd{gl2psBlendFunc} returns:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
 \item[\dd{GL2PS_WARNING}] if the blending mode is not (yet) supported;
@@ -497,13 +501,14 @@ call to \dd{glGetIntegerv(GL_VIEWPORT, viewport)}).
 
 \subsubsection{Return value}
 
-\dd{gl2psBeginViewport} returns:
+\noindent\dd{gl2psBeginViewport} returns:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
-\dd{gl2psEndViewport} returns:
+
+\noindent\dd{gl2psEndViewport} returns:
 \begin{description}
 \item[\dd{GL2PS_NO_FEEDBACK}] if the feedback buffer is empty;
 \item[\dd{GL2PS_OVERFLOW}] if the size of the feedback buffer given to
