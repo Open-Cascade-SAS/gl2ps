@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.180 2004-11-22 06:46:48 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.181 2004-11-25 04:16:00 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -583,23 +583,44 @@ fclose(fp);
 gl2psText("MyText", "Courier", 12);
 \end{verbatim}
 
-If you plan to convert the PostScript file into a PDF file you may need to
-disable the use of the Level 3 PostScript \dd{shfill} operator, i.e., add
-\dd{GL2PS_NO_PS3_SHADING} to the list of options. Note that you can also
-edit the output file a posteriori (just set \dd{/tryPS3shading} to
-\dd{false} in the PostScript file header). The best solution is probably to
-output the file directly in PDF, though, by replacing \dd{GL2PS_EPS} with
-\dd{GL2PS_PDF} in the \dd{gl2psBeginPage()} function call
-above\footnote{Note that for PDF and compressed output, files should be
-opened in binary mode, i.e., with \dd{fopen(..., "wb")}, instead of
-\dd{fopen(..., "w")}.}.
-
 A complete example (\dd{gl2psTest.c}) is included in the distribution.
 
 %\begin{figure}
 %\scalebox{0.85}{\input{outLatex.tex}}
 %\caption{Sample output of the test program}
 %\end{figure}
+
+\section{Tips and Tricks}
+\label{sec:tips}
+
+Here are, in no particular order, some useful tips and solutions to common
+problems:
+\begin{itemize}
+\item For PDF (both compressed and non-compressed) and for compressed
+  PostScript output, files should always be opened in binary mode, i.e.,
+  with \dd{fopen(..., "wb")}, instead of \dd{fopen(..., "w")}.
+\item Blending is not yet very well supported by many viewers/printers. To
+  disable blending entirely, add \dd{GL2PS_NO_BLENDING} to the list of
+  options passed to \dd{gl2psBeginPage}.
+\item Make sure that localization is turned off when using GL2PS, via:
+\begin{verbatim}
+  unsigned char *oldlocale = setlocale(LC_NUMERIC, "C");
+
+  /* gl2ps drawing stuff */
+
+  setlocale(LC_NUMERIC, oldlocale);
+\end{verbatim}
+  French or German localizations would for example lead to corrupted output
+  files, as they represent the decimal point by a comma.
+\item If you plan to convert PostScript files into PDF files, you may need
+  to disable the use of the Level 3 PostScript \dd{shfill} operator, i.e.,
+  add \dd{GL2PS_NO_PS3_SHADING} to the list of options passed to
+  \dd{gl2psBeginPage}. (Note that you can also edit the output file \emph{a
+    posteriori}---just set \dd{/tryPS3shading} to \dd{false} in the
+  PostScript file header.) The best way to generate PDF files is of course
+  to set the \dd{format} argument to \dd{GL2PS_PDF} in the
+  \dd{gl2psBeginPage} call...
+\end{itemize}
 
 \section{Limitations}
 \label{sec:limitations}
@@ -801,7 +822,8 @@ does not seem to be available anymore).
 \item[1.2.2] (Sep 21, 2004) Fixed a couple of small bugs in the example
   code.
 \item[1.2.3] (Nov xx, 2004) Fixed small bugs in (unused) PostScript pixmap
-  code; better computation of \dd{GL2PS_SIMPLE_LINE_OFFSET}.
+  code; better scaling of the z-buffer (improves
+  \dd{GL2PS_SIMPLE_LINE_OFFSET} and occlusion culling).
 \end{description}
 
 \end{document}
