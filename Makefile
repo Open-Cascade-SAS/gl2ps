@@ -18,4 +18,4 @@ test:
 
 clean:
 	rm -f *.tex *.ps *.eps gl2psTest *~
-
+	cd doc && ${MAKE} clean
