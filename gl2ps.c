@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.81 2003-03-05 23:55:46 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.82 2003-03-06 00:12:59 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -61,14 +61,20 @@ void *gl2psMalloc(size_t size){
 
   if(!size) return(NULL);
   ptr = malloc(size);
-  if(!ptr) gl2psMsg(GL2PS_ERROR, "Couldn't allocate requested memory");
+  if(!ptr){
+    gl2psMsg(GL2PS_ERROR, "Couldn't allocate requested memory");
+    exit(1);
+  }
   return(ptr);
 }
 
 void *gl2psRealloc(void *ptr, size_t size){
   if(!size) return(NULL);
   ptr = realloc(ptr, size);
-  if(!ptr) gl2psMsg(GL2PS_ERROR, "Couldn't reallocate requested memory");
+  if(!ptr){
+    gl2psMsg(GL2PS_ERROR, "Couldn't reallocate requested memory");
+    exit(1);
+  }
   return(ptr);
 }
 
@@ -131,6 +137,7 @@ GLint gl2psListNbr(GL2PSlist *list){
 void *gl2psListPointer(GL2PSlist *list, GLint index){
   if((index < 0) || (index >= list->n)){
     gl2psMsg(GL2PS_ERROR, "Wrong list index in gl2psListPointer");
+    return(&list->array[0]);
   }
   return(&list->array[index * list->size]);
 }
@@ -254,6 +261,7 @@ void gl2psGetPlane(GL2PSprimitive *prim, GL2PSplane plane){
     break;
   default :
     gl2psMsg(GL2PS_ERROR, "Unknown primitive type in BSP tree");
+    break;
   }
 }
 
@@ -496,7 +504,11 @@ GLint gl2psFindRoot(GL2PSlist *primitives, GL2PSprimitive **root){
 	if(!count) return index;
       }
     }
-    /* if(index) gl2psMsg(GL2PS_INFO, "GL2PS_BEST_ROOT was worth it: %d", index); */
+    /* 
+       if(index){
+         gl2psMsg(GL2PS_INFO, "GL2PS_BEST_ROOT was worth it: %d", index);
+       }
+    */
     return index;
   }
   else{
@@ -1154,12 +1166,14 @@ GLint gl2psParseFeedbackBuffer(void){
   used = glRenderMode(GL_RENDER);
 
   if(used < 0){
-    gl2psMsg(GL2PS_INFO, "OpenGL feedback buffer reallocation");
+    gl2psMsg(GL2PS_INFO, "OpenGL feedback buffer overflow");
     return GL2PS_OVERFLOW;
   }
 
   if(used == 0){
-    gl2psMsg(GL2PS_INFO, "Empty feedback buffer");
+    /* 
+       gl2psMsg(GL2PS_INFO, "Empty feedback buffer"); 
+    */
     return GL2PS_NO_FEEDBACK;
   }
 
@@ -1471,11 +1485,8 @@ void gl2psPrintPostScriptHeader(void){
   if(gl2ps->format == GL2PS_PS){
     fprintf(gl2ps->stream, "%%!PS-Adobe-3.0\n");
   }
-  else if(gl2ps->format == GL2PS_EPS){
-    fprintf(gl2ps->stream, "%%!PS-Adobe-3.0 EPSF-3.0\n");
-  }
   else{
-    gl2psMsg(GL2PS_ERROR, "Unknown PostScript format");
+    fprintf(gl2ps->stream, "%%!PS-Adobe-3.0 EPSF-3.0\n");
   }
 
   fprintf(gl2ps->stream, 
@@ -1917,7 +1928,7 @@ GLint gl2psPrintPrimitives(void){
       pprim = gl2psPrintPostScriptPrimitive;
       break;
     default :
-      gl2psMsg(GL2PS_ERROR, "Unknown format");
+      gl2psMsg(GL2PS_ERROR, "Unknown output format: %d", gl2ps->format);
       break;
     }
 
@@ -1956,7 +1967,7 @@ GLint gl2psPrintPrimitives(void){
       gl2ps->primitives = gl2psListCreate(500, 500, sizeof(GL2PSprimitive*));
       break;
     default :
-      gl2psMsg(GL2PS_ERROR, "Unknown sorting algorithm");
+      gl2psMsg(GL2PS_ERROR, "Unknown sorting algorithm: %d", gl2ps->sort);
       res = GL2PS_ERROR;
       break;
     }
@@ -2043,7 +2054,7 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
     gl2psPrintPostScriptHeader();
     break;
   default :
-    gl2psMsg(GL2PS_ERROR, "Unknown format");
+    gl2psMsg(GL2PS_ERROR, "Unknown output format: %d", gl2ps->format);
     return GL2PS_ERROR;
   }
 
@@ -2071,7 +2082,7 @@ GL2PSDLL_API GLint gl2psEndPage(void){
     gl2psPrintPostScriptFooter();
     break;
   default :
-    gl2psMsg(GL2PS_ERROR, "Unknown format");
+    gl2psMsg(GL2PS_ERROR, "Unknown output format: %d", gl2ps->format);
     return GL2PS_ERROR;
   }
 
@@ -2225,7 +2236,7 @@ GL2PSDLL_API GLint gl2psEnable(GLint mode){
     glPassThrough(GL2PS_BEGIN_LINE_STIPPLE);
     break;
   default :
-    gl2psMsg(GL2PS_WARNING, "Unknown mode in gl2psEnable");
+    gl2psMsg(GL2PS_WARNING, "Unknown mode in gl2psEnable: %d", mode);
     return GL2PS_WARNING;
   }
 
@@ -2246,7 +2257,7 @@ GL2PSDLL_API GLint gl2psDisable(GLint mode){
     glPassThrough(GL2PS_END_LINE_STIPPLE);
     break;
   default :
-    gl2psMsg(GL2PS_WARNING, "Unknown mode in gl2psDisable");
+    gl2psMsg(GL2PS_WARNING, "Unknown mode in gl2psDisable: %d", mode);
     return GL2PS_WARNING;
   }
 
