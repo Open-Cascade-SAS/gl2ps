@@ -12,9 +12,13 @@ default:
 	cd gl2ps-${RELEASE} && zip -r gl2ps-${RELEASE}.zip *
 	mv gl2ps-${RELEASE}/gl2ps-${RELEASE}.zip .
 
-test:
+linux:
 	gcc -Wall -g -O3 -I/usr/X11R6/include -o gl2psTest gl2psTest.c gl2ps.c\
             -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
+
+mac:
+	gcc -Wall -g -O3 -o gl2psTest gl2psTest.c gl2ps.c\
+            -framework OpenGL -framework GLUT -framework Cocoa
 
 clean:
 	rm -f *.tex *.ps *.eps *.pdf gl2psTest a.out *~
