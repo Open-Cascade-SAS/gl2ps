@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.23 2003-06-02 17:57:33 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.24 2003-06-02 18:13:08 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -37,10 +37,10 @@
 #include "gl2ps.h"
 
 static float rotation = -60.;
-static int teapot = 0;
 static GLsizei window_w = 0; 
 static GLsizei window_h = 0;
 static GLboolean display_multi = 1;
+static GLboolean teapot = 0;
 static char *pixmap[] = {
   "................................................................",
   "...................++++++++++++++++++++++++++...................",
