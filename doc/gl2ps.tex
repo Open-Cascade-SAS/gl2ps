@@ -1,8 +1,8 @@
 %
-%  GL2PS, an OpenGL to Postscript Printing Library
+%  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2001  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.21 2001-10-31 10:55:37 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.22 2001-11-19 10:54:04 geuzaine Exp $
 % 
 %  E-mail: Christophe.Geuzaine@advalvas.be
 %  URL: http://www.geuz.org/gl2ps/
@@ -32,10 +32,10 @@
 \else
   \usepackage[colorlinks=true,urlcolor=blue]{hyperref}
   \pdfinfo{
-    /Title (GL2PS: an OpenGL to Postscript printing library)
+    /Title (GL2PS: an OpenGL to PostScript printing library)
     /Author (Christophe Geuzaine)
     /Subject (Documentation)
-    /Keywords (OpenGL, Postscript, Printing)
+    /Keywords (OpenGL, PostScript, Printing)
   } 
 \fi
 \newcommand\dd{\begingroup\Url}
@@ -47,17 +47,17 @@
 
 \begin{document}
 
-\title{GL2PS: an OpenGL to Postscript printing library}
+\title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.43, 31 October 2001}
+\date{Version 0.5, 19 November 2001}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.43.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.5.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.43.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.5.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{postscript}
 %%tth: and a
@@ -92,10 +92,10 @@ GL2PS begin with \dd{GL2PS}.
 \subsubsection{Specification}
 
 \begin{verbatim}
-void gl2psBeginPage( char *title, char *producer, GLint sort,
-                     GLint options, GLint colormode,
-                     GLint colorsize, GL2PSrgba *colortable, 
-                     GLint buffersize, FILE *stream )
+void gl2psBeginPage( char *title, char *producer, 
+                     GLint format, GLint sort, GLint options, 
+                     GLint colormode, GLint colorsize, GL2PSrgba *colortable, 
+                     GLint buffersize, FILE *stream , char *filename)
 \end{verbatim}
 
 \begin{verbatim}
@@ -105,19 +105,24 @@ void gl2psEndPage( void )
 \subsubsection{Parameters}
 
 \begin{description}
-\item[\dd{title}] Specifies the plot title. For Postscript output, this string
+\item[\dd{title}] Specifies the plot title. For PostScript output, this string
 is placed in the \texttt{\%\%Title} field.
 
-\item[\dd{producer}] Specifies the plot producer. For Postscript output, this
+\item[\dd{producer}] Specifies the plot producer. For PostScript output, this
 string is placed in the \texttt{\%\%For} field.
+
+\item[\dd{format}] Specifies the output format, chosen among: \dd{GL2PS_PS},
+\dd{GL2PS_TEX}. \dd{GL2PS_TEX} produces a \LaTeX\ file containing the text
+parts of the images, and including an image having the same basename. This
+image should be generated with the \dd{GL2PS_NO_TEXT} option.
 
 \item[\dd{sort}] Specifies the sorting algorithm, chosen among:
 \dd{GL2PS_NO_SORT}, \dd{GL2PS_SIMPLE_SORT}, \dd{GL2PS_BSP_SORT}.
 
-\item[\dd{options}] Sets global plot options, chosen among:
-\dd{GL2PS_NONE}, \dd{GL2PS_DRAW_BACKGROUND}, \dd{GL2PS_SIMPLE_LINE_OFFSET},
-\dd{GL2PS_SILENT}, \dd{GL2PS_BEST_ROOT}. Multiple options are combined with the
-bitwise inclusive OR symbol,~\dd{|}.
+\item[\dd{options}] Sets global plot options, chosen among: \dd{GL2PS_NONE},
+\dd{GL2PS_DRAW_BACKGROUND}, \dd{GL2PS_SIMPLE_LINE_OFFSET},
+\dd{GL2PS_SILENT}, \dd{GL2PS_BEST_ROOT}, \dd{GL2PS_NO_TEXT}. Multiple
+options are combined with the bitwise inclusive OR symbol,~\dd{|}.
 
 \item[\dd{colormode}] Specifies the color mode: \dd{GL_RGBA} or
 \dd{GL_COLOR_INDEX}.
@@ -132,6 +137,9 @@ bitwise inclusive OR symbol,~\dd{|}.
 \item[\dd{buffersize}] Specifies the size of the feedback buffer.
 
 \item[\dd{stream}] Specifies the stream to which data is printed.
+
+\item[\dd{filename}] Specifies name of the stream to which data is
+printed. This argument is optional.
 \end{description}
 
 \subsubsection{Description}
@@ -166,6 +174,9 @@ stream.
 \item[\dd{GL2PS_BEST_ROOT}] Try to optimize the BSP tree by choosing as root
 primitives those leading to the minimum number of splits. This is (really) not
 efficient yet.
+
+\item[\dd{GL2PS_NO_TEXT}] Suppress all text strings from output. Useful to
+produce the image part of a \TeX\ output.
 
 %\item[\dd{GL2PS_OCCLUSION_CULL}] Removes (well, tries to remove) all hidden
 %polygons from the output, thus substancially reducing the size of the output
@@ -276,9 +287,9 @@ int buffsize = 0, state = GL2PS_OVERFLOW;
 
 while( state == GL2PS_OVERFLOW ){ 
   buffsize += 1024*1024;
-  gl2psBeginPage ( "MyTitle", "MySoftware", GL2PS_BSP_SORT,
+  gl2psBeginPage ( "MyTitle", "MySoftware", GL2PS_PS, GL2PS_BSP_SORT,
                    GL2PS_SIMPLE_LINE_OFFSET | GL2PS_SILENT, 
-                   GL_RGBA, 0, NULL, buffsize, fp );
+                   GL_RGBA, 0, NULL, buffsize, fp, NULL );
   draw(); 
   state = gl2psEndPage();
 }
@@ -306,7 +317,7 @@ the feedback buffer parser; Marc Um{\'e}
 Jean-Fran\c{c}ois Remacle (\email{remacle@scorec.rpi.edu}) for plane
 equation fixes; Bart Kaptein (\email{B.L.Kaptein@lumc.nl}) for memory leak
 fixes; Quy Nguyen-Dai (\email{quy@vnilux.com}) for output file size
-optimization; Sam Buss (\email{sbuss@ucsd.edu}) for the smooth shaded
+optimization; Sam Buss (\email{sbuss@ucsd.edu}) for the new smooth shaded
 triangle code.
 
 %Bruce Naylor (\email{naylor@comp-graphics.com}) for some BSP tree and occlusion
@@ -334,9 +345,11 @@ this user's guide.
 file formats other than postscript.
 \item[0.41] (Aug 6, 2001) Fixed string allocation (1 char too
 short). Set smaller default line width.
-\item[0.42] (Oct 8, 2001) Optimization of output file size. Postscript
+\item[0.42] (Oct 8, 2001) Optimization of output file size. PostScript
 header cleaning. Better line width computation.
-\item[0.43] (Oct 31, 2001) Better support of smooth shaded primitives.
+\item[0.5] (Nov 19, 2001) New format argument in \dd{gl2psBeginPage}. Better
+PostScript handling of smooth shaded primitives. New options for LaTeX
+output.
 \end{description}
 
 % Occlusion culling... In version 9.99? :-(
