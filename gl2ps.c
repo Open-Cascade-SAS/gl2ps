@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.78 2003-03-05 01:42:37 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.79 2003-03-05 02:35:15 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1318,7 +1318,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
 
   if(shade != 0){ /* grey */
     fprintf(stream, "/picstr %d string def\n", width); 
-    fprintf(stream, "%d %d %d \n", width, height, 8); 
+    fprintf(stream, "%d %d %d\n", width, height, 8); 
     fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", width, height, height); 
     fprintf(stream, "{ currentfile picstr readhexstring pop }\n");
     fprintf(stream, "image\n");
@@ -1343,7 +1343,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     /* 2 bit for r and g and b */
     /* rgbs following each other */
     fprintf(stream, "/rgbstr %d string def\n", nbyte2); 
-    fprintf(stream, "%d %d %d \n", col_max, height, 2); 
+    fprintf(stream, "%d %d %d\n", col_max, height, 2); 
     fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", col_max, height, height); 
     fprintf(stream, "{ currentfile rgbstr readhexstring pop }\n" );
     fprintf(stream, "false 3\n" );
