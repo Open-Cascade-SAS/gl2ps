@@ -21,7 +21,7 @@ mac:
             -framework OpenGL -framework GLUT -framework Cocoa
 
 macz:
-	gcc -DHAVE_ZLIB -Wall -g -O3 -o gl2psTest gl2psTest.c gl2ps.c\
+	gcc -DHAVE_ZLIB -Wall -g -o gl2psTest gl2psTest.c gl2ps.c\
             -framework OpenGL -framework GLUT -framework Cocoa -lz
 
 clean:
