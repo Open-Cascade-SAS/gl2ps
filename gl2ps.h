@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine
  *
- * $Id: gl2ps.h,v 1.56 2003-09-16 19:40:41 geuzaine Exp $
+ * $Id: gl2ps.h,v 1.57 2003-09-16 22:36:58 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -104,6 +104,7 @@
 #define GL2PS_SIMPLE_OFFSET       0.05
 #define GL2PS_SIMPLE_OFFSET_LARGE 1.0
 #define GL2PS_ZERO(arg)           (fabs(arg)<1.e-20)
+#define GL2PS_FIXED_XREF_ENTRIES  7 
 
 /* Message levels and error codes */
 
@@ -214,17 +215,31 @@ typedef struct {
 } GL2PSprimitive;
 
 typedef struct {
-  GLint format, sort, options, colorsize, colormode, buffersize, maxbestroot;
+  /* general */
+  GLint format, sort, options, colorsize, colormode, buffersize;
   const char *title, *producer, *filename;
-  GLboolean boundary, zerosurfacearea;
+  GLboolean boundary;
   GLfloat *feedback, offset[2];
   GLint viewport[4];
   GL2PSrgba *colormap, lastrgba, threshold;
   float lastlinewidth;
   GL2PSlist *primitives;
-  GL2PSbsptree2d *imagetree;
   FILE *stream;
+
+  /* BSP-specific */
+  GLint maxbestroot;
+
+  /* occlusion culling-specific */
+  GLboolean zerosurfacearea;
+  GL2PSbsptree2d *imagetree;
   GL2PSprimitive *primitivetoadd;
+  
+  /* PDF-specific */
+  int cref[GL2PS_FIXED_XREF_ENTRIES];
+  int streamlength;
+  GL2PSlist *tlist, *tidxlist, *ilist, *slist; 
+  int lasttype, consec_cnt, consec_inner_cnt;
+  int line_width_diff, line_rgb_diff, line_stroked;
 } GL2PScontext;
 
 /* public functions */
