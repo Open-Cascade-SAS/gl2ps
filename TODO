@@ -1,4 +1,10 @@
-$Id: TODO,v 1.7 2003-06-02 17:57:32 geuzaine Exp $
+$Id: TODO,v 1.8 2003-06-12 18:46:03 geuzaine Exp $
+
+* Add a note on pstoedit (http://www.pstoedit.net/): enables to
+transform postscript to other vector formats such as xfig, cgm, wmf,
+etc.
+
+------------------------------------------------------------------------
 
 * Enhance the polygon/line/point offset stuff
 
