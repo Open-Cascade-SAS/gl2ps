@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.196 2004-12-17 16:10:10 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.197 2004-12-17 16:18:24 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -179,7 +179,8 @@ struct _GL2PSimagemap {
 };
 
 typedef struct {
-  GLshort type, numverts, pattern;
+  GLshort type, numverts;
+  GLushort pattern;
   char boundary, offset, culled;
   GLint factor;
   GLfloat width;
