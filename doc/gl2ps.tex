@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.156 2004-02-14 18:37:04 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.157 2004-03-06 02:32:34 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -58,7 +58,7 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 1.2.0, xx February 2004}
+\date{Version 1.2.0, xx March 2004}
 
 \maketitle
 
@@ -454,13 +454,14 @@ GLint gl2psBlendFunc( GLenum sfactor, GLenum dfactor )
 
 \subsubsection{Description and arguments}
 
-\dd{gl2psBlendFunc} XXX
+\dd{gl2psBlendFunc} emulates the \dd{glBlendFunc} function.
 
 \subsubsection{Return value}
 
 \dd{gl2psBlendFunc} returns:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
+\item[\dd{GL2PS_WARNING}] if the blending mode is not (yet) supported;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
 
@@ -750,8 +751,9 @@ does not seem to be available anymore).
   (binary files, fonts).
 \item[1.1.2] (Nov 16, 2003) Fixed various compiler warnings (mostly for
   Windows Visual C++).
-\item[1.2.0] (Feb xx, 2004) New transparency support for PDF output; fixed
- more compiler warnings (for Windows Borland C++).
+\item[1.2.0] (Mar xx, 2004) New transparency support for PDF output; fix bug
+  for empty feedback buffer but non-empty primitive list; fixed more
+  compiler warnings.
 \end{description}
 
 \end{document}

@@ -1,7 +1,7 @@
-/* $Id: gl2ps.h,v 1.80 2003-12-22 16:31:24 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.81 2004-03-06 02:32:34 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
- * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
+ * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of either:
@@ -41,7 +41,7 @@
 
 /* To generate a Windows dll, define GL2PSDLL at compile time */
 
-#ifdef WIN32
+#ifdef _WIN32
 /* Shut up warning due to bad windows header file */
 #  if defined(_MSC_VER) 
 #    pragma warning(disable:4115)
@@ -112,7 +112,6 @@
 #define GL2PS_NO_PIXMAP            (1<<8)
 #define GL2PS_USE_CURRENT_VIEWPORT (1<<9)
 #define GL2PS_COMPRESS             (1<<10)
-#define GL2PS_TRANSPARENCY         (1<<11)
 
 /* Arguments for gl2psEnable/gl2psDisable */
 
@@ -190,6 +189,15 @@
 #define GL2PS_SRC_BLEND                11
 #define GL2PS_DST_BLEND                12
 
+typedef enum {
+  T_UNDEFINED    = -1,
+  T_CONST_COLOR  = 1,
+  T_VAR_COLOR    = 1<<1,
+  T_ALPHA_1      = 1<<2,
+  T_ALPHA_LESS_1 = 1<<3,
+  T_VAR_ALPHA    = 1<<4
+} GL2PS_TRIANGLE_PROPERTY;
+
 typedef GLfloat GL2PSrgba[4];
 typedef GLfloat GL2PSxyz[3];
 typedef GLfloat GL2PSplane[4];
@@ -221,7 +229,7 @@ typedef struct {
 
 typedef struct {
   GL2PSvertex vertex[3];
-  GLenum blendsrc, blenddst;
+  GL2PS_TRIANGLE_PROPERTY prop;
 } GL2PStriangle;
 
 typedef struct {
@@ -245,7 +253,6 @@ typedef struct {
     GL2PSstring *text;
     GL2PSimage *image;
   } data;
-  GLenum blendsrc, blenddst;
 } GL2PSprimitive;
 
 typedef struct {
@@ -257,6 +264,12 @@ typedef struct {
 #endif
 } GL2PScompress;
 
+typedef struct{
+  GL2PSlist* ptrlist;
+  int gsno, fontno, imno, shno, maskshno, trgroupno;
+  int gsobjno, fontobjno, imobjno, shobjno, maskshobjno, trgroupobjno;
+} GL2PSpdfgroup;
+
 typedef struct {
   /* General */
   GLint format, sort, options, colorsize, colormode, buffersize;
@@ -265,6 +278,7 @@ typedef struct {
   GLfloat *feedback, offset[2], lastlinewidth;
   GLint viewport[4];
   GLenum blendfunc[2];
+  GLboolean blending;
   GL2PSrgba *colormap, lastrgba, threshold;
   GL2PSlist *primitives;
   FILE *stream;
@@ -279,11 +293,16 @@ typedef struct {
   GL2PSprimitive *primitivetoadd;
   
   /* PDF-specific */
-  int cref[GL2PS_FIXED_XREF_ENTRIES];
   int streamlength;
-  GL2PSlist *tlist, *tidxlist, *ilist, *slist; 
-  int lasttype, consec_cnt, consec_inner_cnt;
-  int line_width_diff, line_rgb_diff, last_line_finished, last_triangle_finished;
+  GL2PSlist *pdfprimlist, *pdfgrouplist;
+  int *xreflist;
+  int objects_stack; /* available objects */
+  int extgs_stack; /* graphics state object number */
+  int font_stack; /* font object number */
+  int im_stack; /* image object number */
+  int trgroupobjects_stack; /* xobject numbers */
+  int shader_stack; /* shader object numbers */
+  int mshader_stack; /* mask shader object numbers */
 } GL2PScontext;
 
 /* Private prototypes */

@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.50 2003-12-22 18:24:00 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.51 2004-03-06 02:32:34 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -44,42 +44,41 @@
   gcc -O3 gl2psTest.c gl2ps.c -framework OpenGL -framework GLUT -framework Cocoa
 */
 
-#ifdef __APPLE__
-#  include <GLUT/glut.h>
-#else
-#  include <GL/glut.h>
-#endif
-
 #ifdef _MSC_VER /* MSVC Compiler */
 #pragma comment(linker, "/entry:\"mainCRTStartup\"")
 #endif
 
 #include <string.h>
 #include "gl2ps.h"
+#ifdef __APPLE__
+#  include <GLUT/glut.h>
+#else
+#  include <GL/glut.h>
+#endif
 
 static float rotation = -60.;
 static GLsizei window_w = 0; 
 static GLsizei window_h = 0;
-static GLboolean display_multi = 1;
-static GLboolean teapot = 0;
+static GLboolean display_multi = GL_TRUE;
+static GLboolean teapot = GL_FALSE;
 static char *pixmap[] = {
   "****************************************************************",
   "*..............................................................*",
   "*..................++++++++++++++++++++++++++..................*",
   "*.............+++++++++++++++++++++++++++++++++++++............*",
-  "*.......++++++++++++@@@@@@@@@@@@@@@@@@@@@@@@++++++++++++.......*",
-  "*.......++++++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@++++++.......*",
-  "*.......++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@++.......*",
-  "*.......++@@@@++++@@+@@@@@@@@++++@@@++++++@@@+++++@@@@++.......*",
-  "*.......++@@@+@@@@+@+@@@@@@@+@@@@+@@+@@@@@+@+@@@@@+@@@++.......*",
-  "*.......++@@+@@@@@@@+@@@@@@@@@@@+@@@+@@@@@+@+@@@@@@@@@++.......*",
-  "*.......++@@+@@@+++@+@@@@@@@@@@+@@@@++++++@@@+++++@@@@++.......*",
-  "*.......++@@+@@@@@+@+@@@@@@@@@+@@@@@+@@@@@@@@@@@@@+@@@++.......*",
-  "*.......++@@@+@@@@+@+@@@@@@@@+@@@@@@+@@@@@@@+@@@@@+@@@++.......*",
-  "*.......++@@@@+++++@++++++@@++++++@@+@@@@@@@@+++++@@@@++.......*",
-  "*.......++@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@++.......*",
-  "*.......++@@@@@@@@@++++++++++++++++++++++++++@@@@@@@@@++.......*",
-  "*.......++@@@+++++++@@@@@@@@@@@+++++++++++++++++++@@@@++.......*",
+  "*.......++++++++++++aaaaaaaaaaaaaaaaaaaaaaaa++++++++++++.......*",
+  "*.......++++++aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa++++++.......*",
+  "*.......++aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa++.......*",
+  "*.......++aaaa++++aa+aaaaaaaa++++aaa++++++aaa+++++aaaa++.......*",
+  "*.......++aaa+aaaa+a+aaaaaaa+aaaa+aa+aaaaa+a+aaaaa+aaa++.......*",
+  "*.......++aa+aaaaaaa+aaaaaaaaaaa+aaa+aaaaa+a+aaaaaaaaa++.......*",
+  "*.......++aa+aaa+++a+aaaaaaaaaa+aaaa++++++aaa+++++aaaa++.......*",
+  "*.......++aa+aaaaa+a+aaaaaaaaa+aaaaa+aaaaaaaaaaaaa+aaa++.......*",
+  "*.......++aaa+aaaa+a+aaaaaaaa+aaaaaa+aaaaaaa+aaaaa+aaa++.......*",
+  "*.......++aaaa+++++a++++++aa++++++aa+aaaaaaaa+++++aaaa++.......*",
+  "*.......++aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa++.......*",
+  "*.......++aaaaaaaaa++++++++++++++++++++++++++aaaaaaaaa++.......*",
+  "*.......++aaa+++++++@@@@@@@@@@@+++++++++++++++++++aaaa++.......*",
   "*.......++++++@@+@@@+@@@++@@@@@+++++++++++++++++++++++++.......*",
   "*.......++@@@@@+@@@+@@@+@@@@+@@+++++++++++++++++++++++++.......*",
   "*.......++@@@@+@@@+@@+++++++@@@+++++++++++++++++++++++++.......*",
@@ -136,21 +135,22 @@ void init(void){
   glShadeModel(GL_SMOOTH);
   glEnable(GL_LIGHT0);
   glEnable(GL_SCISSOR_TEST);
-
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_BLEND);
-  glEnable(GL_ALPHA);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_COLOR_MATERIAL);
 }
 
 void triangles(void){
   /* two intersecting triangles */
+  /* gl2psDisable(GL2PS_BLEND);
+     gl2psBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
   glBegin(GL_TRIANGLES);
   
   glColor3f(1., 0., 0.);
   glVertex3f(-1., 1., 0.);
-  glColor3f(1., 1., 0.);
+  glColor4f(1., 1., 0., 0.1);
   glVertex3f(-1., 0., 0.);
-  glColor3f(1., 0., 1.);
+  glColor4f(1., 0., 1., 1.0);
   glVertex3f(1., 0., 0.2);
   
   glColor3f(0., 1., 0.);
@@ -234,7 +234,8 @@ void objects(void){
   glPushMatrix();
   glEnable(GL_LIGHTING);
   glRotatef(rotation, 2., 0., 1.);
-  if(teapot){
+  glColor4d(0.2, 0.2, 0.9, 0.2);
+  if(teapot == GL_TRUE){
     glutSolidTeapot(0.7);
   }
   else{
@@ -283,42 +284,48 @@ void text(){
 }
 
 void cube(void) {
+  glColor3d (0.0,1.0,0.);   
+  glBegin(GL_POLYGON);
+  glVertex3d( 0.5,-0.5,-0.5);
+  glColor4d (0.0,1.0,0.,0.2);   
+  glVertex3d( 0.5, 0.5,-0.5);
+  glVertex3d(-0.5, 0.5,-0.5);
+  glColor4d (0.0,1.0,0.,1);   
+  glVertex3d(-0.5,-0.5,-0.5);
+  glEnd();
+
+  glColor3d (1.0,0.0,0.);   
+  glBegin(GL_POLYGON);
+  glColor4d (1.0,0.0,0.,0.1);   
+  glVertex3d( 0.5,-0.5,0.5);
+  glColor4d (1.0,0.5,1.,0.9);   
+  glVertex3d( 0.5, 0.5,0.5);
+  glVertex3d(-0.5, 0.5,0.5);
+  glColor4d (1.0,0.5,1.,0.1);   
+  glVertex3d(-0.5,-0.5,0.5);
+  glEnd();
   glLineWidth(4.0);
-  glColor3f(1.0, 0.0, 0.0);
-  glBegin(GL_POLYGON);
-  glVertex3f( 0.5,-0.5, 0.5);
-  glVertex3f( 0.5, 0.5, 0.5);
-  glVertex3f(-0.5, 0.5, 0.5);
-  glVertex3f(-0.5,-0.5, 0.5);
-  glEnd();
-
-  glColor3f(0.0, 1.0, 0.0);
-  glBegin(GL_POLYGON);
-  glVertex3f( 0.5,-0.5,-0.5);
-  glVertex3f( 0.5, 0.5,-0.5);
-  glVertex3f(-0.5, 0.5,-0.5);
-  glVertex3f(-0.5,-0.5,-0.5);
-  glEnd();
-
-  glColor3f(1.0, 1.0, 0.0);
+  glColor3d (1.0,1.0,0.);   
   glBegin(GL_LINES);
-  glVertex3f( 0.5,-0.5, 0.5);
-  glVertex3f( 0.5,-0.5,-0.5);
-  glVertex3f( 0.5, 0.5, 0.5);
-  glVertex3f( 0.5, 0.5,-0.5);
-  glVertex3f(-0.5, 0.5, 0.5);
-  glVertex3f(-0.5, 0.5,-0.5);
-  glVertex3f(-0.5,-0.5, 0.5);
-  glVertex3f(-0.5,-0.5,-0.5);
+  glVertex3d( 0.5,-0.5, 0.5);
+  glVertex3d( 0.5,-0.5,-0.5);
+  glVertex3d( 0.5, 0.5, 0.5);
+  glVertex3d( 0.5, 0.5,-0.5);
+  glVertex3d(-0.5, 0.5, 0.5);
+  glVertex3d(-0.5, 0.5,-0.5);
+  glVertex3d(-0.5,-0.5, 0.5);
+  glVertex3d(-0.5,-0.5,-0.5);
   glEnd();
 }
 
-void image(float x, float y){
+void image(float x, float y, GLboolean opaque){
   int w = 64, h = 66, row, col, pos = 0;
   float *pixels, r = 0., g = 0., b = 0.;
 
   /* Fill a pixmap (each pixel contains three floats defining an RGB color) */
-  pixels = (float*)malloc(3*w*h*sizeof(float));
+  pixels = (opaque == GL_TRUE) 
+    ? (float*)malloc(3*w*h*sizeof(float)) 
+    : (float*)malloc(4*w*h*sizeof(float));
 
   for(row = h-1; row >= 0; row--){
     for(col = 0; col < w; col++){
@@ -327,19 +334,35 @@ void image(float x, float y){
       case '+' : r = 0.  ; g = 0.  ; b = 0.  ; break;
       case '@' : r = 255.; g = 209.; b = 0.  ; break;
       case '#' : r = 255.; g = 0.  ; b = 0.  ; break;
+      case 'a' : r = 255.; g = 209.; b = 0.  ; break;
       case '*' : r = 0.;   g = 0.  ; b = 20. ; break;
       }
       r /= 255.; g /= 255.; b /= 255.; 
       pixels[pos] = r; pos++;
       pixels[pos] = g; pos++;
       pixels[pos] = b; pos++;
+
+      if(opaque)
+      	continue;
+
+      switch(pixmap[row][col]){
+      case '.' : pixels[pos] = col / (float)w ; break;
+      case 'a' : pixels[pos] = 1 - col / ((float)w - 7)  ; break;
+      default  : pixels[pos] = 1.  ; break;
+      }			 
+      pos++;
     }
   }
 
   glRasterPos2f(x, y);
-  glDrawPixels((GLsizei)w, (GLsizei)h, GL_RGB, GL_FLOAT, pixels);
-  gl2psDrawPixels((GLsizei)w, (GLsizei)h, 0, 0, GL_RGB, GL_FLOAT, pixels);
-
+  if(opaque){
+    glDrawPixels((GLsizei)w, (GLsizei)h, GL_RGB, GL_FLOAT, pixels);
+    gl2psDrawPixels((GLsizei)w, (GLsizei)h, 0, 0, GL_RGB, GL_FLOAT, pixels);
+  }
+  else{
+    glDrawPixels((GLsizei)w, (GLsizei)h, GL_RGBA, GL_FLOAT, pixels);
+    gl2psDrawPixels((GLsizei)w, (GLsizei)h, 0, 0, GL_RGBA, GL_FLOAT, pixels);
+  }
   free(pixels);
 }
 
@@ -376,9 +399,9 @@ void draw_multi(void){
   glOrtho(-1.3,1.3, -1.3,1.3, -1.3,1.3);
   glMatrixMode(GL_MODELVIEW);
   
+  objects();
   triangles();
   extras();
-  objects();
   text();
 
   gl2psEndViewport();
@@ -402,10 +425,10 @@ void draw_multi(void){
 
   glPushMatrix();
   glRotatef(rotation, 1., 1., 1.);
+  image(-0.8, -0.3, GL_TRUE);
   cube();
-  image(-0.8, -0.8);
-  image(0.8, 0.2);
   extras();
+  image(-0.8, 0.4, GL_FALSE);
   glPopMatrix();
 
   gl2psEndViewport();
@@ -415,7 +438,7 @@ void draw_multi(void){
 }
 
 void display(void){
-  if(display_multi){
+  if(display_multi == GL_TRUE){
     draw_multi();
   }
   else{
@@ -465,7 +488,7 @@ void writefile(int format, int sort, int options, int nbcol,
 
   while(state == GL2PS_OVERFLOW){
     buffsize += 1024*1024;
-    gl2psBeginPage(file, "test", viewport, format, sort, options /* |GL2PS_TRANSPARENCY */,
+    gl2psBeginPage(file, "test", viewport, format, sort, options,
                    GL_RGBA, 0, NULL, nbcol, nbcol, nbcol, 
                    buffsize, fp, file);
     display();
@@ -489,7 +512,7 @@ void keyboard(unsigned char key, int x, int y){
     exit(0);
     break;
   case 't':
-    teapot = !teapot;
+    teapot = (teapot) ? GL_FALSE : GL_TRUE;
     display();
     break;
   case 'p':
@@ -505,8 +528,8 @@ void keyboard(unsigned char key, int x, int y){
            (format == GL2PS_EPS) ? "EPS" : "PDF");
     break;
   case 'v':
-    display_multi = !display_multi;
-    if(display_multi){
+    display_multi = display_multi ? GL_FALSE : GL_TRUE;
+    if(display_multi == GL_TRUE){
       glEnable(GL_SCISSOR_TEST);
     }
     else{
