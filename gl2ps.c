@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.187 2004-11-22 08:10:51 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.188 2004-11-22 16:35:57 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -1370,7 +1370,7 @@ static GLint gl2psGetPlaneFromPoints(GL2PSxyz a, GL2PSxyz b, GL2PSplane plane)
   plane[1] = a[0] - b[0];
   n = (GLfloat)sqrt(plane[0]*plane[0] + plane[1]*plane[1]);
   plane[2] = 0.0F;
-  if(n != 0.0){
+  if(!GL2PS_ZERO(n)){
     plane[0] /= n;
     plane[1] /= n;
     plane[3] = -plane[0]*a[0]-plane[1]*a[1]; 
