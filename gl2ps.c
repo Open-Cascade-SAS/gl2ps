@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.181 2004-11-15 17:42:11 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.182 2004-11-22 06:46:47 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -64,12 +64,7 @@
 
 /* Magic numbers */
 
-#define GL2PS_EPSILON             5.0e-3F
-#define GL2PS_DEPTH_FACT          1000.0F
-#define GL2PS_SIMPLE_OFFSET       0.05F
-#define GL2PS_SIMPLE_OFFSET_LARGE 1.0F
-#define GL2PS_ZERO(arg)           (fabs(arg)<1.e-20)
-#define GL2PS_FIXED_XREF_ENTRIES  7 
+#define GL2PS_ZERO(arg) (fabs(arg) < 1.e-20)
 
 /* Primitive types */
 
@@ -164,8 +159,8 @@ struct _GL2PSimagemap {
 
 typedef struct {
   GLshort type, numverts;
-  char boundary, dash, culled;
-  GLfloat width, depth;
+  char boundary, offset, dash, culled;
+  GLfloat width;
   GL2PSvertex *verts;
   union {
     GL2PSstring *text;
@@ -193,7 +188,7 @@ typedef struct {
   GLint format, sort, options, colorsize, colormode, buffersize;
   char *title, *producer, *filename;
   GLboolean boundary, blending;
-  GLfloat *feedback, offset[2], lastlinewidth;
+  GLfloat epsilon, *feedback, offset[2], lastlinewidth;
   GLint viewport[4], blendfunc[2];
   GL2PSrgba *colormap, lastrgba, threshold;
   GL2PSlist *primitives;
@@ -633,10 +628,10 @@ static GL2PSprimitive *gl2psCopyPrimitive(GL2PSprimitive* p)
   prim->type = p->type;
   prim->numverts = p->numverts;
   prim->boundary = p->boundary;
+  prim->offset = p->offset;
   prim->dash = p->dash;
   prim->culled = p->culled;
   prim->width = p->width;
-  prim->depth = p->depth;
   prim->verts = (GL2PSvertex*)gl2psMalloc(p->numverts*sizeof(GL2PSvertex));
   memcpy(prim->verts, p->verts, p->numverts * sizeof(GL2PSvertex));
 
@@ -878,8 +873,8 @@ static void gl2psCreateSplitPrimitive(GL2PSprimitive *parent, GL2PSplane plane,
   }
 
   child->boundary = 0; /* not done! */
-  child->depth = parent->depth; /* should not be used in this case */
   child->culled = parent->culled;
+  child->offset = parent->offset;
   child->dash = parent->dash;
   child->width = parent->width;
   child->numverts = numverts;
@@ -931,15 +926,15 @@ static GLint gl2psTestSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane)
   else{
     for(i = 0; i < prim->numverts; i++){
       j = gl2psGetIndex(i, prim->numverts);
-      if(d[j] > GL2PS_EPSILON){
+      if(d[j] > gl2ps->epsilon){
         if(type == GL2PS_COINCIDENT)      type = GL2PS_IN_BACK_OF;
         else if(type != GL2PS_IN_BACK_OF) return 1; 
-        if(d[i] < -GL2PS_EPSILON)         return 1;
+        if(d[i] < -gl2ps->epsilon)        return 1;
       }
-      else if(d[j] < -GL2PS_EPSILON){
+      else if(d[j] < -gl2ps->epsilon){
         if(type == GL2PS_COINCIDENT)       type = GL2PS_IN_FRONT_OF;   
         else if(type != GL2PS_IN_FRONT_OF) return 1;
-        if(d[i] > GL2PS_EPSILON)           return 1;
+        if(d[i] > gl2ps->epsilon)          return 1;
       }
     }
   }
@@ -961,27 +956,27 @@ static GLint gl2psSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane,
 
   switch(prim->type){
   case GL2PS_POINT :
-    if(d[0] > GL2PS_EPSILON)       type = GL2PS_IN_BACK_OF;
-    else if(d[0] < -GL2PS_EPSILON) type = GL2PS_IN_FRONT_OF;
-    else                           type = GL2PS_COINCIDENT;
+    if(d[0] > gl2ps->epsilon)       type = GL2PS_IN_BACK_OF;
+    else if(d[0] < -gl2ps->epsilon) type = GL2PS_IN_FRONT_OF;
+    else                            type = GL2PS_COINCIDENT;
     break;
   default :
     for(i = 0; i < prim->numverts; i++){
       j = gl2psGetIndex(i, prim->numverts);
-      if(d[j] > GL2PS_EPSILON){
+      if(d[j] > gl2ps->epsilon){
         if(type == GL2PS_COINCIDENT)      type = GL2PS_IN_BACK_OF;
         else if(type != GL2PS_IN_BACK_OF) type = GL2PS_SPANNING; 
-        if(d[i] < -GL2PS_EPSILON){
+        if(d[i] < -gl2ps->epsilon){
           gl2psAddIndex(in0, in1, &in, i, j);
           gl2psAddIndex(out0, out1, &out, i, j);
           type = GL2PS_SPANNING;
         }
         gl2psAddIndex(out0, out1, &out, j, -1);
       }
-      else if(d[j] < -GL2PS_EPSILON){
+      else if(d[j] < -gl2ps->epsilon){
         if(type == GL2PS_COINCIDENT)       type = GL2PS_IN_FRONT_OF;   
         else if(type != GL2PS_IN_FRONT_OF) type = GL2PS_SPANNING;
-        if(d[i] > GL2PS_EPSILON){
+        if(d[i] > gl2ps->epsilon){
           gl2psAddIndex(in0, in1, &in, i, j);
           gl2psAddIndex(out0, out1, &out, i, j);
           type = GL2PS_SPANNING;
@@ -1013,8 +1008,8 @@ static void gl2psDivideQuad(GL2PSprimitive *quad,
   *t2 = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
   (*t1)->type = (*t2)->type = GL2PS_TRIANGLE;
   (*t1)->numverts = (*t2)->numverts = 3;
-  (*t1)->depth = (*t2)->depth = quad->depth;
   (*t1)->culled = (*t2)->culled = quad->culled;
+  (*t1)->offset = (*t2)->offset = quad->offset;
   (*t1)->dash = (*t2)->dash = quad->dash;
   (*t1)->width = (*t2)->width = quad->width;
   (*t1)->verts = (GL2PSvertex*)gl2psMalloc(3 * sizeof(GL2PSvertex));
@@ -1032,11 +1027,23 @@ static void gl2psDivideQuad(GL2PSprimitive *quad,
 static int gl2psCompareDepth(const void *a, const void *b)
 {
   GL2PSprimitive *q, *w;
-  GLfloat diff;
-
+  GLfloat dq = 0.0F, dw = 0.0F, diff;
+  int i;
+  
   q = *(GL2PSprimitive**)a;
   w = *(GL2PSprimitive**)b;
-  diff = q->depth - w->depth;
+
+  for(i = 0; i < q->numverts; i++){
+    dq += q->verts[i].xyz[2]; 
+  }
+  dq /= (GLfloat)q->numverts;
+
+  for(i = 0; i < w->numverts; i++){
+    dw += w->verts[i].xyz[2]; 
+  }
+  dw /= (GLfloat)w->numverts;
+
+  diff = dq - dw;
   if(diff > 0.){
     return 1;
   }
@@ -1269,6 +1276,83 @@ static void gl2psTraverseBspTree(GL2PSbsptree *tree, GL2PSxyz eye, GLfloat epsil
   }
 }
 
+static void gl2psSetPrecisionAndApplyOffsets()
+{
+  GL2PSprimitive *prim;
+  GLfloat minZ, maxZ;
+  GLfloat factor, units, area, dZ, dZdX, dZdY, maxdZ;
+  int i, j, offset = 0;
+
+  if(!gl2psListNbr(gl2ps->primitives))
+    return;
+
+  /* get z-buffer range */
+  prim = *(GL2PSprimitive**)gl2psListPointer(gl2ps->primitives, 0);
+  minZ = maxZ = prim->verts[0].xyz[2];
+  if(prim->offset) offset = 1; 
+  for(i = 1; i < prim->numverts; i++){
+    if(prim->verts[i].xyz[2] < minZ) minZ = prim->verts[i].xyz[2];
+    if(prim->verts[i].xyz[2] > maxZ) maxZ = prim->verts[i].xyz[2];
+  }
+  for(i = 1; i < gl2psListNbr(gl2ps->primitives); i++){
+    prim = *(GL2PSprimitive**)gl2psListPointer(gl2ps->primitives, i);
+    for(j = 0; j < prim->numverts; j++){
+      if(prim->verts[j].xyz[2] < minZ) minZ = prim->verts[j].xyz[2];
+      if(prim->verts[j].xyz[2] > maxZ) maxZ = prim->verts[j].xyz[2];
+    }
+    if(prim->offset) offset = 1; 
+  }
+
+  /* set precision */
+  gl2ps->epsilon = (maxZ - minZ) / 10000.0F;
+
+  /* apply offsets */
+  if(gl2ps->options & GL2PS_SIMPLE_LINE_OFFSET){
+    for(i = 0; i < gl2psListNbr(gl2ps->primitives); i++){
+      prim = *(GL2PSprimitive**)gl2psListPointer(gl2ps->primitives, i);
+      if(prim->type == GL2PS_LINE){
+	if(gl2ps->sort == GL2PS_SIMPLE_SORT){
+	  prim->verts[0].xyz[2] -= (maxZ - minZ) / 25.0F;
+	  prim->verts[1].xyz[2] -= (maxZ - minZ) / 25.0F;
+	}
+	else{
+	  prim->verts[0].xyz[2] -= (maxZ - minZ) / 500.0F;
+	  prim->verts[1].xyz[2] -= (maxZ - minZ) / 500.0F;
+	}
+      }
+    }
+  }
+  else if(offset){ /* at least one primitive needs to be offsetted */
+    factor = gl2ps->offset[0];
+    units = gl2ps->offset[1];
+    for(i = 0; i < gl2psListNbr(gl2ps->primitives); i++){
+      prim = *(GL2PSprimitive**)gl2psListPointer(gl2ps->primitives, i);
+      if(prim->type == GL2PS_TRIANGLE){ /* FIXME: needs more work! */
+    	area = 
+	  (prim->verts[1].xyz[0] - prim->verts[0].xyz[0]) * 
+	  (prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) - 
+	  (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) * 
+	  (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]);
+	dZdX = 
+	  (prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) *
+	  (prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) -
+	  (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]) *
+	  (prim->verts[2].xyz[2] - prim->verts[1].xyz[2]) / area;
+	dZdY = 
+	  (prim->verts[1].xyz[0] - prim->verts[0].xyz[0]) *
+	  (prim->verts[2].xyz[2] - prim->verts[1].xyz[2]) -
+	  (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) *
+	  (prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) / area;
+	maxdZ = (GLfloat)sqrt(dZdX*dZdX + dZdY*dZdY);
+	dZ = factor * maxdZ + units;
+	prim->verts[0].xyz[2] += dZ;
+	prim->verts[1].xyz[2] += dZ;
+	prim->verts[2].xyz[2] += dZ;
+      }
+    }
+  }
+}
+
 /********************************************************************* 
  *
  * 2D sorting routines (for occlusion culling) 
@@ -1312,9 +1396,9 @@ static GLint gl2psCheckPoint(GL2PSxyz point, GL2PSplane plane)
   GLfloat pt_dis;
 
   pt_dis = gl2psComparePointPlane(point, plane);
-  if(pt_dis > GL2PS_EPSILON)        return GL2PS_POINT_INFRONT;
-  else if(pt_dis < -GL2PS_EPSILON)  return GL2PS_POINT_BACK;
-  else                              return GL2PS_POINT_COINCIDENT;
+  if(pt_dis > gl2ps->epsilon)        return GL2PS_POINT_INFRONT;
+  else if(pt_dis < -gl2ps->epsilon)  return GL2PS_POINT_BACK;
+  else                               return GL2PS_POINT_COINCIDENT;
 }
 
 static void gl2psAddPlanesInBspTreeImage(GL2PSprimitive *prim,
@@ -1452,8 +1536,8 @@ static GL2PSprimitive *gl2psCreateSplitPrimitive2D(GL2PSprimitive *parent,
     }
   }
   child->boundary = 0; /* not done! */
-  child->depth = parent->depth;
   child->culled = parent->culled;
+  child->offset = parent->offset;
   child->dash = parent->dash;
   child->width = parent->width;
   child->numverts = numverts;
@@ -1640,8 +1724,8 @@ static void gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list)
     if(prim->boundary & (GLint)pow(2., i)){
       b = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
       b->type = GL2PS_LINE;
+      b->offset = prim->offset;
       b->dash = prim->dash;
-      b->depth = prim->depth; /* FIXME: this is wrong */
       b->culled = prim->culled;
       b->width = prim->width;
       b->boundary = 0;
@@ -1714,8 +1798,6 @@ static void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
                                   char dash, GLfloat width,
                                   char boundary)
 {
-  GLshort i;
-  GLfloat factor, units, area, dZ, dZdX, dZdY, maxdZ;
   GL2PSprimitive *prim;
 
   prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
@@ -1724,70 +1806,10 @@ static void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
   prim->verts = (GL2PSvertex*)gl2psMalloc(numverts * sizeof(GL2PSvertex));
   memcpy(prim->verts, verts, numverts * sizeof(GL2PSvertex));
   prim->boundary = boundary;
+  prim->offset = offset;
   prim->dash = dash;
   prim->width = width;
   prim->culled = 0;
-
-  if(gl2ps->options & GL2PS_SIMPLE_LINE_OFFSET){
-
-    if(type == GL2PS_LINE){
-      if(gl2ps->sort == GL2PS_SIMPLE_SORT){
-        prim->verts[0].xyz[2] -= GL2PS_SIMPLE_OFFSET_LARGE;
-        prim->verts[1].xyz[2] -= GL2PS_SIMPLE_OFFSET_LARGE;
-      }
-      else{
-        prim->verts[0].xyz[2] -= GL2PS_SIMPLE_OFFSET;
-        prim->verts[1].xyz[2] -= GL2PS_SIMPLE_OFFSET;
-      }
-    }
-
-  }
-  else if(offset && type == GL2PS_TRIANGLE){
-
-    /* FIXME: this needs some more work... */
-
-    if(gl2ps->sort == GL2PS_SIMPLE_SORT){    
-      factor = gl2ps->offset[0];
-      units = gl2ps->offset[1];
-    }
-    else{
-      factor = gl2ps->offset[0] / 800.0F;
-      units = gl2ps->offset[1] / 800.0F;
-    }
-
-    area = 
-      (prim->verts[1].xyz[0] - prim->verts[0].xyz[0]) * 
-      (prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) - 
-      (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) * 
-      (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]);
-    dZdX = 
-      (prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) *
-      (prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) -
-      (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]) *
-      (prim->verts[2].xyz[2] - prim->verts[1].xyz[2]) / area;
-    dZdY = 
-      (prim->verts[1].xyz[0] - prim->verts[0].xyz[0]) *
-      (prim->verts[2].xyz[2] - prim->verts[1].xyz[2]) -
-      (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) *
-      (prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) / area;
-    
-    maxdZ = (GLfloat)sqrt(dZdX*dZdX + dZdY*dZdY);
-
-    dZ = factor * maxdZ + units;
-
-    prim->verts[0].xyz[2] += dZ;
-    prim->verts[1].xyz[2] += dZ;
-    prim->verts[2].xyz[2] += dZ;
-  }
-
-  prim->depth = 0.;
-  if(gl2ps->sort == GL2PS_SIMPLE_SORT){
-    for(i = 0; i < numverts; i++){
-      prim->depth += prim->verts[i].xyz[2]; 
-    }
-    prim->depth /= (GLfloat)numverts;
-  }
-  
   gl2psListAdd(gl2ps->primitives, &prim);
 }
 
@@ -1797,7 +1819,7 @@ static GLint gl2psGetVertex(GL2PSvertex *v, GLfloat *p)
 
   v->xyz[0] = p[0];
   v->xyz[1] = p[1];
-  v->xyz[2] = GL2PS_DEPTH_FACT * p[2];
+  v->xyz[2] = p[2];
 
   if(gl2ps->colormode == GL_COLOR_INDEX && gl2ps->colorsize > 0){
     i = (GLint)(p[3] + 0.5);
@@ -1930,6 +1952,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
         prim->numverts = 4;
         prim->verts = (GL2PSvertex *)gl2psMalloc(4 * sizeof(GL2PSvertex));
         prim->culled = 0;
+        prim->offset = 0;
         prim->dash = 0;
         prim->width = 1;
         
@@ -1955,7 +1978,6 @@ static void gl2psParseFeedbackBuffer(GLint used)
         node->image->height = (GLint)current[2];
         prim->verts[0].xyz[0] = prim->verts[0].xyz[0] - (int)(node->image->width / 2) + 0.5;
         prim->verts[0].xyz[1] = prim->verts[0].xyz[1] - (int)(node->image->height / 2) + 0.5;
-        prim->depth = prim->verts[0].xyz[2];
         for(i = 1; i < 4; i++){
           for(v = 0; v < 3; v++){
             prim->verts[i].xyz[v] = prim->verts[0].xyz[v];
@@ -2911,7 +2933,7 @@ static void gl2psPutPDFImage(GL2PSimage *image, int cnt, GLfloat x, GLfloat y)
 
 static void gl2psPDFstacksInit(void)
 {
-  gl2ps->objects_stack = GL2PS_FIXED_XREF_ENTRIES + 1; 
+  gl2ps->objects_stack = 7 /* FIXED_XREF_ENTRIES */ + 1; 
   gl2ps->extgs_stack = 0;   
   gl2ps->font_stack = 0;    
   gl2ps->im_stack = 0;      
@@ -4281,9 +4303,11 @@ static GLint gl2psPrintPrimitives(void)
   }
 
   if(!gl2psListNbr(gl2ps->primitives)){
-    /* Empty feedback buffer and/or nothing else to print */
+    /* empty feedback buffer and/or nothing else to print */
     return GL2PS_NO_FEEDBACK;
   }
+
+  gl2psSetPrecisionAndApplyOffsets();
 
   switch(gl2ps->format){
   case GL2PS_TEX :
@@ -4321,11 +4345,11 @@ static GLint gl2psPrintPrimitives(void)
     gl2psBuildBspTree(root, gl2ps->primitives);
     if(GL_TRUE == gl2ps->boundary) gl2psBuildPolygonBoundary(root);
     if(gl2ps->options & GL2PS_OCCLUSION_CULL){
-      gl2psTraverseBspTree(root, eye, -(float)GL2PS_EPSILON, gl2psLess,
+      gl2psTraverseBspTree(root, eye, -gl2ps->epsilon, gl2psLess,
                            gl2psAddInImageTree, 1);
       gl2psFreeBspImageTree(&gl2ps->imagetree);
     }
-    gl2psTraverseBspTree(root, eye, (float)GL2PS_EPSILON, gl2psGreater, 
+    gl2psTraverseBspTree(root, eye, gl2ps->epsilon, gl2psGreater, 
                          pprim, 0);
     gl2psFreeBspTree(&root);
     /* reallocate the primitive list (it's been deleted by
@@ -4370,6 +4394,7 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
   gl2ps->compress = NULL;
   gl2ps->imagemap_head = NULL;
   gl2ps->imagemap_tail = NULL;
+  gl2ps->epsilon = 0.0F; /* adjusted later according to z-buffer values */
 
   if(gl2ps->options & GL2PS_USE_CURRENT_VIEWPORT){
     glGetIntegerv(GL_VIEWPORT, gl2ps->viewport);
@@ -4603,9 +4628,9 @@ GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname,
   prim->verts = (GL2PSvertex*)gl2psMalloc(sizeof(GL2PSvertex));
   prim->verts[0].xyz[0] = pos[0];
   prim->verts[0].xyz[1] = pos[1];
-  prim->verts[0].xyz[2] = GL2PS_DEPTH_FACT * pos[2];
-  prim->depth = pos[2];
+  prim->verts[0].xyz[2] = pos[2];
   prim->culled = 0;
+  prim->offset = 0;
   prim->dash = 0;
   prim->width = 1;
   glGetFloatv(GL_CURRENT_RASTER_COLOR, prim->verts[0].rgba);
@@ -4663,9 +4688,9 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
   prim->verts = (GL2PSvertex*)gl2psMalloc(sizeof(GL2PSvertex));
   prim->verts[0].xyz[0] = pos[0] + xorig;
   prim->verts[0].xyz[1] = pos[1] + yorig;
-  prim->verts[0].xyz[2] = GL2PS_DEPTH_FACT * pos[2];
-  prim->depth = pos[2];
+  prim->verts[0].xyz[2] = pos[2];
   prim->culled = 0;
+  prim->offset = 0;
   prim->dash = 0;
   prim->width = 1;
   glGetFloatv(GL_CURRENT_RASTER_COLOR, prim->verts[0].rgba);
