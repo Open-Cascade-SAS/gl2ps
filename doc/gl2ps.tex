@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.84 2003-03-06 03:19:46 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.85 2003-03-07 18:37:15 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -48,7 +48,7 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.8, 6 March 2003}
+\date{Version 0.8, 7 March 2003}
 
 \maketitle
 
@@ -278,6 +278,7 @@ library is not initialized;
 
 \begin{verbatim}
 GLint gl2psDrawPixels( GLsizei width, GLsizei height,
+                       GLint xorig, GLint yorig,
                        GLenum format, GLenum type,
                        const void *pixels )
 \end{verbatim}
@@ -293,6 +294,9 @@ the current raster position only. The arguments are:
 \begin{description}
 \item[\dd{width}] Specifies the width of the image.
 \item[\dd{height}] Specifies the height of the image.
+\item[\dd{xorig}, \dd{yorig}] Specify the location of the origin in the
+image.  The origin is measured from the lower left corner of the image, with
+right and up being the positive axes.
 \item[\dd{format}] Specifies the format of the pixel data. The symbolic
 constant \dd{GL_RGB} is the only one accepted at the moment.
 \item[\dd{type}] Specifies the data type for pixels. The symbolic constant
@@ -561,24 +565,24 @@ product does not seem to be available anymore).
 \begin{description}
 \item[0.1] (Feb 12, 2000) First distributed version.
 \item[0.2] (Feb 20, 2000) Added \dd{GL2PS_POLYGON_BOUNDARY} and
-\dd{GL2PS_BEST_ROOT}. Changed arguments of \dd{gl2psBeginPage} and
-\dd{gl2psText}. Corrected some memory allocation stuff. First version of
+\dd{GL2PS_BEST_ROOT}. API change: changed arguments of \dd{gl2psBeginPage}
+and \dd{gl2psText}. Corrected some memory allocation stuff. First version of
 this user's guide.
 \item[0.21] (Mar 16, 2000) Initialization fixes.
-\item[0.3] (Jul 29, 2000) Code cleaning. Added \dd{GL2PS_LINE_STIPPLE}.
+\item[0.3] (Jul 29, 2000) Code cleanup. Added \dd{GL2PS_LINE_STIPPLE}.
 \item[0.31] (Aug 14, 2000) Better handling of erroneous primitives.
 \item[0.32] (May 23, 2001) Fixed memory leaks.
 \item[0.4] (Jun 12, 2001) Added \dd{gl2psPointSize} and
-\dd{gl2psLineWidth}. Some code cleaning to allow easier generation of vector
+\dd{gl2psLineWidth}. Some code cleanup to allow easier generation of vector
 file formats other than postscript.
 \item[0.41] (Aug 6, 2001) Fixed string allocation (1 char too
 short). Set smaller default line width.
 \item[0.42] (Oct 8, 2001) Optimization of output file size. PostScript
-header cleaning. Better line width computation.
-\item[0.5] (Nov 19, 2001) New \dd{format} and \dd{filename} arguments for
-\dd{gl2psBeginPage}. Better PostScript handling of smooth shaded
-primitives. Fix handling of zero-length strings. New options for \LaTeX\
-output. Changed (again) the line width computation.
+header cleanup. Better line width computation.
+\item[0.5] (Nov 19, 2001) API change: new \dd{format} and \dd{filename}
+arguments for \dd{gl2psBeginPage}. Better PostScript handling of smooth
+shaded primitives. Fix handling of zero-length strings. New options for
+\LaTeX\ output. Changed (again) the line width computation.
 \item[0.51] (Jan 22, 2002) Fixed erroneous drawing of text primitives lying
 outside the viewport.
 \item[0.52] (Feb 14, 2002) New \dd{GL2PS_LANDSCAPE} option.
@@ -606,7 +610,7 @@ the code; added example program \dd{gl2psTest.c} to the distribution.
 \item[0.72] (Jan 21, 2003) Fixed crash in occlusion culling code; enhanced
 documentation.
 \item[0.73] (Jan 30, 2003) Minor code cleanup.
-\item[0.8] (Mar 6, 2003) API change: \dd{gl2psNumShadeColors} has been
+\item[0.8] (Mar 7, 2003) API change: \dd{gl2psNumShadeColors} has been
 removed and the color subdivision parameters \dd{nr}, \dd{ng} and \dd{nb}
 are now given as arguments to \dd{gl2psBeginPage}; API change:
 \dd{gl2psBeginPage} takes an additional argument (\dd{viewport}) to specify

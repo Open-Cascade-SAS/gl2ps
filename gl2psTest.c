@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.16 2003-03-06 04:09:56 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.17 2003-03-07 18:37:15 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -207,12 +207,8 @@ void cube(void) {
 }
 
 void image(){
-  int w = 64;
-  int h = 64;
-  int row, col;
-  float r = 0, g = 0, b = 0;
-  int pos = 0;
-  float *pixels;
+  int w = 64, h = 64, row, col, pos = 0;
+  float *pixels, r = 0., g = 0., b = 0.;
 
   /* Fill a pixmap (each pixel contains three floats defining an RGB color) */
   pixels = (float*)malloc(3*w*h*sizeof(float));
@@ -232,9 +228,9 @@ void image(){
     }
   }
 
-  glRasterPos2f(-0.8,-0.8);  
-  glDrawPixels((GLsizei)w,(GLsizei)h,GL_RGB,GL_FLOAT,pixels);
-  gl2psDrawPixels((GLsizei)w,(GLsizei)h,GL_RGB,GL_FLOAT,pixels);
+  glRasterPos2f(-0.8, -0.8);
+  glDrawPixels((GLsizei)w, (GLsizei)h, GL_RGB, GL_FLOAT, pixels);
+  gl2psDrawPixels((GLsizei)w, (GLsizei)h, 0, 0, GL_RGB, GL_FLOAT, pixels);
 
   free(pixels);
 }
