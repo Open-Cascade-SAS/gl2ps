@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.7 2003-01-22 04:24:19 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.8 2003-02-14 18:38:37 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -28,7 +28,7 @@
 
   To compile on a Linux system, type:
 
-  gcc -O3 gl2psTest.c gl2ps.c -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
+  gcc -O3 gl2psTest.c gl2ps.c -lglut -lGL -L/usr/X11R6/lib -lX11 -lm
 */
 
 #include <GL/glut.h>
@@ -62,7 +62,7 @@ void triangles(void){
   glVertex3f(1., 0.5, 0.);
   glColor3f(0., 1., 1.);
   glVertex3f(-1., 0.5, 0.1);
-  
+
   glEnd();
 }
 
@@ -80,6 +80,12 @@ void display(void){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   triangles();
   teapot();
+
+  glDisable(GL_LIGHTING);
+  glColor3f(1., 0., 0.);
+  glRasterPos2d(0.1,-0.8); 
+  gl2psText("Hello, world!","Helvetica", 12);
+
   glFlush();
 }
 
