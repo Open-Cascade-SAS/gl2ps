@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.63 2004-12-17 01:49:21 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.64 2004-12-18 00:24:57 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -49,8 +49,9 @@
 #pragma comment(linker, "/entry:\"mainCRTStartup\"")
 #endif
 
-#include <string.h>
 #include "gl2ps.h"
+
+#include <string.h>
 #ifdef __APPLE__
 #  include <GLUT/glut.h>
 #else

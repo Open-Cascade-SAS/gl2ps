@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.92 2004-12-17 16:01:38 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.93 2004-12-18 00:24:57 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -37,7 +37,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
 /* Define GL2PSDLL at compile time to build a Windows dll */
 
