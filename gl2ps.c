@@ -1,11 +1,7 @@
+/* $Id: gl2ps.c,v 1.118 2003-09-17 07:18:50 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
- * Copyright (C) 1999-2003 Christophe Geuzaine 
- *
- * $Id: gl2ps.c,v 1.117 2003-09-17 00:00:30 geuzaine Exp $
- *
- * E-mail: geuz@geuz.org
- * URL: http://www.geuz.org/gl2ps/
+ * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Library General Public
@@ -21,7 +17,7 @@
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- * Contributor(s):
+ * Contributors:
  *   Michael Sweet <mike@easysw.com>
  *   Marc Ume <marc.ume@digitalgraphics.be>
  *   Jean-Francois Remacle <remacle@scorec.rpi.edu>
@@ -36,6 +32,8 @@
  *   Lassi Tuura <lassi.tuura@cern.ch>
  *   Guy Barrand <barrand@lal.in2p3.fr>
  *   Micha Bieber <bieber@traits.de>
+ *
+ * For the latest info about gl2ps, see http://www.geuz.org/gl2ps/
  */
 
 #include <string.h>
