@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.48 2002-11-12 19:05:59 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.49 2002-11-13 17:59:18 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -365,6 +365,18 @@ fclose(fp);
 \begin{verbatim}
 gl2psText("MyText", "Courier", 12);
 \end{verbatim}
+
+If you plan to convert the PostScript file to a PDF file you may need to
+disable the use of the Level 3 PostScript \dd{shfill} operator, i.e.\ add
+\dd{GL2PS_NO_PS3_SHADING} to the list of options:
+\begin{verbatim}
+  gl2psBeginPage ( "MyTitle", "MySoftware", 
+                   GL2PS_EPS, GL2PS_BSP_SORT,
+                   GL2PS_SIMPLE_LINE_OFFSET | GL2PS_SILENT |
+                   GL2PS_NO_PS3_SHADING, 
+                   GL_RGBA, 0, NULL, buffsize, fp, NULL );
+\end{verbatim}
+
 
 %\section{Implementation Notes}
 %
