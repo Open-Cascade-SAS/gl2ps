@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.49 2002-10-23 18:20:43 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.50 2002-11-11 23:37:05 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1061,7 +1061,7 @@ void gl2psPrintPostScriptHeader(void){
           /* stack : (V3) (V13) (V23) (V13) (V12) (V23) (V13) (V1) (V12) (V23) (V12) (V2) */
           "      STnoshfill STnoshfill STnoshfill STnoshfill } BD\n");
 
-  /* Gourad shaded triangle using recursive subdivision until the difference
+  /* Gouraud shaded triangle using recursive subdivision until the difference
      between corner colors does not exceed the thresholds:
         x3 y3 r3 g3 b3 x2 y2 r2 g2 b2 x1 y1 r1 g1 b1 STnoshfill  */
 
