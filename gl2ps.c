@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.77 2003-03-04 22:20:48 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.78 2003-03-05 01:42:37 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -105,14 +105,6 @@ GL2PSlist *gl2psListCreate(GLint n, GLint incr, GLint size){
   list->array = NULL;
   gl2psListRealloc(list, n);
   return(list);
-}
-
-void gl2psListClear(GL2PSlist *list){
-  gl2psFree(list->array);
-  list->nmax = 0;
-  list->n = 0;
-  list->array = NULL;
-  gl2psListRealloc(list, 500);
 }
 
 void gl2psListDelete(GL2PSlist *list){
@@ -1359,7 +1351,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     for(row = 0; row < height; row++){
       for(col = 0; col < col_max; col+=4){
 	status = gl2psGetRGB(image, width, height,
-                              col, row, &dr, &dg, &db) == 0 ? 0 : status;
+			     col, row, &dr, &dg, &db) == 0 ? 0 : status;
 	red = (Uchar)(3. * dr);
 	green = (Uchar)(3. * dg);
 	blue = (Uchar)(3. * db);
@@ -1387,7 +1379,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
 	
 	b = blue;
 	status = gl2psGetRGB(image,width,height,
-                              col+3,row,&dr,&dg,&db)==0 ? 0 : status;
+			     col+3,row,&dr,&dg,&db)==0 ? 0 : status;
 	red = (Uchar)(3. * dr);
 	green = (Uchar)(3. * dg);
 	blue = (Uchar)(3. * db);
@@ -1415,14 +1407,14 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     for(row = 0; row < height; row++){
       for(col = 0; col < col_max; col+=2){
 	status = gl2psGetRGB(image, width, height,
-                              col, row, &dr, &dg, &db) == 0 ? 0 : status;
+			     col, row, &dr, &dg, &db) == 0 ? 0 : status;
 	red = (Uchar)(15. * dr);
 	green = (Uchar)(15. * dg);
 	fprintf(stream, "%x%x", red, green);
 	blue = (Uchar)(15. * db);
 	
 	status = gl2psGetRGB(image, width, height,
-                              col+1, row, &dr, &dg, &db) == 0 ? 0 : status;
+			     col+1, row, &dr, &dg, &db) == 0 ? 0 : status;
 	red = (Uchar)(15. * dr);
 	fprintf(stream,"%x%x",blue,red);
 	green = (Uchar)(15. * dg);
@@ -1433,7 +1425,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     }
   }
   else{ 
-    nbyte8    = width   * 3;
+    nbyte8 = width * 3;
     /* 8 bit for r and g and b */
     fprintf(stream, "/rgbstr %d string def\n", nbyte8);
     fprintf(stream, "%d %d %d\n", width, height, 8);
@@ -1444,7 +1436,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     for(row = 0; row < height; row++){
       for(col = 0; col < width; col++){
 	status = gl2psGetRGB(image, width, height,
-                                 col, row, &dr, &dg, &db) == 0 ? 0 : status;
+			     col, row, &dr, &dg, &db) == 0 ? 0 : status;
 	red = (Uchar)(255. * dr);
 	gl2psWriteByte(stream, red);
 	green = (Uchar)(255. * dg);
@@ -1937,7 +1929,6 @@ int gl2psPrintPrimitives(void){
       gl2psListAction(gl2ps->primitives, pprim);
       gl2psListAction(gl2ps->primitives, gl2psFreePrimitive);
       gl2psListDelete(gl2ps->primitives);
-      res = GL2PS_SUCCESS;
       break;
     case GL2PS_SIMPLE_SORT :
       gl2psListSort(gl2ps->primitives, gl2psCompareDepth);
@@ -1948,7 +1939,6 @@ int gl2psPrintPrimitives(void){
       gl2psListActionInverse(gl2ps->primitives, pprim);
       gl2psListAction(gl2ps->primitives, gl2psFreePrimitive);
       gl2psListDelete(gl2ps->primitives);
-      res = GL2PS_SUCCESS;
       break;
     case GL2PS_BSP_SORT :
       root = (GL2PSbsptree*)gl2psMalloc(sizeof(GL2PSbsptree));
@@ -1962,12 +1952,12 @@ int gl2psPrintPrimitives(void){
       gl2psTraverseBspTree(root, eye, (float)GL2PS_EPSILON, gl2psGreater, 
 			   pprim);
       gl2psFreeBspTree(&root);
-      res = GL2PS_SUCCESS;
       break;
     default :
       gl2psMsg(GL2PS_ERROR, "Unknown sorting algorithm");
     }
     fflush(gl2ps->stream);
+
   }
 
   return res;
@@ -2014,8 +2004,9 @@ GL2PSDLL_API void gl2psBeginPage(const char *title, const char *producer,
     gl2ps->colormap = (GL2PSrgba*)gl2psMalloc(gl2ps->colorsize * sizeof(GL2PSrgba));
     memcpy(gl2ps->colormap, colormap, gl2ps->colorsize * sizeof(GL2PSrgba));
   }
-  else
+  else{
     gl2psMsg(GL2PS_ERROR, "Unknown color mode in gl2psBeginPage");
+  }
 
   if(stream){
     gl2ps->stream = stream;
@@ -2051,10 +2042,13 @@ GL2PSDLL_API GLint gl2psEndPage(void){
 
   if(!gl2ps){
     gl2psMsg(GL2PS_ERROR, "Uninitialized gl2ps context");
+    return GL2PS_ERROR;
   }
 
   res = gl2psPrintPrimitives();
 
+  /* print the footer even if gl2psPrintPrimitives didn't succeed, so
+     that we end up with a valid file */
   switch(gl2ps->format){
   case GL2PS_TEX :
     gl2psPrintTeXFooter();
@@ -2094,7 +2088,7 @@ GL2PSDLL_API void gl2psBeginViewport(void){
 GL2PSDLL_API GLint gl2psEndViewport(void){
   GLint res;
 
-  if(!gl2ps) return GL2PS_SUCCESS;
+  if(!gl2ps) return GL2PS_ERROR;
 
   switch(gl2ps->format){
   case GL2PS_EPS :
@@ -2146,20 +2140,20 @@ GL2PSDLL_API void gl2psText(const char *str, const char *fontname, GLshort fonts
   gl2psListAdd(gl2ps->primitives, &prim);
 }
 
-GL2PSDLL_API GLboolean gl2psPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei height,
-				   GLfloat *image, GLboolean free){
+GL2PSDLL_API void gl2psPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei height,
+			      GLfloat *image, GLboolean free){
   GLfloat pos[4];
   GL2PSprimitive *prim;
   GLboolean valid;
 
-  if(!gl2ps || !image) return GL_FALSE;
+  if(!gl2ps || !image) return;
 
-  if((width <= 0) || (height <= 0)) return GL_FALSE;
+  if((width <= 0) || (height <= 0)) return;
 
-  if(gl2ps->options & GL2PS_NO_PIXMAP) return GL_FALSE;
+  if(gl2ps->options & GL2PS_NO_PIXMAP) return;
 
   glGetBooleanv(GL_CURRENT_RASTER_POSITION_VALID, &valid);
-  if(!valid) return GL_FALSE; /* the primitive is culled */
+  if(!valid) return; /* the primitive is culled */
 
   glGetFloatv(GL_CURRENT_RASTER_POSITION, pos);
 
@@ -2185,8 +2179,6 @@ GL2PSDLL_API GLboolean gl2psPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei 
   prim->image->free = free;
 
   gl2psListAdd(gl2ps->primitives, &prim);
-
-  return GL_TRUE;
 }
 
 GL2PSDLL_API void gl2psEnable(GLint mode){

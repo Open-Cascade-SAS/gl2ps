@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine
  *
- * $Id: gl2ps.h,v 1.41 2003-03-04 21:19:11 geuzaine Exp $
+ * $Id: gl2ps.h,v 1.42 2003-03-05 01:42:37 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -97,15 +97,12 @@
 #define GL2PS_ZERO(arg)                  (fabs(arg)<1.e-20)
 /*#define GL2PS_ZERO(arg)                ((arg)==0.0)*/
 
-/* Message levels */
+/* Message levels and error codes */
 
+#define GL2PS_SUCCESS                    0
 #define GL2PS_INFO                       1
 #define GL2PS_WARNING                    2
 #define GL2PS_ERROR                      3
-
-/* Error codes */
-
-#define GL2PS_SUCCESS                    0
 #define GL2PS_NO_FEEDBACK               -1
 #define GL2PS_OVERFLOW                  -2
 
@@ -216,16 +213,16 @@ GL2PSDLL_API void gl2psBeginPage(const char *title, const char *producer,
 				 GLint nr, GLint ng, GLint nb, GLint buffersize,
 				 FILE *stream, const char *filename);
 GL2PSDLL_API GLint gl2psEndPage(void);
+GL2PSDLL_API void gl2psBeginViewport(void);
+GL2PSDLL_API GLint gl2psEndViewport(void);
 GL2PSDLL_API void gl2psText(const char *str, const char *fontname, GLshort fontsize);
-GL2PSDLL_API GLboolean gl2psPixmap(GLfloat x, GLfloat y, GLsizei w, GLsizei h,
-				   GLfloat* image, GLboolean free);
+GL2PSDLL_API void gl2psPixmap(GLfloat x, GLfloat y, GLsizei w, GLsizei h,
+			      GLfloat* image, GLboolean free);
 GL2PSDLL_API void gl2psEnable(GLint mode);
 GL2PSDLL_API void gl2psDisable(GLint mode);
 GL2PSDLL_API void gl2psPointSize(GLfloat value);
 GL2PSDLL_API void gl2psLineWidth(GLfloat value);
 GL2PSDLL_API void gl2psNumShadeColors(GLint nr, GLint ng, GLint nb);
-GL2PSDLL_API void gl2psBeginViewport(void);
-GL2PSDLL_API GLint gl2psEndViewport(void);
 
 #ifdef __cplusplus
 };
