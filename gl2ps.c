@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.54 2002-12-11 16:26:52 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.55 2002-12-11 16:54:05 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -33,7 +33,7 @@
 /* The gl2ps context. gl2ps is not thread safe (we should create a
    local GL2PScontext during gl2psBeginPage). */
 
-GL2PScontext *gl2ps=NULL;
+GL2PScontext *gl2ps = NULL;
 
 /* Some 'system' utility routines */
 
@@ -136,7 +136,7 @@ void gl2psListAction(GL2PSlist *list,
 		     void (*action)(void *data, void *dummy)){
   GLint i, dummy;
 
-  for(i=0 ; i<gl2psListNbr(list) ; i++)
+  for(i = 0; i < gl2psListNbr(list); i++)
     (*action)(gl2psListPointer(list, i), &dummy);
 }
 
@@ -144,7 +144,7 @@ void gl2psListActionInverse(GL2PSlist *list,
 			    void (*action)(void *data, void *dummy)){
   GLint i, dummy;
 
-  for(i=gl2psListNbr(list) ; i>0 ; i--)
+  for(i = gl2psListNbr(list); i > 0; i--)
     (*action)(gl2psListPointer(list, i-1), &dummy);
 }
 
@@ -186,7 +186,7 @@ void gl2psGetNormal(GLfloat *a, GLfloat *b, GLfloat *c){
 }
 
 void gl2psGetPlane(GL2PSprimitive *prim, GL2PSplane plane){
-  GL2PSxyz v={0., 0., 0.}, w={0., 0., 0.};
+  GL2PSxyz v = {0., 0., 0.}, w = {0., 0., 0.};
 
   switch(prim->type){
   case GL2PS_TRIANGLE :
@@ -284,7 +284,7 @@ void gl2psCreateSplittedPrimitive(GL2PSprimitive *parent, GL2PSplane plane,
   child->numverts = numverts;
   child->verts = (GL2PSvertex *)gl2psMalloc(numverts * sizeof(GL2PSvertex));
 
-  for(i=0 ; i<numverts ; i++){
+  for(i = 0; i < numverts; i++){
     if(index1[i] < 0)
       child->verts[i] = parent->verts[index0[i]];
     else
@@ -297,7 +297,7 @@ void gl2psAddIndex(GLshort *index0, GLshort *index1, GLshort *nb,
 		   GLshort i, GLshort j){
   GLint k;
 
-  for(k=0 ; k<*nb ; k++)
+  for(k = 0; k < *nb; k++)
     if((index0[k] == i && index1[k] == j) ||
        (index1[k] == i && index0[k] == j)) return;
 
@@ -311,18 +311,18 @@ GLshort gl2psGetIndex(GLshort i, GLshort num){
 }
 
 GLint gl2psTestSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane){
-  GLint     type=GL2PS_COINCIDENT;
+  GLint     type = GL2PS_COINCIDENT;
   GLshort   i, j;
   GLfloat   d[5]; 
 
-  for(i = 0 ; i < prim->numverts ; i++){  
+  for(i = 0; i < prim->numverts; i++){  
     d[i] = gl2psComparePointPlane(prim->verts[i].xyz, plane);
   }
 
   if(prim->type == GL2PS_POINT)
     return 0;
   else{
-    for(i = 0 ; i < prim->numverts ; i++){
+    for(i = 0; i < prim->numverts; i++){
       j = gl2psGetIndex(i, prim->numverts);
       if(d[j] > GL2PS_EPSILON){
 	if(type == GL2PS_COINCIDENT)      type = GL2PS_IN_BACK_OF;
@@ -347,7 +347,7 @@ GLint gl2psSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane,
 
   type = GL2PS_COINCIDENT;
 
-  for(i = 0 ; i < prim->numverts ; i++){  
+  for(i = 0; i < prim->numverts; i++){  
     d[i] = gl2psComparePointPlane(prim->verts[i].xyz, plane);
   }
 
@@ -358,7 +358,7 @@ GLint gl2psSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane,
     else                           type = GL2PS_COINCIDENT;
     break;
   default :
-    for(i = 0 ; i < prim->numverts ; i++){
+    for(i = 0; i < prim->numverts; i++){
       j = gl2psGetIndex(i, prim->numverts);
       if(d[j] > GL2PS_EPSILON){
 	if(type == GL2PS_COINCIDENT)      type = GL2PS_IN_BACK_OF;
@@ -443,22 +443,22 @@ int gl2psTrianglesFirst(const void *a, const void *b){
 }
 
 GLint gl2psFindRoot(GL2PSlist *primitives, GL2PSprimitive **root){
-  GLint          i, j, count, best=1000000, index=0;
+  GLint          i, j, count, best = 1000000, index = 0;
   GL2PSprimitive *prim1, *prim2;
   GL2PSplane     plane;
   GLint maxp;
 
   if(gl2ps->options & GL2PS_BEST_ROOT){
     *root = *(GL2PSprimitive**)gl2psListPointer(primitives, 0);
-    maxp=gl2psListNbr(primitives);
-    if(maxp>gl2ps->maxbestroot){
-      maxp=gl2ps->maxbestroot;
+    maxp = gl2psListNbr(primitives);
+    if(maxp > gl2ps->maxbestroot){
+      maxp = gl2ps->maxbestroot;
     }
-    for(i=0 ; i<maxp ; i++){
+    for(i = 0; i < maxp; i++){
       prim1 = *(GL2PSprimitive**)gl2psListPointer(primitives, i);
       gl2psGetPlane(prim1, plane);
-      count=0;
-      for(j=0 ; j<gl2psListNbr(primitives) ; j++){
+      count = 0;
+      for(j = 0; j < gl2psListNbr(primitives); j++){
 	if(j != i){
 	  prim2 = *(GL2PSprimitive**)gl2psListPointer(primitives, j);
 	  count += gl2psTestSplitPrimitive(prim2, plane); 
@@ -482,7 +482,7 @@ GLint gl2psFindRoot(GL2PSlist *primitives, GL2PSprimitive **root){
 }
 
 void gl2psFreePrimitive(void *a, void *b){
-  GL2PSprimitive *q ;
+  GL2PSprimitive *q;
   
   q = *(GL2PSprimitive**)a;
   gl2psFree(q->verts);
@@ -549,10 +549,10 @@ void gl2psBuildBspTree(GL2PSbsptree *tree, GL2PSlist *primitives){
   frontlist = gl2psListCreate(1, 2, sizeof(GL2PSprimitive*));
   backlist = gl2psListCreate(1, 2, sizeof(GL2PSprimitive*));
 
-  for(i=0 ; i<gl2psListNbr(primitives) ; i++){
+  for(i = 0; i < gl2psListNbr(primitives); i++){
     if(i != index){
       prim = *(GL2PSprimitive**)gl2psListPointer(primitives,i);
-      switch(gl2psSplitPrimitive(prim,tree->plane,&frontprim,&backprim)){
+      switch(gl2psSplitPrimitive(prim, tree->plane, &frontprim, &backprim)){
       case GL2PS_COINCIDENT:
 	gl2psAddPrimitiveInList(prim, tree->primitives);
 	break;
@@ -610,32 +610,32 @@ void gl2psTraverseBspTree(GL2PSbsptree *tree, GL2PSxyz eye, GLfloat epsilon,
   else if(compare(-epsilon, result)){ 
     gl2psTraverseBspTree(tree->front, eye, epsilon, compare, action);
     gl2psListAction(tree->primitives, action);
-    gl2psTraverseBspTree(tree->back, eye, epsilon, compare, action) ;
+    gl2psTraverseBspTree(tree->back, eye, epsilon, compare, action);
   }
   else{
     gl2psTraverseBspTree(tree->front, eye, epsilon, compare, action);
-    gl2psTraverseBspTree(tree->back, eye, epsilon, compare, action) ;
+    gl2psTraverseBspTree(tree->back, eye, epsilon, compare, action);
   }
 }
 
 /* The 2D sorting routines (for occlusion culling). */
 
-GLint gl2psGetPlaneFromPoints(GL2PSxyz a, GL2PSxyz b,GL2PSplane plane){  
+GLint gl2psGetPlaneFromPoints(GL2PSxyz a, GL2PSxyz b, GL2PSplane plane){  
   GLfloat  n; 
-  plane[0] = b[1] - a[1] ;
-  plane[1] = a[0] - b[0] ;
+  plane[0] = b[1] - a[1];
+  plane[1] = a[0] - b[0];
   n = sqrt(plane[0]*plane[0] + plane[1]*plane[1]);
   plane[2]=0.;
-  if(n!=0.){
-    plane[0] /= n ;
-    plane[1] /= n ;
-    plane[3] = -plane[0]*a[0]-plane[1]*a[1] ; 
+  if(n != 0.){
+    plane[0] /= n;
+    plane[1] /= n;
+    plane[3] = -plane[0]*a[0]-plane[1]*a[1]; 
     return 1;
   }
   else{
-    plane[0]=-1.0;
-    plane[1]=0.;
-    plane[3]=a[0];
+    plane[0] = -1.0;
+    plane[1] = 0.;
+    plane[3] = a[0];
     return 0;
   }
 }
@@ -645,13 +645,13 @@ void gl2psFreeBspImageTree(GL2PSbsptree2d **tree){
     if((*tree)->back)  gl2psFreeBspImageTree(&(*tree)->back);
     if((*tree)->front) gl2psFreeBspImageTree(&(*tree)->front);
     gl2psFree(*tree);
-    *tree=NULL;
+    *tree = NULL;
   }
 }
 
-GLint gl2psCheckPoint(GL2PSxyz point,GL2PSplane plane){
+GLint gl2psCheckPoint(GL2PSxyz point, GL2PSplane plane){
   GLfloat pt_dis;
-  pt_dis=gl2psComparePointPlane(point,plane);
+  pt_dis = gl2psComparePointPlane(point, plane);
   if(pt_dis>GL2PS_EPSILON)        return GL2PS_POINT_INFRONT;
   else if(pt_dis<-GL2PS_EPSILON)  return GL2PS_POINT_BACK;
   else                            return GL2PS_POINT_COINCIDENT;
@@ -659,17 +659,18 @@ GLint gl2psCheckPoint(GL2PSxyz point,GL2PSplane plane){
 
 void gl2psAddPlanesInBspTreeImage(GL2PSprimitive *prim,
 				  GL2PSbsptree2d **tree){
-  GLint ret=0;
+  GLint ret = 0;
   GLint i;
-  GLint offset=0;
-  GL2PSbsptree2d *head=NULL,*cur=NULL;
-  if((*tree==NULL) && (prim->numverts>2)){
+  GLint offset = 0;
+  GL2PSbsptree2d *head = NULL, *cur = NULL;
+
+  if((*tree == NULL) && (prim->numverts > 2)){
     head=(GL2PSbsptree2d*)gl2psMalloc(sizeof(GL2PSbsptree2d));
-    for(i=0;i<prim->numverts-1;i++){
+    for(i = 0; i < prim->numverts-1; i++){
       if(!gl2psGetPlaneFromPoints(prim->verts[i].xyz,
                                   prim->verts[i+1].xyz,
 				  head->plane)){
-        if(prim->numverts-i>3)  
+        if(prim->numverts-i > 3)  
 	  offset++;
 	else{
 	  gl2psFree(head);
@@ -680,26 +681,26 @@ void gl2psAddPlanesInBspTreeImage(GL2PSprimitive *prim,
     }
     head->back = NULL;
     head->front = NULL;
-    for(i=2+offset;i<prim->numverts;i++){
-      ret=gl2psCheckPoint(prim->verts[i].xyz,head->plane);
-      if(ret!=0) break;
+    for(i = 2+offset; i < prim->numverts; i++){
+      ret = gl2psCheckPoint(prim->verts[i].xyz, head->plane);
+      if(ret != 0) break;
     }
     switch(ret){
     case GL2PS_POINT_INFRONT :
-      cur=head;
-      for(i=1+offset;i<(prim->numverts-1);i++){
-        if(cur->front==NULL)
-          cur->front=(GL2PSbsptree2d*)gl2psMalloc(sizeof(GL2PSbsptree2d));
+      cur = head;
+      for(i = 1+offset; i < (prim->numverts-1); i++){
+        if(cur->front == NULL)
+          cur->front = (GL2PSbsptree2d*)gl2psMalloc(sizeof(GL2PSbsptree2d));
         if(gl2psGetPlaneFromPoints(prim->verts[i].xyz,
 				   prim->verts[i+1].xyz,
 				   cur->front->plane)){
-	  cur=cur->front;
+	  cur = cur->front;
 	  cur->front = NULL;
 	  cur->back = NULL;
 	}
       }
-      if(cur->front==NULL)
-        cur->front=(GL2PSbsptree2d*)gl2psMalloc(sizeof(GL2PSbsptree2d));
+      if(cur->front == NULL)
+        cur->front = (GL2PSbsptree2d*)gl2psMalloc(sizeof(GL2PSbsptree2d));
       if(gl2psGetPlaneFromPoints(prim->verts[i].xyz,
                                  prim->verts[offset].xyz,
 				 cur->front->plane)){
@@ -708,26 +709,26 @@ void gl2psAddPlanesInBspTreeImage(GL2PSprimitive *prim,
       }
       else{
         gl2psFree(cur->front);
-	cur=NULL;
+	cur = NULL;
       }
       break;
     case GL2PS_POINT_BACK :
-      for(i=0;i<4;i++)
-        head->plane[i]=-head->plane[i];
-      cur=head;
-      for(i=1+offset;i<(prim->numverts-1);i++){
-        if(cur->front==NULL)
-          cur->front=(GL2PSbsptree2d*)gl2psMalloc(sizeof(GL2PSbsptree2d));
+      for(i = 0; i < 4; i++)
+        head->plane[i] = -head->plane[i];
+      cur = head;
+      for(i = 1+offset; i < (prim->numverts-1); i++){
+        if(cur->front == NULL)
+          cur->front = (GL2PSbsptree2d*)gl2psMalloc(sizeof(GL2PSbsptree2d));
         if(gl2psGetPlaneFromPoints(prim->verts[i+1].xyz,
 				   prim->verts[i].xyz,
 				   cur->front->plane)){
-	  cur=cur->front;
+	  cur = cur->front;
 	  cur->front = NULL;
 	  cur->back = NULL;
 	}
       }
-      if(cur->front==NULL)
-        cur->front=(GL2PSbsptree2d*)gl2psMalloc(sizeof(GL2PSbsptree2d));
+      if(cur->front == NULL)
+        cur->front = (GL2PSbsptree2d*)gl2psMalloc(sizeof(GL2PSbsptree2d));
       if(gl2psGetPlaneFromPoints(prim->verts[offset].xyz,
                                  prim->verts[i].xyz,
 				 cur->front->plane)){
@@ -736,24 +737,24 @@ void gl2psAddPlanesInBspTreeImage(GL2PSprimitive *prim,
       }
       else{
         gl2psFree(cur->front);
-	cur=NULL;
+	cur = NULL;
       }
       break;
     default:
       gl2psFree(head);
       return;
     }
-    (*tree)=head;
+    (*tree) = head;
   }
 }
 
-GLint gl2psCheckPrimitive(GL2PSprimitive *prim,GL2PSplane plane){
+GLint gl2psCheckPrimitive(GL2PSprimitive *prim, GL2PSplane plane){
   GLint i;
   GLint pos;
-  pos=gl2psCheckPoint(prim->verts[0].xyz,plane);
-  for(i=1;i<prim->numverts;i++){
-    pos|=gl2psCheckPoint(prim->verts[i].xyz,plane);
-    if(pos==(GL2PS_POINT_INFRONT | GL2PS_POINT_BACK)) return GL2PS_SPANNING;
+  pos = gl2psCheckPoint(prim->verts[0].xyz, plane);
+  for(i = 1; i < prim->numverts; i++){
+    pos |= gl2psCheckPoint(prim->verts[i].xyz, plane);
+    if(pos == (GL2PS_POINT_INFRONT | GL2PS_POINT_BACK)) return GL2PS_SPANNING;
   }
   if(pos & GL2PS_POINT_INFRONT)    return GL2PS_IN_FRONT_OF;
   else if(pos & GL2PS_POINT_BACK)  return GL2PS_IN_BACK_OF;
@@ -776,7 +777,7 @@ GL2PSprimitive* gl2psCreateSplitPrimitive2D(GL2PSprimitive *parent,
   child->width = parent->width;
   child->numverts = numverts;
   child->verts = (GL2PSvertex *)gl2psMalloc(numverts * sizeof(GL2PSvertex));
-  for(i=0;i<numverts;i++)
+  for(i = 0; i < numverts; i++)
     child->verts[i] = vertx[i];
   return child;
 }
@@ -787,102 +788,103 @@ void gl2psSplitPrimitive2D(GL2PSprimitive *prim,
 			   GL2PSprimitive **front, 
 			   GL2PSprimitive **back){
 
-  //cur will hold the position of current vertex
-  //prev will holds the position of previous vertex
-  //prev0 will holds the position of vertex number 0
-  //v1 and v2 represent the current and previous vertexs respectively
-  //flag will represents that should the current be checked against the plane
-  GLint cur=-1,prev=-1,i,v1=0,v2=0,flag=1,prev0=-1;
+  // cur will hold the position of current vertex
+  // prev will holds the position of previous vertex
+  // prev0 will holds the position of vertex number 0
+  // v1 and v2 represent the current and previous vertexs respectively
+  // flag will represents that should the current be checked against the plane
+  GLint cur = -1, prev = -1, i, v1 = 0, v2 = 0, flag = 1, prev0 = -1;
   
-  //list of vertexs which will go in front and back Primitive
-  GL2PSvertex *front_list=NULL,*back_list=NULL;
+  // list of vertexs which will go in front and back Primitive
+  GL2PSvertex *front_list = NULL, *back_list = NULL;
   
-  //number of vertex in front and back list
-  GLint front_count=0,back_count=0;
-  for(i=0;i<=prim->numverts;i++){
-    v1=i;
-    if(v1==prim->numverts){
-      if(prim->numverts<3) break;
-      v1=0;
-      v2=prim->numverts-1;
-      cur=prev0;
+  // number of vertex in front and back list
+  GLint front_count = 0, back_count = 0;
+
+  for(i = 0; i <= prim->numverts; i++){
+    v1 = i;
+    if(v1 == prim->numverts){
+      if(prim->numverts < 3) break;
+      v1 = 0;
+      v2 = prim->numverts-1;
+      cur = prev0;
     }
     else if(flag){
-      cur=gl2psCheckPoint(prim->verts[v1].xyz,plane);
-      if(i==0)
-        prev0=cur;
+      cur = gl2psCheckPoint(prim->verts[v1].xyz, plane);
+      if(i == 0)
+        prev0 = cur;
     } 
-    if(((prev==-1) || (prev==cur) || (prev==0) || (cur==0)) &&
-       (i<prim->numverts)){
-      if(cur==GL2PS_POINT_INFRONT){
+    if(((prev == -1) || (prev == cur) || (prev == 0) || (cur == 0)) &&
+       (i < prim->numverts)){
+      if(cur == GL2PS_POINT_INFRONT){
 	front_count++;
-	front_list=(GL2PSvertex*)gl2psRealloc(front_list,
-					      sizeof(GL2PSvertex)*front_count);
-        front_list[front_count-1]=prim->verts[v1];
+	front_list = (GL2PSvertex*)gl2psRealloc(front_list,
+						sizeof(GL2PSvertex)*front_count);
+        front_list[front_count-1] = prim->verts[v1];
       }
-      else if(cur==GL2PS_POINT_BACK){
+      else if(cur == GL2PS_POINT_BACK){
 	back_count++;
-	back_list=(GL2PSvertex*)gl2psRealloc(back_list,
-					     sizeof(GL2PSvertex)*back_count);
-        back_list[back_count-1]=prim->verts[v1];
+	back_list = (GL2PSvertex*)gl2psRealloc(back_list,
+					       sizeof(GL2PSvertex)*back_count);
+        back_list[back_count-1] = prim->verts[v1];
       }
       else{
 	front_count++;
-	front_list=(GL2PSvertex*)gl2psRealloc(front_list,
-					      sizeof(GL2PSvertex)*front_count);
-        front_list[front_count-1]=prim->verts[v1];
+	front_list = (GL2PSvertex*)gl2psRealloc(front_list,
+						sizeof(GL2PSvertex)*front_count);
+        front_list[front_count-1] = prim->verts[v1];
 	back_count++;
-	back_list=(GL2PSvertex*)gl2psRealloc(back_list,
-					     sizeof(GL2PSvertex)*back_count);
-        back_list[back_count-1]=prim->verts[v1];
+	back_list = (GL2PSvertex*)gl2psRealloc(back_list,
+					       sizeof(GL2PSvertex)*back_count);
+        back_list[back_count-1] = prim->verts[v1];
       }
-      flag=1;
+      flag = 1;
     }
-    else if((prev!=cur) && (cur!=0) && (prev!=0)){
-      if(v1!=0){
-	v2=v1-1;
+    else if((prev != cur) && (cur != 0) && (prev != 0)){
+      if(v1 != 0){
+	v2 = v1-1;
 	i--;
       }
       front_count++;
-      front_list=(GL2PSvertex*)gl2psRealloc(front_list,
-                                            sizeof(GL2PSvertex)*front_count);
+      front_list = (GL2PSvertex*)gl2psRealloc(front_list,
+					      sizeof(GL2PSvertex)*front_count);
       gl2psCutEdge(&prim->verts[v2],
                    &prim->verts[v1],
 		   plane,
 		   &front_list[front_count-1]);
       back_count++;
-      back_list=(GL2PSvertex*)gl2psRealloc(back_list,
-					   sizeof(GL2PSvertex)*back_count);
-      back_list[back_count-1]=front_list[front_count-1];
-      flag=0;
+      back_list = (GL2PSvertex*)gl2psRealloc(back_list,
+					     sizeof(GL2PSvertex)*back_count);
+      back_list[back_count-1] = front_list[front_count-1];
+      flag = 0;
     }
-    prev=cur;
+    prev = cur;
   }
-  *front = gl2psCreateSplitPrimitive2D(prim,front_count,front_list);
-  *back = gl2psCreateSplitPrimitive2D(prim,back_count,back_list);
+  *front = gl2psCreateSplitPrimitive2D(prim, front_count, front_list);
+  *back = gl2psCreateSplitPrimitive2D(prim, back_count, back_list);
   gl2psFree(front_list);
   gl2psFree(back_list);
 }
 
-GLint gl2psAddInImageTree(GL2PSprimitive *prim,GL2PSbsptree2d **tree){
-  GLint ret=0;
-  GL2PSprimitive *frontprim=NULL, *backprim=NULL;
+GLint gl2psAddInImageTree(GL2PSprimitive *prim, GL2PSbsptree2d **tree){
+  GLint ret = 0;
+  GL2PSprimitive *frontprim = NULL, *backprim = NULL;
   if(*tree == NULL){
-    gl2psAddPlanesInBspTreeImage(prim,tree);
+    gl2psAddPlanesInBspTreeImage(prim, tree);
     return 1;
   }
   else{
-    switch(gl2psCheckPrimitive(prim,(*tree)->plane)){
-    case GL2PS_IN_BACK_OF: return gl2psAddInImageTree(prim,&(*tree)->back);
+    switch(gl2psCheckPrimitive(prim, (*tree)->plane)){
+    case GL2PS_IN_BACK_OF: return gl2psAddInImageTree(prim, &(*tree)->back);
     case GL2PS_IN_FRONT_OF: 
-      if((*tree)->front!=NULL) return gl2psAddInImageTree(prim,&(*tree)->front);
-      else                     return 0;
+      if((*tree)->front != NULL) return gl2psAddInImageTree(prim, &(*tree)->front);
+      else                       return 0;
     case GL2PS_SPANNING:
-      gl2psSplitPrimitive2D(prim,(*tree)->plane,&frontprim,&backprim);
-      ret=gl2psAddInImageTree(backprim,&(*tree)->back);
+      gl2psSplitPrimitive2D(prim, (*tree)->plane, &frontprim, &backprim);
+      ret = gl2psAddInImageTree(backprim, &(*tree)->back);
       if((*tree)->front != NULL)
-        if(gl2psAddInImageTree(frontprim,&(*tree)->front))  
-	  ret=1;
+        if(gl2psAddInImageTree(frontprim, &(*tree)->front))  
+	  ret = 1;
       gl2psFree(frontprim->verts);
       gl2psFree(frontprim);
       gl2psFree(backprim->verts);
@@ -900,7 +902,7 @@ void gl2psAddInImage(void *a, void *b){
   GL2PSprimitive *prim;
   prim = *(GL2PSprimitive **)a;
   if(gl2psAddInImageTree(prim, &gl2ps->image)){
-    prim->depth=-1.;
+    prim->depth = -1.;
   }
 }
 /* Boundary contruction */
@@ -913,14 +915,14 @@ void gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list){
   GL2PSxyz        c;
 
   c[0] = c[1] = c[2] = 0.;
-  for(i=0 ; i<prim->numverts ; i++){
+  for(i = 0; i < prim->numverts; i++){
     c[0] += prim->verts[i].xyz[0];
     c[1] += prim->verts[i].xyz[1];
   }
   c[0] /= prim->numverts;
   c[1] /= prim->numverts;
 
-  for(i=0 ; i<prim->numverts ; i++){
+  for(i = 0; i < prim->numverts; i++){
     if(prim->boundary & (GLint)pow(2., i)){
       b = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
       b->type = GL2PS_LINE;
@@ -978,7 +980,7 @@ void gl2psBuildPolygonBoundary(GL2PSbsptree *tree){
   if(!tree) return;
   gl2psBuildPolygonBoundary(tree->back);
   n = gl2psListNbr(tree->primitives);
-  for(i=0 ; i<n ; i++){
+  for(i = 0; i < n; i++){
     prim = *(GL2PSprimitive**)gl2psListPointer(tree->primitives, i);
     if(prim->boundary) gl2psAddBoundaryInList(prim, tree->primitives);
   }
@@ -1093,9 +1095,9 @@ GLint gl2psGetVertex(GL2PSvertex *v, GLfloat *p){
 }
 
 GLint gl2psParseFeedbackBuffer(void){
-  GLint        i, used, count, v, vtot, offset=0;
-  GLshort      boundary, flag, dash=0;
-  GLfloat      lwidth=1., psize=1.;
+  GLint        i, used, count, v, vtot, offset = 0;
+  GLshort      boundary, flag, dash = 0;
+  GLfloat      lwidth = 1., psize = 1.;
   GLfloat     *current;
   GL2PSvertex  vertices[3];
 
@@ -1152,9 +1154,9 @@ GLint gl2psParseFeedbackBuffer(void){
 	vtot++;
 	if(v == 2){
 	  if(boundary){
-	    if(!count && vtot==2) flag = 1|2|4;
+	    if(!count && vtot == 2) flag = 1|2|4;
 	    else if(!count) flag = 2|4;
-	    else if(vtot==2) flag = 1|2;
+	    else if(vtot == 2) flag = 1|2;
 	    else flag = 2;
 	  }
 	  else
@@ -1178,21 +1180,21 @@ GLint gl2psParseFeedbackBuffer(void){
       break;      
     case GL_PASS_THROUGH_TOKEN :
       switch((GLint)current[1]){
-      case GL2PS_BEGIN_POLYGON_OFFSET_FILL : offset=1; break;
-      case GL2PS_END_POLYGON_OFFSET_FILL : offset=0; break;
-      case GL2PS_BEGIN_POLYGON_BOUNDARY : boundary=1; break;
-      case GL2PS_END_POLYGON_BOUNDARY : boundary=0; break;
-      case GL2PS_BEGIN_LINE_STIPPLE : dash=4; break;
-      case GL2PS_END_LINE_STIPPLE : dash=0; break;
+      case GL2PS_BEGIN_POLYGON_OFFSET_FILL : offset = 1; break;
+      case GL2PS_END_POLYGON_OFFSET_FILL : offset = 0; break;
+      case GL2PS_BEGIN_POLYGON_BOUNDARY : boundary = 1; break;
+      case GL2PS_END_POLYGON_BOUNDARY : boundary = 0; break;
+      case GL2PS_BEGIN_LINE_STIPPLE : dash = 4; break;
+      case GL2PS_END_LINE_STIPPLE : dash = 0; break;
       case GL2PS_SET_POINT_SIZE : 
-	current+=2; 
-	used-=2; 
-	psize=current[1];
+	current += 2; 
+	used -= 2; 
+	psize = current[1];
 	break;
       case GL2PS_SET_LINE_WIDTH : 
-	current+=2; 
-	used-=2; 
-	lwidth=current[1];
+	current += 2; 
+	used -= 2; 
+	lwidth = current[1];
 	break;
       }
       current += 2; 
@@ -1217,7 +1219,7 @@ GLboolean gl2psSameColor(GL2PSrgba rgba1, GL2PSrgba rgba2){
   
 GLboolean gl2psVertsSameColor(const GL2PSprimitive *prim){
   int i;
-  for(i=1; i<prim->numverts; i++)
+  for(i = 1; i < prim->numverts; i++)
     if(!gl2psSameColor(prim->verts[0].rgba, prim->verts[i].rgba))
       return 0;
   return 1;
@@ -1412,7 +1414,7 @@ void gl2psPrintPostScriptHeader(void){
 	  "%%%%Page: 1 1\n"
 	  "%%%%BeginPageSetup\n");
 
-  if (gl2ps->options & GL2PS_LANDSCAPE)
+  if(gl2ps->options & GL2PS_LANDSCAPE)
     fprintf(gl2ps->stream,
 	    "%d 0 translate 90 rotate\n",
 	    viewport[3]);
@@ -1550,15 +1552,15 @@ void gl2psPrintTeXHeader(void){
 
   glGetIntegerv(GL_VIEWPORT, viewport);
 
-  if(gl2ps->filename && strlen(gl2ps->filename)<256){
-    for(i=strlen(gl2ps->filename)-1 ; i>=0 ; i--){
+  if(gl2ps->filename && strlen(gl2ps->filename) < 256){
+    for(i = strlen(gl2ps->filename)-1; i >= 0; i--){
       if(gl2ps->filename[i] == '.'){
 	strncpy(name, gl2ps->filename, i);
-	name[i]='\0';
+	name[i] = '\0';
 	break;
       }
     }
-    if(i<=0) strcpy(name, gl2ps->filename);
+    if(i <= 0) strcpy(name, gl2ps->filename);
   }
   else
     strcpy(name, "untitled");
@@ -1648,7 +1650,7 @@ GL2PSDLL_API void gl2psBeginPage(const char *title, const char *producer,
 
 GL2PSDLL_API GLint gl2psEndPage(void){
   GL2PSbsptree   *root;
-  GL2PSxyz        eye={0., 0., 100000.};
+  GL2PSxyz        eye = {0., 0., 100000.};
   GLint           shademodel, res;
   void          (*phead)(void) = 0;
   void          (*pprim)(void *a, void *b) = 0;
