@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.178 2004-09-03 18:12:40 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.179 2004-11-15 00:01:48 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -2040,33 +2040,34 @@ static void gl2psWriteByte(unsigned char byte)
 
 static void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GL2PSimage *im)
 {
-  int nbhex, nbyte2, nbyte4, nbyte8;
-  GLsizei row, col, col_max;
-  GLfloat dr, dg, db;
+  GLuint nbhex, nbyte, nrgb, nbits;
+  GLuint row, col, ibyte, icase;
+  GLfloat dr, dg, db, fgrey;
   unsigned char red, green, blue, b, grey;
-  GLsizei width = im->width;
-  GLsizei height = im->height;
+  GLuint width = (GLuint)im->width;
+  GLuint height = (GLuint)im->height;
 
   /* FIXME: should we define an option for these? */
   int greyscale = 0; /* set to 1 to output greyscale image */
-  int nbits = 8; /* number of bits per color compoment (2, 4 or 8) */
+  int nbit = 8; /* number of bits per color compoment (2, 4 or 8) */
 
   if((width <= 0) || (height <= 0)) return;
 
   gl2psPrintf("gsave\n");
   gl2psPrintf("%.2f %.2f translate\n", x, y); 
-  gl2psPrintf("%d %d scale\n", (int)width, (int)height); 
+  gl2psPrintf("%d %d scale\n", width, height); 
 
-  if(greyscale){ /* greyscale, 8 bits per pixel */
-    gl2psPrintf("/picstr %d string def\n", (int)width); 
-    gl2psPrintf("%d %d %d\n", (int)width, (int)height, 8); 
-    gl2psPrintf("[ %d 0 0 -%d 0 %d ]\n", (int)width, (int)height, (int)height); 
+  if(greyscale){ /* greyscale */
+    gl2psPrintf("/picstr %d string def\n", width); 
+    gl2psPrintf("%d %d %d\n", width, height, 8); 
+    gl2psPrintf("[ %d 0 0 -%d 0 %d ]\n", width, height, height); 
     gl2psPrintf("{ currentfile picstr readhexstring pop }\n");
     gl2psPrintf("image\n");
     for(row = 0; row < height; row++){
       for(col = 0; col < width; col++){ 
         gl2psGetRGB(im, col, row, &dr, &dg, &db);
-        grey = (unsigned char)(255.0 * (0.30 * dr + 0.59 * dg + 0.11 * db));
+        fgrey = (0.30 * dr + 0.59 * dg + 0.11 * db);
+        grey = (unsigned char)(255. * fgrey);
         gl2psWriteByte(grey);
       }
       gl2psPrintf("\n");
@@ -2074,104 +2075,166 @@ static void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GL2PSimage *im)
     nbhex = width * height * 2; 
     gl2psPrintf("%%%% nbhex digit          :%d\n", nbhex); 
   }
-  else if(nbits == 2){ /* color, 2 bits for r and g and b; rgbs following each other */
-    nbyte2 = (width * 3)/4;
-    nbyte2 /=3;
-    nbyte2 *=3;
-    col_max = (nbyte2 * 4)/3;
-    gl2psPrintf("/rgbstr %d string def\n", nbyte2); 
-    gl2psPrintf("%d %d %d\n", (int)col_max, (int)height, 2); 
-    gl2psPrintf("[ %d 0 0 -%d 0 %d ]\n", (int)col_max, (int)height, (int)height); 
-    gl2psPrintf("{ currentfile rgbstr readhexstring pop }\n" );
-    gl2psPrintf("false 3\n" );
-    gl2psPrintf("colorimage\n" );
-    for(row = 0; row < height; row++){
-      for(col = 0; col < col_max; col+=4){
-        gl2psGetRGB(im, col, row, &dr, &dg, &db);
-        red = (unsigned char)(3.0 * dr);
-        green = (unsigned char)(3.0 * dg);
-        blue = (unsigned char)(3.0 * db);
-        b = red;
-        b = (b<<2)+green;
-        b = (b<<2)+blue;
-        gl2psGetRGB(im, col+1, row, &dr, &dg, &db);
-        red = (unsigned char)(3.0 * dr);
-        green = (unsigned char)(3.0 * dg);
-        blue = (unsigned char)(3.0 * db);
-        b = (b<<2)+red;
-        gl2psWriteByte(b);
-        b = green;
-        b = (b<<2)+blue;
-        gl2psGetRGB(im, col+2, row, &dr, &dg, &db);
-        red = (unsigned char)(3.0 * dr);
-        green = (unsigned char)(3.0 * dg);
-        blue = (unsigned char)(3.0 * db);
-        b = (b<<2)+red;
-        b = (b<<2)+green;
-        gl2psWriteByte(b);
-        b = blue;
-        gl2psGetRGB(im, col+3, row, &dr, &dg, &db);
-        red = (unsigned char)(3.0 * dr);
-        green = (unsigned char)(3.0 * dg);
-        blue = (unsigned char)(3.0 * db);
-        b = (b<<2)+red;
-        b = (b<<2)+green;
-        b = (b<<2)+blue;
-        gl2psWriteByte(b);
-      }
-      gl2psPrintf("\n");
-    }
-  }
-  else if(nbits == 4){ /* color, 4 bits for r and g and b; rgbs following each other */
-    nbyte4 = (width  * 3)/2;
-    nbyte4 /=3;
-    nbyte4 *=3;
-    col_max = (nbyte4 * 2)/3;
-    gl2psPrintf("/rgbstr %d string def\n", nbyte4);
-    gl2psPrintf("%d %d %d\n", (int)col_max, (int)height, 4);
-    gl2psPrintf("[ %d 0 0 -%d 0 %d ]\n", (int)col_max, (int)height, (int)height);
+  else if(nbit == 2){ /* color, 2 bits for r and g and b; rgbs following each other */
+    nrgb = width  * 3;
+    nbits = nrgb * nbit;
+    nbyte = nbits/8;
+    if((nbyte * 8) != nbits) nbyte++;
+    gl2psPrintf("/rgbstr %d string def\n", nbyte);
+    gl2psPrintf("%d %d %d\n", width, height, nbit);
+    gl2psPrintf("[ %d 0 0 -%d 0 %d ]\n", width, height, height);
     gl2psPrintf("{ currentfile rgbstr readhexstring pop }\n");
     gl2psPrintf("false 3\n");
     gl2psPrintf("colorimage\n");
     for(row = 0; row < height; row++){
-      for(col = 0; col < col_max; col+=2){
-        gl2psGetRGB(im, col, row, &dr, &dg, &db);
-        red = (unsigned char)(15. * dr);
-        green = (unsigned char)(15. * dg);
-        gl2psPrintf("%x%x", red, green);
-        blue = (unsigned char)(15. * db);
-        gl2psGetRGB(im, col+1, row, &dr, &dg, &db);
-        red = (unsigned char)(15. * dr);
-        gl2psPrintf("%x%x",blue,red);
-        green = (unsigned char)(15. * dg);
-        blue = (unsigned char)(15. * db);
-        gl2psPrintf("%x%x", green, blue);
+      icase = 1;
+      col = 0;
+      b = 0;
+      for(ibyte = 0; ibyte < nbyte; ibyte++){
+        if(icase == 1) {
+          if(col < width) {
+            gl2psGetRGB(im, col, row, &dr, &dg, &db);
+          } 
+          else {
+            dr = dg = db = 0;
+          }
+          col++;
+          red = (unsigned char)(3. * dr);
+          green = (unsigned char)(3. * dg);
+          blue = (unsigned char)(3. * db);
+          b = red;
+          b = (b<<2) + green;
+          b = (b<<2) + blue;
+          if(col < width) {
+            gl2psGetRGB(im, col, row, &dr, &dg, &db);
+          } 
+          else {
+            dr = dg = db = 0;
+          }
+          col++;
+          red = (unsigned char)(3. * dr);
+          green = (unsigned char)(3. * dg);
+          blue = (unsigned char)(3. * db);
+          b = (b<<2) + red;
+          gl2psWriteByte(b);
+          b = 0;
+          icase++;
+        } 
+        else if(icase == 2) {
+          b = green;
+          b = (b<<2) + blue;
+          if(col < width) {
+            gl2psGetRGB(im, col, row, &dr, &dg, &db);
+          }
+          else {
+            dr = dg = db = 0;
+          }
+          col++;
+          red = (unsigned char)(3. * dr);
+          green = (unsigned char)(3. * dg);
+          blue = (unsigned char)(3. * db);
+          b = (b<<2) + red;
+          b = (b<<2) + green;
+          gl2psWriteByte(b);
+          b = 0;
+          icase++;
+        } 
+        else if(icase == 3) {
+          b = blue;
+          if(col < width) {
+            gl2psGetRGB(im, col, row, &dr, &dg, &db);
+          }
+          else {
+            dr = dg = db = 0;
+          }
+          col++;
+          red = (unsigned char)(3. * dr);
+          green = (unsigned char)(3. * dg);
+          blue = (unsigned char)(3. * db);
+          b = (b<<2) + red;
+          b = (b<<2) + green;
+          b = (b<<2) + blue;
+          gl2psWriteByte(b);
+          b = 0;
+          icase = 1;
+        }
       }
       gl2psPrintf("\n");
     }
   }
-  else{ /* color, 8 bits for r and g and b; rgbs following each other */
-    nbyte8 = width * 3;
-    gl2psPrintf("/rgbstr %d string def\n", nbyte8);
-    gl2psPrintf("%d %d %d\n", (int)width, (int)height, 8);
-    gl2psPrintf("[ %d 0 0 -%d 0 %d ]\n", (int)width, (int)height, (int)height); 
+  else if(nbit == 4){ /* color, 4 bits for r and g and b; rgbs following each other */
+    nrgb = width  * 3;
+    nbits = nrgb * nbit;
+    nbyte = nbits/8;
+    if((nbyte * 8) != nbits) nbyte++; 
+    gl2psPrintf("/rgbstr %d string def\n", nbyte);
+    gl2psPrintf("%d %d %d\n", width, height, nbit);
+    gl2psPrintf("[ %d 0 0 -%d 0 %d ]\n", width, height, height);
+    gl2psPrintf("{ currentfile rgbstr readhexstring pop }\n");
+    gl2psPrintf("false 3\n");
+    gl2psPrintf("colorimage\n");
+    for(row = 0; row < height; row++){
+      col = 0;
+      icase = 1;
+      for(ibyte = 0; ibyte < nbyte; ibyte++){
+        if(icase == 1) {
+          if(col < width) {
+            gl2psGetRGB(im, col, row, &dr, &dg, &db);
+          } 
+          else {
+            dr = dg = db = 0;
+          }
+          col++;
+          red = (unsigned char)(15. * dr);
+          green = (unsigned char)(15. * dg);
+          gl2psPrintf("%x%x", red, green);
+          icase++;
+        } 
+        else if(icase == 2) {
+          blue = (unsigned char)(15. * db);
+          if(col < width) {
+            gl2psGetRGB(im, col, row, &dr, &dg, &db);
+          } 
+          else {
+            dr = dg = db = 0;
+          }
+          col++;
+          red = (unsigned char)(15. * dr);
+          gl2psPrintf("%x%x", blue, red);
+          icase++;
+        }
+        else if(icase == 3) {
+          green = (unsigned char)(15. * dg);
+          blue = (unsigned char)(15. * db);
+          gl2psPrintf("%x%x", green, blue);
+          icase = 1;
+        }
+      }
+      gl2psPrintf("\n");
+    }
+  }
+  else{ /* 8 bit for r and g and b */
+    nbyte = width * 3;
+    gl2psPrintf("/rgbstr %d string def\n", nbyte);
+    gl2psPrintf("%d %d %d\n", width, height, 8);
+    gl2psPrintf("[ %d 0 0 -%d 0 %d ]\n", width, height, height); 
     gl2psPrintf("{ currentfile rgbstr readhexstring pop }\n");
     gl2psPrintf("false 3\n");
     gl2psPrintf("colorimage\n");
     for(row = 0; row < height; row++){
       for(col = 0; col < width; col++){
         gl2psGetRGB(im, col, row, &dr, &dg, &db);
-        red = (unsigned char)(255.0 * dr);
+        red = (unsigned char)(255. * dr);
         gl2psWriteByte(red);
-        green = (unsigned char)(255.0 * dg);
+        green = (unsigned char)(255. * dg);
         gl2psWriteByte(green);
-        blue = (unsigned char)(255.0 * db);
+        blue = (unsigned char)(255. * db);
         gl2psWriteByte(blue);
       }
       gl2psPrintf("\n");
     }
   }
-
+  
   gl2psPrintf("grestore\n");
 }
 
@@ -4319,7 +4382,7 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
 
   if(!viewport[2] || !viewport[3]){
     gl2psMsg(GL2PS_ERROR, "Incorrect viewport (x=%d, y=%d, width=%d, height=%d)",
-	     viewport[0], viewport[1], viewport[2], viewport[3]);
+             viewport[0], viewport[1], viewport[2], viewport[3]);
     gl2psFree(gl2ps);
     gl2ps = NULL;
     return GL2PS_ERROR;
