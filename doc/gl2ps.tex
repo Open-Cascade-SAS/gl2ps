@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.60 2003-01-17 05:54:11 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.61 2003-01-22 01:39:36 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -377,12 +377,12 @@ polygon offset or line stippling: see sections~\ref{sec:gl2psText},
 Other limitations include:
 \begin{itemize}
 \item 
-Rendering large and/or complicated scenes is slow, and will always be. But
-vector-based images are not destined to replace bitmaps! They just offer an
-alternative when high quality (especially for 2D and small 3D plots) and
-ease of manipulation (how do you change the scale, the labels or the colors
-in a bitmap picture long after the picture was produced, and without
-altering its quality?) are important.
+Rendering large and/or complicated scenes is slow and/or can lead to large
+output files. This is normal: vector-based images are not destined to
+replace bitmaps. They just offer an alternative when high quality
+(especially for 2D and small 3D plots) and ease of manipulation (how do you
+change the scale, the labels or the colors in a bitmap picture long after
+the picture was produced, and without altering its quality?) are important.
 \item
 Transparency is not supported yet. See the \dd{TODO} file for some
 explanations why this may or may not be possible.
@@ -483,7 +483,8 @@ the output file; revised documentation.
 \dd{GL2PS_BEST_ROOT}.
 \item[0.71] (Dec 13, 2002) Removed C++ style comments inadvertently left in
 the code; added example program \dd{gl2psTest.c} to the distribution.
-\item[0.72] (Jan 16, 2002) Enhanced documentation.
+\item[0.72] (Jan 21, 2002) Fixed crash in occlusion culling code; enhanced
+documentation.
 \end{description}
 
 \end{document}
