@@ -1,5 +1,5 @@
 /*
-gcc test_gl2ps.c gl2ps.c -lglut -lGLU -lGL -lX11 -lm -Wall -ansi -pedantic
+gcc -Wall test_gl2ps.c gl2ps.c -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
 */
 
 #include <GL/glut.h>
