@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.125 2003-10-20 18:24:54 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.126 2003-10-25 02:12:59 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine <geuz@geuz.org>
@@ -213,8 +213,10 @@ determine the way primitives are handled:
   the output, thus substantially reducing the size of the output file.
 \item[\dd{GL2PS_USE_CURRENT_VIEWPORT}] The current OpenGL viewport is used
   instead of \dd{viewport}.
-%\item[\dd{GL2PS_DEFLATE}] The output stream is compressed (currently only
-%  available with the PDF format).
+\item[\dd{GL2PS_COMPRESS}] The PDF output stream is compressed. You need to
+  compile GL2PS with \dd{HAVE_ZLIB} defined and link the executable with the
+  zlib library (\url{http://www.gzip.org/zlib/}) for this option to take
+  effect.
 \end{description}
 
 \item[\dd{colormode}] Specifies the color mode: \dd{GL_RGBA} or
