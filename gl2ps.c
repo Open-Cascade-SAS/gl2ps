@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.34 2002-03-08 18:05:23 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.35 2002-03-12 00:40:12 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1099,7 +1099,7 @@ GLvoid gl2psPrintPostScriptHeader(GLvoid){
 	  "%%%%Orientation: %s\n"
 	  "%%%%DocumentMedia: Default %d %d 0 () ()\n"
 	  "%%%%BoundingBox: %d %d %d %d\n"
-	  "%%%%Copyright: GNU LGPL (C) 1999-2002 geuz@geuz.org\n"
+	  "%%%%Copyright: GNU LGPL (C) 1999-2002 Christophe Geuzaine <geuz@geuz.org>\n"
 	  "%%%%EndComments\n"
 	  "%%%%BeginProlog\n"
 	  "/gl2psdict 64 dict def gl2psdict begin\n"
