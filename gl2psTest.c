@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.66 2005-01-01 19:16:53 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.67 2005-03-22 07:32:29 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -408,7 +408,6 @@ void draw_multi(void){
   glScissor((GLint)(window_w * 0.05), (GLint)(window_h * 0.025), 
              (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
   glClearColor(0.8, 0.8, 0.8, 0.);
-
   glGetIntegerv(GL_VIEWPORT, viewport);
 
   gl2psBeginViewport(viewport);

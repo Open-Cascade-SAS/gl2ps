@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.203 2005-03-05 17:58:39 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.204 2005-03-22 07:32:29 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -2819,11 +2819,11 @@ static void gl2psPrintPostScriptBeginViewport(GLint viewport[4])
                 "closepath fill\n",
                 rgba[0], rgba[1], rgba[2], 
                 x, y, x+w, y, x+w, y+h, x, y+h);
-    gl2psPrintf("newpath %d %d moveto %d %d lineto %d %d lineto %d %d lineto\n"
-                "closepath clip\n",
-                x, y, x+w, y, x+w, y+h, x, y+h);
   }
-
+  
+  gl2psPrintf("newpath %d %d moveto %d %d lineto %d %d lineto %d %d lineto\n"
+	      "closepath clip\n",
+	      x, y, x+w, y, x+w, y+h, x, y+h);
 }
 
 static GLint gl2psPrintPostScriptEndViewport(void)
