@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.163 2004-03-15 19:09:11 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.164 2004-03-15 22:48:13 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -1997,8 +1997,8 @@ void gl2psPrintPostScriptHeader(void){
               "              { STsplit }\n"
               "              { dup 11 index sub abs bThreshold gt\n" /* |b1-b3|>bth */
               "                { STsplit }\n"
-              "                { 7 index 13 index sub abs rThreshold gt\n" /* |r2-r3|>rht */
-              "                  { STsplit }\n"
+              "                { 7 index 13 index sub abs rThreshold gt\n"); /* |r2-r3|>rht */
+  gl2psPrintf("                  { STsplit }\n"
               "                  { 6 index 12 index sub abs gThreshold gt\n" /* |g2-g3|>gth */
               "                    { STsplit }\n"
               "                    { 5 index 11 index sub abs bThreshold gt\n" /* |b2-b3|>bth */
