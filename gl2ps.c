@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.125 2003-10-25 02:05:43 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.126 2003-10-25 03:25:24 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -185,8 +185,6 @@ int zprintf(const char* fmt, ...){
 #ifdef GL2PS_HAVE_ZLIB
   unsigned int bufsize = 0;
   unsigned int oldsize = 0;
-  if(!gl2ps->zstream)
-    return 0;
   if(gl2ps->options & GL2PS_COMPRESS){
     va_start(args, fmt);
     bufsize = vsprintf(gl2ps->zbuf, fmt, args);
