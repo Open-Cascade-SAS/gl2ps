@@ -30,7 +30,7 @@ html:
 	echo "<input type=\"hidden\" name=\"no_note\" value=\"1\">" >> gl2ps.html
 	echo "<input type=\"hidden\" name=\"currency_code\" value=\"USD\">" >> gl2ps.html
 	echo "<input type=\"hidden\" name=\"tax\" value=\"0\">" >> gl2ps.html
-	echo "<input type=\"image\" src=\"/images/donation.gif\" border=\"0\" name=\"submit\"" >> gl2ps.html
+	echo "<input type=\"image\" src=\"/images/donation.gif\" name=\"submit\"" >> gl2ps.html
 	echo "       alt=\"Make a donation with PayPal\">" >> gl2ps.html
 	echo "</form>" >> gl2ps.html
 	echo "<p>Back to <a href=\"/\">geuz.org</a>" >> gl2ps.html
