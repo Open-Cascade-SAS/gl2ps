@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.27 2003-06-11 17:39:10 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.28 2003-06-11 19:22:12 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -329,7 +329,7 @@ void draw_multi(void){
   glScissor(0., 0., window_w, window_h);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  /* First viewport with triangles, teapot or torus and text */
+  /* First viewport with triangles, teapot or torus, etc. */
   glViewport(window_w * 0.05, window_h * 0.525 , 
 	     (GLsizei) (window_w * 0.9), (GLsizei) (window_h * 0.45));
   glScissor(window_w * 0.05, window_h * 0.525 , 
