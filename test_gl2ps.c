@@ -47,7 +47,7 @@ void reshape(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void write_with_gl2ps(int sort, char *file)
+void write_with_gl2ps(int sort, int format, char *file)
 {
 	FILE *fp;
 	int state = GL2PS_OVERFLOW;
@@ -62,7 +62,7 @@ void write_with_gl2ps(int sort, char *file)
 		gl2psBeginPage(
 				file,
 				"test",
-				GL2PS_PS,
+				format,
 				sort,
 				GL2PS_DRAW_BACKGROUND,
 				GL_RGBA, 0, NULL,
@@ -84,10 +84,12 @@ void keyboard(unsigned char key, int x, int y)
 		exit(0);
 		break;
 	case 'w':
-		write_with_gl2ps(GL2PS_BSP_SORT, "file_bsp.ps");
+		write_with_gl2ps(GL2PS_BSP_SORT, GL2PS_PS, "file_bsp.ps");
+		write_with_gl2ps(GL2PS_BSP_SORT, GL2PS_EPS, "file_bsp.eps");
 		break;
 	case 'x':
-		write_with_gl2ps(GL2PS_SIMPLE_SORT, "file_simple.ps");
+		write_with_gl2ps(GL2PS_SIMPLE_SORT, GL2PS_PS, "file_simple.ps");
+		write_with_gl2ps(GL2PS_SIMPLE_SORT, GL2PS_EPS, "file_simple.eps");
 		break;
 	}
 }

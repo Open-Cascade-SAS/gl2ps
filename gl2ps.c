@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.45 2002-08-15 22:50:34 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.46 2002-09-03 23:35:35 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -945,25 +945,35 @@ GLvoid gl2psPrintPostScriptHeader(GLvoid){
 
   glGetIntegerv(GL_VIEWPORT, viewport);
 
+  if(gl2ps->format == GL2PS_PS)
+    fprintf(gl2ps->stream, "%%!PS-Adobe-3.0\n");
+  else if(gl2ps->format == GL2PS_EPS)
+    fprintf(gl2ps->stream, "%%!PS-Adobe-3.0 EPSF-3.0\n");
+  else
+    gl2psMsg(GL2PS_ERROR, "Unknown PostScript format");
+
   fprintf(gl2ps->stream, 
-	  "%%!PS-Adobe-3.0\n"
 	  "%%%%Title: %s\n"
 	  "%%%%Creator: GL2PS, an OpenGL to PostScript Printing Library, v. %g\n"
 	  "%%%%For: %s\n"
 	  "%%%%CreationDate: %s"
 	  "%%%%LanguageLevel: 3\n"
 	  "%%%%DocumentData: Clean7Bit\n"
-	  "%%%%Pages: 1\n"
-	  "%%%%PageOrder: Ascend\n"
-	  "%%%%Orientation: %s\n"
-	  "%%%%DocumentMedia: Default %d %d 0 () ()\n"
+	  "%%%%Pages: 1\n",
+	  gl2ps->title, GL2PS_VERSION, gl2ps->producer, ctime(&now));
+
+  if(gl2ps->format == GL2PS_PS)
+    fprintf(gl2ps->stream, 
+	    "%%%%Orientation: %s\n"
+	    "%%%%DocumentMedia: Default %d %d 0 () ()\n",
+	    (gl2ps->options & GL2PS_LANDSCAPE) ? "Landscape" : "Portrait",
+	    (gl2ps->options & GL2PS_LANDSCAPE) ? viewport[3] : viewport[2],
+	    (gl2ps->options & GL2PS_LANDSCAPE) ? viewport[2] : viewport[3]);
+
+  fprintf(gl2ps->stream,
 	  "%%%%BoundingBox: %d %d %d %d\n"
 	  "%%%%Copyright: GNU LGPL (C) 1999-2002 Christophe Geuzaine <geuz@geuz.org>\n"
 	  "%%%%EndComments\n",
-	  gl2ps->title, GL2PS_VERSION, gl2ps->producer, ctime(&now),
-	  (gl2ps->options & GL2PS_LANDSCAPE) ? "Landscape" : "Portrait",
-	  (gl2ps->options & GL2PS_LANDSCAPE) ? viewport[3] : viewport[2],
-	  (gl2ps->options & GL2PS_LANDSCAPE) ? viewport[2] : viewport[3],
 	  (gl2ps->options & GL2PS_LANDSCAPE) ? viewport[1] : viewport[0],
 	  (gl2ps->options & GL2PS_LANDSCAPE) ? viewport[0] : viewport[1],
 	  (gl2ps->options & GL2PS_LANDSCAPE) ? viewport[3] : viewport[2],
@@ -1274,7 +1284,7 @@ GL2PSDLL_API GLint gl2psEndPage(GLvoid){
   glGetIntegerv(GL_SHADE_MODEL, &shademodel);
   gl2ps->shade = (shademodel == GL_SMOOTH);
 
-  if(gl2ps->format & GL2PS_TEX)
+  if(gl2ps->format == GL2PS_TEX)
     res = GL2PS_SUCCESS;
   else
     res = gl2psParseFeedbackBuffer();
@@ -1290,6 +1300,7 @@ GL2PSDLL_API GLint gl2psEndPage(GLvoid){
       pfoot = gl2psPrintTeXFooter;
       break;
     case GL2PS_PS :
+    case GL2PS_EPS :
       phead = gl2psPrintPostScriptHeader;
       pprim = gl2psPrintPostScriptPrimitive;
       pfoot = gl2psPrintPostScriptFooter;

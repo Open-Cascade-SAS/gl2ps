@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.41 2002-07-16 05:29:45 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.42 2002-09-03 23:35:35 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -49,15 +49,15 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.61, 21 June 2002}
+\date{Version 0.62, ... 2002}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.61.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.62.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.61.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.62.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
@@ -126,6 +126,9 @@ this string is placed in the \texttt{\%\%For} field.
 
 \item[\dd{GL2PS_PS}] The output stream will be a PostScript file. 
 
+\item[\dd{GL2PS_EPS}] The output stream will be an Encapsulated PostScript
+file.
+
 \item[\dd{GL2PS_TEX}] The output stream will be a \LaTeX\ file, containing
 only the text strings of the plot (cf.\ section~\ref{sec:gl2psText}), as
 well as an \verb+\includegraphics+ command permitting to include a graphic
@@ -133,8 +136,8 @@ file having the same basename as \dd{filename}.\footnote{The two steps to
 generate a \LaTeX\ plot with GL2PS are thus:
 \begin{enumerate}
 \item generate the PostScript file (e.g.\ \dd{file.ps}) with no text
-strings, using the \dd{GL2PS_PS} format combined with the \dd{GL2PS_NO_TEXT}
-option;
+strings, using the \dd{GL2PS_PS} or \dd{GL2PS_EPS} format combined with the
+\dd{GL2PS_NO_TEXT} option;
 \item generate the \LaTeX\ file \dd{file.tex}, using the \dd{GL2PS_TEX}
 format and specifying \dd{file.tex} as the \dd{filename} argument to
 \dd{gl2psBeginPage}.
@@ -318,7 +321,7 @@ int buffsize = 0, state = GL2PS_OVERFLOW;
 while( state == GL2PS_OVERFLOW ){ 
   buffsize += 1024*1024;
   gl2psBeginPage ( "MyTitle", "MySoftware", 
-                   GL2PS_PS, GL2PS_BSP_SORT,
+                   GL2PS_EPS, GL2PS_BSP_SORT,
                    GL2PS_SIMPLE_LINE_OFFSET | GL2PS_SILENT, 
                    GL_RGBA, 0, NULL, buffsize, fp, NULL );
   draw(); 
@@ -397,6 +400,8 @@ fixed handling of color and line width attributes when gl2ps was called
 multiple times inside the same program.
 \item[0.61] (Jun 21, 2002) Fixed the fix for the sorting of text objects;
 introduced tolerance for floating point comparisons.
+\item[0.62] (..., 2002) New \dd{GL2PS_EPS} option to produce Encapsulated
+PostScript files.
 \end{description}
 
 % Occlusion culling... In version 9.99? :-(
