@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.166 2004-03-17 17:02:38 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.167 2004-03-17 18:55:51 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -923,7 +923,7 @@ static GLint gl2psTestSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane)
 static GLint gl2psSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane, 
                                  GL2PSprimitive **front, GL2PSprimitive **back)
 {
-  GLshort i, j, in=0, out=0, in0[5], in1[5], out0[5], out1[5];
+  GLshort i, j, in = 0, out = 0, in0[5], in1[5], out0[5], out1[5];
   GLint type;
   GLfloat d[5]; 
 
@@ -2832,7 +2832,7 @@ static void gl2psPDFgroupListWriteMainStream(void)
     return;
 
   for(i = 0; i < gl2psListNbr(gl2ps->pdfgrouplist); ++i){
-    gro= (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i);
+    gro = (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i);
     lastel = gl2psListNbr(gro->ptrlist) - 1;
     if(lastel < 0)
       continue;
@@ -2843,7 +2843,7 @@ static void gl2psPDFgroupListWriteMainStream(void)
 
     switch(prim->type){
     case GL2PS_PIXMAP:
-      for(j = 0; j <=lastel ; ++j){
+      for(j = 0; j <= lastel; ++j){
         prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
         if(!prim)
           continue;
@@ -2852,7 +2852,7 @@ static void gl2psPDFgroupListWriteMainStream(void)
       }
       break;
     case GL2PS_TEXT:
-      for(j = 0; j <=lastel ; ++j){  
+      for(j = 0; j <= lastel; ++j){  
         prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
         if(!prim)
           continue;
@@ -2870,7 +2870,7 @@ static void gl2psPDFgroupListWriteMainStream(void)
       else{
         gl2ps->streamlength += gl2psPrintf("[] 0 d\n"); 
       }
-      for(j = 0; j <=lastel ; ++j){  
+      for(j = 0; j <= lastel; ++j){  
         prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
         if(!prim)
           continue;
@@ -2885,7 +2885,7 @@ static void gl2psPDFgroupListWriteMainStream(void)
       gl2ps->streamlength += gl2psPrintf("1 J\n");
       gl2ps->streamlength += gl2psPrintPDFLineWidth(prim->width);
       gl2ps->streamlength += gl2psPrintPDFStrokeColor(prim->verts[0].rgba);
-      for(j = 0; j <=lastel ; ++j){  
+      for(j = 0; j <= lastel; ++j){  
         prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
         if(!prim)
           continue;
@@ -2904,7 +2904,7 @@ static void gl2psPDFgroupListWriteMainStream(void)
       /* No alpha and const color: Simple PDF draw orders  */
       if(t.prop & T_CONST_COLOR && t.prop & T_ALPHA_1){         
         gl2ps->streamlength += gl2psPrintPDFFillColor(t.vertex[0].rgba);        
-        for(j = 0; j <=lastel ; ++j){  
+        for(j = 0; j <= lastel; ++j){  
           prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
           if(!prim)
             continue;
@@ -2926,7 +2926,7 @@ static void gl2psPDFgroupListWriteMainStream(void)
                                            "/GS%d gs\n",
                                            gro->gsno);
         gl2ps->streamlength += gl2psPrintPDFFillColor(prim->verts[0].rgba);
-        for(j = 0; j <=lastel ; ++j){  
+        for(j = 0; j <= lastel; ++j){  
           prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
           if(!prim)
             continue;
@@ -2951,7 +2951,7 @@ static void gl2psPDFgroupListWriteMainStream(void)
                                            "/TrG%d Do\n",
                                            gro->gsno, gro->trgroupno);
         gl2ps->streamlength += gl2psPrintPDFFillColor(prim->verts[0].rgba);
-        for(j = 0; j <=lastel ; ++j){  
+        for(j = 0; j <= lastel; ++j){  
           prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
           if(!prim)
             continue;
@@ -3013,7 +3013,7 @@ static int gl2psPDFgroupListWriteGStateResources(void)
                   "<<\n"
                   "/GSa 7 0 R\n");
   for(i = 0; i < gl2psListNbr(gl2ps->pdfgrouplist); ++i){  
-    gro= (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i); 
+    gro = (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i); 
     if(gro->gsno >= 0)
       offs += fprintf(gl2ps->stream, "/GS%d %d 0 R\n", gro->gsno, gro->gsobjno);
   }
@@ -3033,7 +3033,7 @@ static int gl2psPDFgroupListWriteShaderResources(void)
                   "/Shading\n"
                   "<<\n");
   for(i = 0; i < gl2psListNbr(gl2ps->pdfgrouplist); ++i){  
-    gro= (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i); 
+    gro = (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i); 
     if(gro->shno >= 0)
       offs += fprintf(gl2ps->stream, "/Sh%d %d 0 R\n", gro->shno, gro->shobjno);
     if(gro->maskshno >= 0)
@@ -3057,7 +3057,7 @@ static int gl2psPDFgroupListWriteXObjectResources(void)
                   "<<\n");
 
   for(i = 0; i < gl2psListNbr(gl2ps->pdfgrouplist); ++i){  
-    gro= (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i); 
+    gro = (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i); 
     p = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, 0);
     if(!p)
       continue;
@@ -3090,7 +3090,7 @@ static int gl2psPDFgroupListWriteFontResources(void)
   offs += fprintf(gl2ps->stream, "/Font\n<<\n");
 
   for(i = 0; i < gl2psListNbr(gl2ps->pdfgrouplist); ++i){  
-    gro= (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i); 
+    gro = (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i); 
     if(gro->fontno < 0)
       continue;
     gro->fontobjno = gl2ps->objects_stack++;
@@ -3837,7 +3837,7 @@ static int gl2psPDFgroupListWriteObjects(int entryoffs)
     return offs;
   
   for(i = 0; i < gl2psListNbr(gl2ps->pdfgrouplist); ++i){  
-    gro= (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i); 
+    gro = (GL2PSpdfgroup*)gl2psListPointer(gl2ps->pdfgrouplist, i); 
     p = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, 0);
     if(!p)
       continue;    
@@ -3860,7 +3860,7 @@ static int gl2psPDFgroupListWriteObjects(int entryoffs)
       if(!size)
         break;
       triangles = (GL2PStriangle*)gl2psMalloc(sizeof(GL2PStriangle) * size);
-      for(j = 0; j < size ; ++j){  
+      for(j = 0; j < size; ++j){  
         p = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
         if(!p)
           continue;
