@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.54 2004-03-15 18:53:41 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.55 2004-03-15 19:02:09 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -507,8 +507,8 @@ void writefile(int format, int sort, int options, int nbcol,
 
 void keyboard(unsigned char key, int x, int y){
   int opt;
+  char *ext;
   static int format = GL2PS_EPS;
-  static char *ext = "eps";
 
   switch(key){
   case 27:
@@ -573,8 +573,8 @@ void keyboard(unsigned char key, int x, int y){
     writefile(format, GL2PS_BSP_SORT, opt, 0, "outLatex", ext);
 
     opt = GL2PS_NONE;
-    ext = (format == GL2PS_EPS) ? "eps" : "pdf";
-    writefile(GL2PS_TEX, GL2PS_BSP_SORT, opt, 0, "outLatex", "tex");
+    ext = "tex";
+    writefile(GL2PS_TEX, GL2PS_BSP_SORT, opt, 0, "outLatex", ext);
 
     printf("GL2PS %d.%d.%d done with all images\n",
            GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION, GL2PS_PATCH_VERSION);
