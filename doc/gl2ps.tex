@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.36 2002-06-04 21:39:52 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.37 2002-06-06 15:42:20 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -49,15 +49,15 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.6, 4 June 2002}
+\date{Version 0.61, 6 June 2002}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.6.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.61.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.6.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.61.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
@@ -189,6 +189,8 @@ is (really) not efficient yet.
 
 \item[\dd{GL2PS_NO_TEXT}] All the text strings are suppressed from
 output. This is useful to produce the image part of a \LaTeX\ output.
+
+\item[\dd{GL2PS_LANDSCAPE}] Landscape orientation instead of portrait.
 
 %\item[\dd{GL2PS_OCCLUSION_CULL}] All the hidden polygons are removed from
 %the output, thus substancially reducing the size of the output file. This
@@ -393,6 +395,7 @@ generation of a Windows dll.
 sorting of text objects; removed (non functional) occlusion culling code;
 fixed handling of color and line width attributes when gl2ps was called
 multiple times inside the same program;
+\item[0.61] (Jun 6, 2002) Fix the fix for sorting of text objects...
 \end{description}
 
 % Occlusion culling... In version 9.99? :-(
