@@ -1,17 +1,8 @@
-$Id: TODO,v 1.8 2003-06-12 18:46:03 geuzaine Exp $
-
-* Add a note on pstoedit (http://www.pstoedit.net/): enables to
-transform postscript to other vector formats such as xfig, cgm, wmf,
-etc.
+$Id: TODO,v 1.9 2003-07-03 15:44:47 geuzaine Exp $
 
 ------------------------------------------------------------------------
 
 * Enhance the polygon/line/point offset stuff
-
-------------------------------------------------------------------------
-
-* Some lines seem to not show up in the BSP sorted output. Check with
-45 deg. cube rot. in sample test.
 
 ------------------------------------------------------------------------
 
