@@ -9,3 +9,6 @@ default:
 	gzip gl2ps-${RELEASE}.tar
 	cd gl2ps-${RELEASE} && zip -r gl2ps-${RELEASE}.zip *
 	mv gl2ps-${RELEASE}/gl2ps-${RELEASE}.zip .
+
+test:
+	gcc test_gl2ps.c gl2ps.c -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm -Wall -ansi -pedantic
