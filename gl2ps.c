@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.90 2003-03-08 00:11:42 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.91 2003-03-08 00:24:23 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -50,9 +50,7 @@ void gl2psMsg(GLint level, char *fmt, ...){
     va_end(args);
     fprintf(stderr, "\n");
   }
-  /*
-    if(level == GL2PS_ERROR) exit(1);
-  */
+  /* if(level == GL2PS_ERROR) exit(1); */
 }
 
 void *gl2psMalloc(size_t size){
