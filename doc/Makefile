@@ -4,8 +4,8 @@ default:
 	latex gl2ps
 	latex gl2ps
 	dvips gl2ps -o
-	rm -f gl2ps.toc gl2ps.out gl2ps.aux
 	make html
+	rm -f gl2ps.toc gl2ps.out gl2ps.aux
 	pdflatex gl2ps
 	pdflatex gl2ps
 	pdflatex gl2ps

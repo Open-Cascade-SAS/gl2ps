@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.35 2002-03-12 00:40:12 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.36 2002-03-12 20:05:29 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1497,10 +1497,7 @@ GL2PSDLL_API GLvoid gl2psText(char *str, char *fontname, GLint fontsize){
   prim->text->fontname = fontname;
   prim->text->fontsize = fontsize;
 
-  if(!gl2ps->primitives)
-    gl2psMsg(GL2PS_ERROR, "gl2psText should be called inside gl2psBeginPage/gl2psEndPage");
-  else
-    gl2psListAdd(gl2ps->primitives, &prim);
+  gl2psListAdd(gl2ps->primitives, &prim);
 }
 
 GL2PSDLL_API GLvoid gl2psEnable(GLint mode){
