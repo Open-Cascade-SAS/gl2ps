@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.51 2002-12-11 16:37:53 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.52 2002-12-11 18:29:41 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -49,7 +49,7 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.7, ?? December 2002}
+\date{Version 0.7, 11 December 2002}
 
 \maketitle
 
@@ -198,8 +198,7 @@ PostScript level 3 operator (which can lead to problems when converting
 PostScript files to PDF files; see also section~\ref{sec:gl2psNumShadeColors}).
 
 \item[\dd{GL2PS_OCCLUSION_CULL}] All the hidden polygons are removed from
-the output, thus substancially reducing the size of the output file. This
-is not functional yet.
+the output, thus substantially reducing the size of the output file.
 
 \end{description}
 
@@ -336,9 +335,10 @@ $1/\mathtt{nb}$ for the blue component. The last call before
 
 \section{Example}
 
-Here is a typical calling sequence to produce BSP sorted PostScript output in
-the file \dd{"MyFile"}, with all the lines slightly shifted front in the
-z-buffer. The \dd{draw()} function contains all the OpenGL commands.
+Here is a typical calling sequence to produce BSP sorted PostScript output
+in the file \dd{"MyFile"}, with all the lines slightly shifted front in the
+z-buffer and all invisible primitives removed to reduce the size of the
+output file. The \dd{draw()} function contains all the OpenGL commands.
 
 \begin{verbatim}
 FILE *fp = fopen("MyFile", "w");
@@ -348,7 +348,8 @@ while( state == GL2PS_OVERFLOW ){
   buffsize += 1024*1024;
   gl2psBeginPage ( "MyTitle", "MySoftware", 
                    GL2PS_EPS, GL2PS_BSP_SORT,
-                   GL2PS_SIMPLE_LINE_OFFSET | GL2PS_SILENT, 
+                   GL2PS_SIMPLE_LINE_OFFSET | GL2PS_SILENT |
+                   GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT,
                    GL_RGBA, 0, NULL, buffsize, fp, NULL );
   draw(); 
   state = gl2psEndPage();
@@ -366,15 +367,9 @@ gl2psText("MyText", "Courier", 12);
 
 If you plan to convert the PostScript file to a PDF file you may need to
 disable the use of the Level 3 PostScript \dd{shfill} operator, i.e.\ add
-\dd{GL2PS_NO_PS3_SHADING} to the list of options:
-\begin{verbatim}
-  gl2psBeginPage ( "MyTitle", "MySoftware", 
-                   GL2PS_EPS, GL2PS_BSP_SORT,
-                   GL2PS_SIMPLE_LINE_OFFSET | GL2PS_SILENT |
-                   GL2PS_NO_PS3_SHADING, 
-                   GL_RGBA, 0, NULL, buffsize, fp, NULL );
-\end{verbatim}
-
+\dd{GL2PS_NO_PS3_SHADING} to the list of options. Note that you can also
+edit the output file a posteriori (just set \dd{/tryPS3shading} to
+\dd{false} in the PostScript file header).
 
 %\section{Implementation Notes}
 %
@@ -385,7 +380,8 @@ disable the use of the Level 3 PostScript \dd{shfill} operator, i.e.\ add
 \label{sec:contrib}
 
 Michael Sweet (\email{mike@easysw.com}) for the original implementation of
-the feedback buffer parser; Marc Um{\'e}
+the feedback buffer parser; Bruce Naylor (\email{naylor@comp-graphics.com})
+for BSP tree and occlusion culling hints; Marc Um{\'e}
 (\email{marc.ume@digitalgraphics.be}) for the original list code;
 Jean-Fran\c{c}ois Remacle (\email{remacle@scorec.rpi.edu}) for plane
 equation fixes; Bart Kaptein (\email{B.L.Kaptein@lumc.nl}) for memory leak
@@ -400,9 +396,6 @@ optimized shaded triangle code and the \dd{shfill} management; Shahzad
 Muzaffar (\email{Shahzad.Muzaffar@cern.ch}) and Lassi Tuura
 (\email{lassi.tuura@cern.ch}) for the new occlusion culling code and the
 improvement of \dd{GL2PS_BEST_ROOT}.
-
-%Bruce Naylor (\email{naylor@comp-graphics.com}) for some BSP tree and occlusion
-%culling hints;
 
 Projects similar to \dd{GL2PS} include: Michael Sweet's GLP library
 (\url{http://www.easysw.com/~mike/opengl/index.html}); Mark J. Kilgard's
@@ -452,8 +445,9 @@ well handled when converting to PDF).
 \item[0.63] (Nov 12, 2002) Changed \dd{GLvoid} to \dd{void} to accomodate
 some SUN compilers; made subdivision parameters modifiable a posteriori in
 the output file; revised documentation.
-\item[0.7] (Dec ??, 2002) Occlusion culling (\dd{GL2PS_OCCLUSION_CULL}) is
-back; enhanced \dd{GL2PS_BEST_ROOT}.
+\item[0.7] (Dec 11, 2002) Occlusion culling (\dd{GL2PS_OCCLUSION_CULL}) is
+(finally!) working thanks to the great work of Shahzad Muzaffar; enhanced
+\dd{GL2PS_BEST_ROOT}.
 \end{description}
 
 \end{document}
