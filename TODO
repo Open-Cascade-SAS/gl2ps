@@ -1,4 +1,26 @@
-$Id: TODO,v 1.15 2004-07-11 22:30:25 geuzaine Exp $
+$Id: TODO,v 1.16 2004-09-01 00:58:47 geuzaine Exp $
+
+* At last, after so many help requests, I have a small contribution --
+rotated text in ps output. Actually, I just figured out the ps code,
+not the changes needed in gl2ps to implement it. just replace the /S
+macro with
+
+/SR { gsave FC translate 0 0 moveto rotate show grestore } BD
+
+which now shows rotated text:
+
+(rotated) -45 100 25 10 /Helvetica SR
+
+All the other "/S??" macros need to be altered accordingly. Tell if
+you like the idea.
+
+------------------------------------------------------------------------
+
+* Add a special font name ("Data"? Or "RawPS", "RawPDF", "RawTEX"?)
+  and modify the PrintPrimitive routines to just write the string
+  directly to the stream
+
+------------------------------------------------------------------------
 
 * Think about a way to provide a (even rough) progress indicator
   through a callback...
