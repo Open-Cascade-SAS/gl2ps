@@ -1,4 +1,4 @@
-RELEASE = 1.2.0
+RELEASE = 1.2.1
 UNAME = `uname -s`
 
 default:

@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.172 2004-05-14 07:56:03 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.173 2004-07-11 22:30:25 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -58,15 +58,15 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 1.2.0, 13 May 2004}
+\date{Version 1.2.1, xx July 2004}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.2.0.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.2.1.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.2.0.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.2.1.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
@@ -111,7 +111,7 @@ under certain conditions) for static linking with closed-source software
 corrections, questions or suggestions should be e-mailed to the GL2PS
 mailing list \email{gl2ps@geuz.org}{gl2ps@geuz.org}.
 
-The interface consists of eleven functions, all beginning with the prefix
+The interface consists of twelve functions, all beginning with the prefix
 \dd{gl2ps}. All the data structures and the symbolic constants peculiar to
 GL2PS begin with \dd{GL2PS}.
 
@@ -296,7 +296,7 @@ library is not initialized (e.g.\ if \dd{gl2psEndPage} is called before
 
 % -------------------------------------------------------------------------
 
-\subsection{\texttt{gl2psText}}
+\subsection{\texttt{gl2psText} and \texttt{gl2psTextOpt}}
 \label{sec:gl2psText}
 
 \subsubsection{Specification}
@@ -304,15 +304,17 @@ library is not initialized (e.g.\ if \dd{gl2psEndPage} is called before
 \begin{verbatim}
 GLint gl2psText( const char *string, const char *fontname,
                  GLint fontsize )
+GLint gl2psTextOpt( const char *string, const char *fontname,
+                    GLint fontsize, GLint align, GLfloat angle )
 \end{verbatim}
 
 \subsubsection{Description and arguments}
 
-\dd{gl2psText} permits to include text in the PostScript, PDF or \LaTeX\
-output in a very simple way. The text is inserted at the current raster
-position (set by one of the \dd{glRasterPos} OpenGL commands). Beware that
-text will be sorted according to the position of the leftmost element of the
-string only. The arguments are:
+\dd{gl2psText} and \dd{gl2psTextOpt} permit to include text strings in the
+PostScript, PDF or \LaTeX\ output. The string is inserted at the current
+raster position (set by one of the \dd{glRasterPos} OpenGL commands). Beware
+that text will be sorted according to the current raster position only. The
+arguments are:
 
 \begin{description}
 \item[\dd{string}] Specifies the text string to print.
@@ -330,9 +332,32 @@ string only. The arguments are:
 \item[\dd{fontsize}] Specifies the size of the font.
 \end{description}
 
+The additional arguments for \dd{gl2psTextOpt} are:
+
+\begin{description}
+\item[\dd{align}] (for PostScript and \LaTeX\ output only) Specifies the
+  text string alignment with respect to the current raster position. Valid
+  choices are \dd{GL2PS_TEXT_C} (center-center), \dd{GL2PS_TEXT_CL}
+  (center-left), \dd{GL2PS_TEXT_CR} (center-right), \dd{GL2PS_TEXT_B}
+  (bottom-center), \dd{GL2PS_TEXT_BL} (bottom-left) \dd{GL2PS_TEXT_BR}
+  (bottom-right), \dd{GL2PS_TEXT_T} (top-center), \dd{GL2PS_TEXT_TL}
+  (top-left) and \dd{GL2PS_TEXT_TR} (top-right). The default alignment used
+  by \dd{gl2psText} is \dd{GL2PS_TEXT_BL}.
+
+\begin{verbatim}
++---+ +---+ +---+ +---+ +---+ +---+ +-o-+ o---+ +---o
+| o | o   | |   o |   | |   | |   | |   | |   | |   |
++---+ +---+ +---+ +-o-+ o---+ +---o +---+ +---+ +---+
+ C     CL    CR    B     BL    BR    T     TL    TR
+\end{verbatim}
+
+\item[\dd{angle}] (for \LaTeX\ output only) Specifies a rotation angle for
+  the text string (counter-clockwise, in degrees).
+\end{description}
+
 \subsubsection{Return value}
 
-\noindent\dd{gl2psText} returns:
+\noindent\dd{gl2psText} and \dd{gl2psTextOpt} return:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if \dd{string} is \dd{NULL} or if the
 library is not initialized;
@@ -666,8 +691,8 @@ implementation;
 shaded triangle code and the \dd{shfill} management;
 %
 \email{Shahzad Muzaffar}{Shahzad.Muzaffar@cern.ch} and \email{Lassi
-Tuura}{lassi.tuura@cern.ch} for the new occlusion culling code and the
-improvement of \dd{GL2PS_BEST_ROOT};
+Tuura}{lassi.tuura@cern.ch} for the new occlusion culling code, the
+improvement of \dd{GL2PS_BEST_ROOT} and the image map support;
 %
 \email{Guy Barrand}{barrand@lal.in2p3.fr} for his work on
 \dd{gl2psDrawPixels} and the new viewport management;
@@ -773,6 +798,9 @@ does not seem to be available anymore).
   PDF output; fixed bug for empty feedback buffer but non-empty primitive
   list; fixed more compiler warnings and cleaned up the code (mostly to
   reduce the global namespace pollution).
+\item[1.2.1] (Jul xx, 2004) New image map support for PostScript output; new
+ text alignment support for PostScript and LaTeX output; new support for
+ rotated text for LaTeX output.
 \end{description}
 
 \end{document}

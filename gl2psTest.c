@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.56 2004-03-17 17:06:25 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.57 2004-07-11 22:30:25 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -257,21 +257,29 @@ void text(void){
   glColor3f(1., 1., 0.);
 
   glRasterPos2d(x, y); y -= dy;
-  printstring("Press:");
+  //printstring("Press:");  
+  gl2psTextOpt("abcdefg", "Helvetica", 12, GL2PS_TEXT_B, 0.0);
   glRasterPos2d(x, y); y -= dy;
-  printstring("  p: to change the print format (PostScript, PDF)");
+  //printstring("  p: to change the print format (PostScript, PDF)");
+  gl2psTextOpt("abcdefg", "Helvetica", 12, GL2PS_TEXT_BL, 0.0);
   glRasterPos2d(x, y); y -= dy;
-  printstring("  s: to save the images");
+  //printstring("  s: to save the images");
+  gl2psTextOpt("abcdefg", "Helvetica", 12, GL2PS_TEXT_BR, 0.0);
   glRasterPos2d(x, y); y -= dy;
-  printstring("  t: to alternate between teapot and torus");
+  //printstring("  t: to alternate between teapot and torus");
+  gl2psTextOpt("abcdefg", "Helvetica", 12, GL2PS_TEXT_C, 0.0);
   glRasterPos2d(x, y); y -= dy;
-  printstring("  v: to alternate between single and multiple viewport modes");
+  //printstring("  v: to alternate between single and multiple viewport modes");
+  gl2psTextOpt("abcdefg", "Helvetica", 12, GL2PS_TEXT_CL, 0.0);
   glRasterPos2d(x, y); y -= dy;
-  printstring("  b: to change the blending mode (transparency)");
+  //printstring("  b: to change the blending mode (transparency)");
+  gl2psTextOpt("abcdefg", "Helvetica", 12, GL2PS_TEXT_CR, 0.0);
   glRasterPos2d(x, y); y -= dy;
-  printstring("  q: to quit");
+  //printstring("  q: to quit");
+  gl2psTextOpt("abcdefg", "Helvetica", 12, GL2PS_TEXT_T, 0.0);
   glRasterPos2d(x, y); y -= dy;
-  printstring("Click and move the mouse to rotate the objects");
+  //printstring("Click and move the mouse to rotate the objects");
+  gl2psTextOpt("abcdefg", "Helvetica", 12, GL2PS_TEXT_TL, 0.0);
 }
 
 void cube(void){

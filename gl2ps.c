@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.173 2004-05-09 18:06:01 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.174 2004-07-11 22:30:25 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -73,13 +73,16 @@
 
 /* Primitive types */
 
-#define GL2PS_NOTYPE     -1
-#define GL2PS_TEXT       1
-#define GL2PS_POINT      2
-#define GL2PS_LINE       3
-#define GL2PS_QUADRANGLE 4
-#define GL2PS_TRIANGLE   5
-#define GL2PS_PIXMAP     6
+#define GL2PS_NOTYPE          -1
+#define GL2PS_TEXT             1
+#define GL2PS_POINT            2
+#define GL2PS_LINE             3
+#define GL2PS_QUADRANGLE       4
+#define GL2PS_TRIANGLE         5
+#define GL2PS_PIXMAP           6
+#define GL2PS_IMAGEMAP         7
+#define GL2PS_IMAGEMAP_WRITTEN 8
+#define GL2PS_IMAGEMAP_VISIBLE 9
 
 /* BSP tree primitive comparison */
 
@@ -140,13 +143,24 @@ typedef struct {
   GLshort fontsize;
   char *str, *fontname;
   GLint alignment;
+  GLfloat angle;
 } GL2PSstring;
 
+/* FIXME: in the case of an image map, "type" indicates if this image
+   map has already been written to the PostScript file or not, and
+   "format" indicates if this image map is visible or not */
 typedef struct {
   GLsizei width, height;
   GLenum format, type;
   GLfloat *pixels;
 } GL2PSimage;
+
+typedef struct _GL2PSimagemap GL2PSimagemap;
+
+struct _GL2PSimagemap {
+  GL2PSimage *image;
+  GL2PSimagemap *next;
+};
 
 typedef struct {
   GLshort type, numverts;
@@ -205,6 +219,10 @@ typedef struct {
   int trgroupobjects_stack; /* xobject numbers */
   int shader_stack; /* shader object numbers */
   int mshader_stack; /* mask shader object numbers */
+
+  /* for image map list */
+  GL2PSimagemap *imagemap_head;
+  GL2PSimagemap *imagemap_tail;
 } GL2PScontext;
 
 /* The gl2ps context. gl2ps is not thread safe (we should create a
@@ -587,6 +605,7 @@ static GL2PSstring *gl2psCopyText(GL2PSstring* t)
   strcpy(text->fontname, t->fontname);
   text->fontsize = t->fontsize;
   text->alignment = t->alignment;
+  text->angle = t->angle;
   
   return text;
 }
@@ -801,6 +820,7 @@ static void gl2psGetPlane(GL2PSprimitive *prim, GL2PSplane plane)
   case GL2PS_POINT :
   case GL2PS_PIXMAP :
   case GL2PS_TEXT :
+  case GL2PS_IMAGEMAP:
     plane[0] = plane[1] = 0.0F;
     plane[2] = 1.0F;
     plane[3] = -prim->verts[0].xyz[2];
@@ -840,17 +860,23 @@ static void gl2psCreateSplitPrimitive(GL2PSprimitive *parent, GL2PSplane plane,
 {
   GLshort i;
 
-  if(numverts > 4){
-    gl2psMsg(GL2PS_WARNING, "%d vertices in polygon", numverts);
-    numverts = 4;
+  if(parent->type == GL2PS_IMAGEMAP){
+    child->type = GL2PS_IMAGEMAP;
+    child->data.image = parent->data.image;
+  }
+  else{
+    if(numverts > 4){
+      gl2psMsg(GL2PS_WARNING, "%d vertices in polygon", numverts);
+      numverts = 4;
+    }
+    switch(numverts){
+    case 1 : child->type = GL2PS_POINT; break; 
+    case 2 : child->type = GL2PS_LINE; break; 
+    case 3 : child->type = GL2PS_TRIANGLE; break; 
+    case 4 : child->type = GL2PS_QUADRANGLE; break;    
+    }
   }
 
-  switch(numverts){
-  case 1 : child->type = GL2PS_POINT; break; 
-  case 2 : child->type = GL2PS_LINE; break; 
-  case 3 : child->type = GL2PS_TRIANGLE; break; 
-  case 4 : child->type = GL2PS_QUADRANGLE; break;    
-  }
   child->boundary = 0; /* not done! */
   child->depth = parent->depth; /* should not be used in this case */
   child->culled = parent->culled;
@@ -1073,6 +1099,17 @@ static GLint gl2psFindRoot(GL2PSlist *primitives, GL2PSprimitive **root)
   }
   else{
     return 0;
+  }
+}
+
+static void gl2psFreeImagemap(GL2PSimagemap *list){
+  GL2PSimagemap *next;
+  while(list != NULL){
+    next = list->next;
+    gl2psFree(list->image->pixels);
+    gl2psFree(list->image);
+    gl2psFree(list);
+    list = next;
   }
 }
 
@@ -1402,11 +1439,17 @@ static GL2PSprimitive *gl2psCreateSplitPrimitive2D(GL2PSprimitive *parent,
   GLint i;
   GL2PSprimitive *child = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
 
-  switch(numverts){
-  case 1 : child->type = GL2PS_POINT; break;
-  case 2 : child->type = GL2PS_LINE; break;
-  case 3 : child->type = GL2PS_TRIANGLE; break;
-  case 4 : child->type = GL2PS_QUADRANGLE; break;
+  if(parent->type == GL2PS_IMAGEMAP){
+    child->type = GL2PS_IMAGEMAP;
+    child->data.image = parent->data.image;
+  }
+  else {
+    switch(numverts){
+    case 1 : child->type = GL2PS_POINT; break;
+    case 2 : child->type = GL2PS_LINE; break;
+    case 3 : child->type = GL2PS_TRIANGLE; break;
+    case 4 : child->type = GL2PS_QUADRANGLE; break;
+    }
   }
   child->boundary = 0; /* not done! */
   child->depth = parent->depth;
@@ -1518,7 +1561,7 @@ static GLint gl2psAddInBspImageTree(GL2PSprimitive *prim, GL2PSbsptree2d **tree)
   }
 
   if(*tree == NULL){
-    if(GL_FALSE == gl2ps->zerosurfacearea){
+    if((prim->type != GL2PS_IMAGEMAP) && (GL_FALSE == gl2ps->zerosurfacearea)){
       gl2psAddPlanesInBspTreeImage(gl2ps->primitivetoadd, tree);
     }
     return 1;
@@ -1566,8 +1609,14 @@ static void gl2psAddInImageTree(void *data)
 {
   GL2PSprimitive *prim = *(GL2PSprimitive **)data;
   gl2ps->primitivetoadd = prim;
-  if(!gl2psAddInBspImageTree(prim, &gl2ps->imagetree)){
+  if(prim->type == GL2PS_IMAGEMAP && prim->data.image->format == GL2PS_IMAGEMAP_VISIBLE){
     prim->culled = 1;
+  }
+  else if(!gl2psAddInBspImageTree(prim, &gl2ps->imagetree)){
+    prim->culled = 1;
+  }
+  else if(prim->type == GL2PS_IMAGEMAP){
+    prim->data.image->format = GL2PS_IMAGEMAP_VISIBLE;
   }
 }
 
@@ -1771,10 +1820,11 @@ static void gl2psParseFeedbackBuffer(GLint used)
 {
   char flag, dash = 0;
   GLboolean boundary;
-  GLint i, count, v, vtot, offset = 0;
+  GLint i, sizeoffloat, count, v, vtot, offset = 0;
   GLfloat lwidth = 1.0F, psize = 1.0F;
   GLfloat *current;
   GL2PSvertex vertices[3];
+  GL2PSprimitive *prim;
 
   current = gl2ps->feedback;
   boundary = gl2ps->boundary = GL_FALSE;
@@ -1871,6 +1921,69 @@ static void gl2psParseFeedbackBuffer(GLint used)
         current += 2; 
         used -= 2; 
         lwidth = current[1];
+        break;
+      case GL2PS_DRAW_IMAGEMAP_TOKEN :
+        prim = (GL2PSprimitive *)gl2psMalloc(sizeof(GL2PSprimitive));
+        prim->type = GL2PS_IMAGEMAP;
+        prim->boundary = 0;
+        prim->numverts = 4;
+        prim->verts = (GL2PSvertex *)gl2psMalloc(4 * sizeof(GL2PSvertex));
+        prim->culled = 0;
+        prim->dash = 0;
+        prim->width = 1;
+        
+        GL2PSimagemap *node = (GL2PSimagemap*)gl2psMalloc(sizeof(GL2PSimagemap));
+        node->image = (GL2PSimage*)gl2psMalloc(sizeof(GL2PSimage));
+        node->image->type = 0;
+        node->image->format = 0;
+        node->next = NULL;
+        
+        if(gl2ps->imagemap_head == NULL)
+          gl2ps->imagemap_head = node;
+        else
+          gl2ps->imagemap_tail->next = node;
+        gl2ps->imagemap_tail = node;
+        prim->data.image = node->image;
+        
+        current += 2; used -= 2;
+        i = gl2psGetVertex(&prim->verts[0], &current[1]);
+        current += i; used -= i;
+        
+        node->image->width = (GLint)current[2];
+        current += 2; used -= 2;
+        node->image->height = (GLint)current[2];
+        prim->verts[0].xyz[0] = prim->verts[0].xyz[0] - (int)(node->image->width / 2) + 0.5;
+        prim->verts[0].xyz[1] = prim->verts[0].xyz[1] - (int)(node->image->height / 2) + 0.5;
+        prim->depth = prim->verts[0].xyz[2];
+        for(i = 1; i < 4; i++){
+          for(v = 0; v < 3; v++){
+            prim->verts[i].xyz[v] = prim->verts[0].xyz[v];
+            prim->verts[i].rgba[v] = prim->verts[0].rgba[v];
+          }
+          prim->verts[i].rgba[v] = prim->verts[0].rgba[v];
+        }
+        prim->verts[1].xyz[0] = prim->verts[1].xyz[0] + node->image->width;
+        prim->verts[2].xyz[0] = prim->verts[1].xyz[0];
+        prim->verts[2].xyz[1] = prim->verts[2].xyz[1] + node->image->height;
+        prim->verts[3].xyz[1] = prim->verts[2].xyz[1];
+
+        sizeoffloat = sizeof(GLfloat);
+        v = 2 * sizeoffloat;
+        vtot = node->image->height + node->image->height * 
+          ((node->image->width-1)/8);
+        node->image->pixels = (GLfloat*)gl2psMalloc(v + vtot);
+        node->image->pixels[0] = prim->verts[0].xyz[0];
+        node->image->pixels[1] = prim->verts[0].xyz[1];
+        
+        for(i = 0; i < vtot; i += sizeoffloat){
+          current += 2; used -= 2;
+          if((vtot - i) >= 4)
+            memcpy(&(((char*)(node->image->pixels))[i + v]), &(current[2]), sizeoffloat);
+          else
+            memcpy(&(((char*)(node->image->pixels))[i + v]), &(current[2]), vtot - i);
+        }
+        current++; used--;
+        gl2psListAdd(gl2ps->primitives, &prim);
         break;
       }
       current += 2; 
@@ -2061,6 +2174,27 @@ static void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GL2PSimage *im)
   gl2psPrintf("grestore\n");
 }
 
+static void gl2psPrintPostScriptImagemap(GLfloat x, GLfloat y,
+                                         GLsizei width, GLsizei height,
+                                         const unsigned char *imagemap,
+                                         FILE *stream){
+  int i, size;
+  
+  if((width <= 0) || (height <= 0)) return;
+  
+  size = height + height * (width-1)/8;
+  
+  gl2psPrintf("gsave\n");
+  gl2psPrintf("%.2f %.2f translate\n", x, y);
+  gl2psPrintf("%d %d scale\n%d %d\ntrue\n", width, height,width, height); 
+  gl2psPrintf("[ %d 0 0 -%d 0 %d ] {<", width, height);
+  for(i = 0; i < size; i++){
+    gl2psWriteByte(*imagemap);
+    imagemap++;
+  }
+  gl2psPrintf(">} imagemask\ngrestore\n");
+}
+
 static void gl2psPrintPostScriptHeader(void)
 {
   GLint index;
@@ -2129,7 +2263,7 @@ static void gl2psPrintPostScriptHeader(void)
   /* RGB color: r g b C (replace C by G in output to change from rgb to gray)
      Grayscale: r g b G
      Font choose: size fontname FC
-     String primitive: (string) x y size fontname S
+     Text string: (string) x y size fontname SXX
      Point primitive: x y size P
      Line width: width W
      Flat-shaded line: x2 y2 x1 y1 L
@@ -2152,7 +2286,17 @@ static void gl2psPrintPostScriptHeader(void)
               "/G  { 0.082 mul exch 0.6094 mul add exch 0.3086 mul add neg 1.0 add setgray } BD\n"
               "/W  { setlinewidth } BD\n"
               "/FC { findfont exch scalefont setfont } BD\n"
+              "/SW { stringwidth pop } BD\n"
+              "/SH { false charpath flattenpath pathbbox exch pop exch sub exch pop } BD\n"
               "/S  { FC moveto show } BD\n"
+              "/SBR{ FC moveto dup SW neg 0 rmoveto show } BD\n"
+              "/SBC{ FC moveto dup SW -2 div 0 rmoveto show } BD\n"
+              "/SCL{ FC moveto dup dup SW neg exch SH -2 div rmoveto show } BD\n"
+              "/SCC{ FC moveto dup dup SW -1.5 mul exch SH -2 div rmoveto show } BD\n"
+              "/SCR{ FC moveto dup dup SW -2 mul exch SH -2 div rmoveto show } BD\n"
+              "/STL{ FC moveto dup dup SW neg exch SH neg rmoveto show } BD\n"
+              "/STC{ FC moveto dup dup SW -1.5 mul exch SH neg rmoveto show } BD\n"
+              "/STR{ FC moveto dup dup SW -2 mul exch SH neg rmoveto show } BD\n"
               "/P  { newpath 0.0 360.0 arc closepath fill } BD\n"
               "/L  { newpath moveto lineto stroke } BD\n"
               "/SL { C moveto C lineto stroke } BD\n"
@@ -2324,11 +2468,53 @@ static void gl2psPrintPostScriptPrimitive(void *data)
     gl2psPrintPostScriptPixmap(prim->verts[0].xyz[0], prim->verts[0].xyz[1],
                                prim->data.image);
     break;
+  case GL2PS_IMAGEMAP :
+    if(prim->data.image->type != GL2PS_IMAGEMAP_WRITTEN){
+      gl2psPrintPostScriptColor(prim->verts[0].rgba);
+      gl2psPrintPostScriptImagemap(prim->data.image->pixels[0],
+                                   prim->data.image->pixels[1],
+                                   prim->data.image->width, prim->data.image->height,
+                                   (const unsigned char*)(&(prim->data.image->pixels[2])),
+                                   gl2ps->stream);
+      prim->data.image->type = GL2PS_IMAGEMAP_WRITTEN;
+    }
+    break;
   case GL2PS_TEXT :
     gl2psPrintPostScriptColor(prim->verts[0].rgba);
-    gl2psPrintf("(%s) %g %g %d /%s S\n",
+    gl2psPrintf("(%s) %g %g %d /%s ",
                 prim->data.text->str, prim->verts[0].xyz[0], prim->verts[0].xyz[1],
                 prim->data.text->fontsize, prim->data.text->fontname);
+
+    switch(prim->data.text->alignment){
+    case GL2PS_TEXT_C:
+      gl2psPrintf("SCC\n");
+      break;
+    case GL2PS_TEXT_CL:
+      gl2psPrintf("SCL\n");
+      break;
+    case GL2PS_TEXT_CR:
+      gl2psPrintf("SCR\n");
+      break;
+    case GL2PS_TEXT_B:
+      gl2psPrintf("SBC\n");
+      break;
+    case GL2PS_TEXT_BR:
+      gl2psPrintf("SBR\n");
+      break;
+    case GL2PS_TEXT_T:
+      gl2psPrintf("STC\n");
+      break;
+    case GL2PS_TEXT_TL:
+      gl2psPrintf("STL\n");
+      break;
+    case GL2PS_TEXT_TR:
+      gl2psPrintf("STR\n");
+      break;
+    case GL2PS_TEXT_BL:
+    default:
+      gl2psPrintf("S\n");
+      break;
+    }
     break;
   case GL2PS_POINT :
     gl2psPrintPostScriptColor(prim->verts[0].rgba);
@@ -2534,35 +2720,40 @@ static void gl2psPrintTeXPrimitive(void *data)
             prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
     switch(prim->data.text->alignment){
     case GL2PS_TEXT_CL:
-      fprintf(gl2ps->stream, "[l]");
+      fprintf(gl2ps->stream, "[l]{");
       break;
     case GL2PS_TEXT_CR:
-      fprintf(gl2ps->stream, "[r]");
+      fprintf(gl2ps->stream, "[r]{");
       break;
     case GL2PS_TEXT_B:
-      fprintf(gl2ps->stream, "[b]");
+      fprintf(gl2ps->stream, "[b]{");
       break;
     case GL2PS_TEXT_BL:
-      fprintf(gl2ps->stream, "[bl]");
+      fprintf(gl2ps->stream, "[bl]{");
       break;
     case GL2PS_TEXT_BR:
-      fprintf(gl2ps->stream, "[br]");
+      fprintf(gl2ps->stream, "[br]{");
       break;
     case GL2PS_TEXT_T:
-      fprintf(gl2ps->stream, "[t]");
+      fprintf(gl2ps->stream, "[t]{");
       break;
     case GL2PS_TEXT_TL:
-      fprintf(gl2ps->stream, "[tl]");
+      fprintf(gl2ps->stream, "[tl]{");
       break;
     case GL2PS_TEXT_TR:
-      fprintf(gl2ps->stream, "[tr]");
+      fprintf(gl2ps->stream, "[tr]{");
       break;
     default:
       break;
     }
-    fprintf(gl2ps->stream, "{\\textcolor[rgb]{%f,%f,%f}{",
-            prim->verts[0].rgba[0], prim->verts[0].rgba[1], prim->verts[0].rgba[2]);
-    fprintf(gl2ps->stream, "{%s}}}}\n", prim->data.text->str);
+    if(prim->data.text->angle)
+      fprintf(gl2ps->stream, "\\rotatebox{%g}{", prim->data.text->angle);
+    fprintf(gl2ps->stream, "\\textcolor[rgb]{%g,%g,%g}{{%s}}",
+            prim->verts[0].rgba[0], prim->verts[0].rgba[1], prim->verts[0].rgba[2],
+            prim->data.text->str);
+    if(prim->data.text->angle)
+      fprintf(gl2ps->stream, "}");
+    fprintf(gl2ps->stream, "}}\n");
     break;
   default :
     break;
@@ -4114,6 +4305,8 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
   gl2ps->sort = sort;
   gl2ps->options = options;
   gl2ps->compress = NULL;
+  gl2ps->imagemap_head = NULL;
+  gl2ps->imagemap_tail = NULL;
 
   if(gl2ps->options & GL2PS_USE_CURRENT_VIEWPORT){
     glGetIntegerv(GL_VIEWPORT, gl2ps->viewport);
@@ -4179,12 +4372,19 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
     rewind(gl2ps->stream);
   }
 
+  if(!title)
+    title = "";
+  if(!producer)
+    producer = "";
+  if(!filename)
+    filename = "";
+
   gl2ps->title = (char*)gl2psMalloc((strlen(title)+1)*sizeof(char));
-  strcpy(gl2ps->title, title); 
+  strcpy(gl2ps->title, title);
   gl2ps->producer = (char*)gl2psMalloc((strlen(producer)+1)*sizeof(char));
-  strcpy(gl2ps->producer, producer); 
+  strcpy(gl2ps->producer, producer);
   gl2ps->filename = (char*)gl2psMalloc((strlen(filename)+1)*sizeof(char));
-  strcpy(gl2ps->filename, filename); 
+  strcpy(gl2ps->filename, filename);
 
   switch(gl2ps->format){
   case GL2PS_TEX :
@@ -4242,6 +4442,7 @@ GL2PSDLL_API GLint gl2psEndPage(void)
   fflush(gl2ps->stream);
 
   gl2psListDelete(gl2ps->primitives);
+  gl2psFreeImagemap(gl2ps->imagemap_head);
   gl2psFree(gl2ps->colormap);
   gl2psFree(gl2ps->title);
   gl2psFree(gl2ps->producer);
@@ -4295,8 +4496,7 @@ GL2PSDLL_API GLint gl2psEndViewport(void)
 }
 
 GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname, 
-                                GLshort fontsize, GLint alignment, 
-                                GL2PSrgba rgba)
+                                GLshort fontsize, GLint alignment, GLfloat angle)
 {
   GLfloat pos[4];
   GL2PSprimitive *prim;
@@ -4323,15 +4523,7 @@ GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname,
   prim->culled = 0;
   prim->dash = 0;
   prim->width = 1;
-  if(rgba){
-    prim->verts[0].rgba[0] = rgba[0];
-    prim->verts[0].rgba[1] = rgba[1];
-    prim->verts[0].rgba[2] = rgba[2];
-    prim->verts[0].rgba[3] = rgba[3];
-  }
-  else{
-    glGetFloatv(GL_CURRENT_RASTER_COLOR, prim->verts[0].rgba);
-  }
+  glGetFloatv(GL_CURRENT_RASTER_COLOR, prim->verts[0].rgba);
   prim->data.text = (GL2PSstring*)gl2psMalloc(sizeof(GL2PSstring));
   prim->data.text->str = (char*)gl2psMalloc((strlen(str)+1)*sizeof(char));
   strcpy(prim->data.text->str, str); 
@@ -4339,6 +4531,7 @@ GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname,
   strcpy(prim->data.text->fontname, fontname);
   prim->data.text->fontsize = fontsize;
   prim->data.text->alignment = alignment;
+  prim->data.text->angle = angle;
 
   gl2psListAdd(gl2ps->primitives, &prim);
 
@@ -4348,7 +4541,7 @@ GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname,
 GL2PSDLL_API GLint gl2psText(const char *str, const char *fontname,
                              GLshort fontsize)
 {
-  return gl2psTextOpt(str, fontname, fontsize, GL2PS_TEXT_BL, NULL);
+  return gl2psTextOpt(str, fontname, fontsize, GL2PS_TEXT_BL, 0.0F);
 }
 
 GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
@@ -4427,6 +4620,31 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
 
   gl2psListAdd(gl2ps->primitives, &prim);
 
+  return GL2PS_SUCCESS;
+}
+
+GL2PSDLL_API GLint gl2psDrawImageMap(GLsizei width, GLsizei height,
+                                     const GLfloat position[3],
+                                     const unsigned char *imagemap){
+  int size, i;
+  int sizeoffloat = sizeof(GLfloat);
+  
+  if(!gl2ps || !imagemap) return GL2PS_UNINITIALIZED;
+
+  if((width <= 0) || (height <= 0)) return GL2PS_ERROR;
+  
+  size = height + height * ((width-1)/8);
+  glPassThrough(GL2PS_DRAW_IMAGEMAP_TOKEN);
+  glBegin(GL_POINTS);
+  glVertex3f(position[0], position[1],position[2]);
+  glEnd();
+  glPassThrough(width);
+  glPassThrough(height);
+  for(i = 0; i < size; i += sizeoffloat){
+    float *value = (float*)imagemap;
+    glPassThrough(*value);
+    imagemap += sizeoffloat;
+  }
   return GL2PS_SUCCESS;
 }
 
