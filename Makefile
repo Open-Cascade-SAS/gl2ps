@@ -1,4 +1,4 @@
-RELEASE = 0.73
+RELEASE = 0.74
 
 default:
 	rm -rf gl2ps-${RELEASE}/ gl2ps-${RELEASE}.tar* gl2ps-${RELEASE}.zip*
