@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.63 2003-01-13 01:57:31 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.64 2003-01-15 18:44:09 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -183,7 +183,6 @@ void gl2psGetNormal(GLfloat *a, GLfloat *b, GLfloat *c){
     /* The plane is still wrong, despite our tests in
        gl2psGetPlane... Let's return a dummy value (this is a hack: we
        should do more tests in GetPlane): */
-    /* printf("fix this\n"); */
     c[0] = c[1] = 0.;
     c[2] = 1.;
   }
