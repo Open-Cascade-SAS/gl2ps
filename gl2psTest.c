@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.33 2003-09-16 23:28:59 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.34 2003-09-17 00:00:30 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -40,9 +40,8 @@
 #  include <GL/glut.h>
 #endif
 
-#ifdef WIN32
-/* set the entry point to be main() */
-#pragma comment( linker, "/entry:\"mainCRTStartup\"" )
+#ifdef _MSC_VER /* MSVC Compiler */
+#pragma comment(linker, "/entry:\"mainCRTStartup\"")
 #endif
 
 #include <string.h>

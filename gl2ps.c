@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.116 2003-09-16 23:28:59 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.117 2003-09-17 00:00:30 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -2061,7 +2061,7 @@ int gl2psPrintPDFStrokeColor(GL2PSrgba rgba){
   for(i = 0; i < 3; ++i){
     if(GL2PS_ZERO(rgba[i]))
       offs += fprintf(gl2ps->stream, "%.0f ", 0.);
-    else if(rgba[i] < 1e-4 || rgba[i] > 1e6) /* avoid %e formatting*/
+    else if(rgba[i] < 1e-4 || rgba[i] > 1e6) /* avoid %e formatting */
       offs += fprintf(gl2ps->stream, "%f ", rgba[i]);
     else
       offs += fprintf(gl2ps->stream, "%g ", rgba[i]);
@@ -2077,7 +2077,7 @@ int gl2psPrintPDFFillColor(GL2PSrgba rgba){
   for(i = 0; i < 3; ++i){
     if(GL2PS_ZERO(rgba[i]))
       offs += fprintf(gl2ps->stream, "%.0f ", 0.);
-    else if(rgba[i] < 1e-4 || rgba[i] > 1e6) /* avoid %e formatting*/
+    else if(rgba[i] < 1e-4 || rgba[i] > 1e6) /* avoid %e formatting */
       offs += fprintf(gl2ps->stream, "%f ", rgba[i]);
     else
       offs += fprintf(gl2ps->stream, "%g ", rgba[i]);
@@ -2089,7 +2089,7 @@ int gl2psPrintPDFFillColor(GL2PSrgba rgba){
 int gl2psPrintPDFLineWidth(float lw){
   if(GL2PS_ZERO(lw))
     return fprintf(gl2ps->stream, "%.0f w\n", 0.);
-  else if(lw < 1e-4 || lw > 1e6) /* avoid %e formatting*/
+  else if(lw < 1e-4 || lw > 1e6) /* avoid %e formatting */
     return fprintf(gl2ps->stream, "%f w\n", lw);
   else
     return fprintf(gl2ps->stream, "%g w\n", lw);
