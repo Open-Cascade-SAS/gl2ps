@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.71 2003-02-27 18:20:27 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.72 2003-03-04 21:19:11 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -45,15 +45,15 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.74, ?? March 2003}
+\date{Version 0.8, ?? March 2003}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.74.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.8.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.74.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.8.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
@@ -76,7 +76,7 @@ License (see \url{http://www.gnu.org/} for more details), and is available
 at \url{http://www.geuz.org/gl2ps/}. Any corrections, questions or
 suggestions should be e-mailed to \email{geuz@geuz.org}{geuz@geuz.org}.
 
-The interface consists of eight functions, all beginning with the prefix
+The interface consists of ten functions, all beginning with the prefix
 \dd{gl2ps}. All the data structures and the symbolic constants peculiar to
 GL2PS begin with \dd{GL2PS}.
 
@@ -84,6 +84,7 @@ GL2PS begin with \dd{GL2PS}.
 \section{Usage}
 
 \subsection{\texttt{gl2psBeginPage} and \texttt{gl2psEndPage}}
+\label{sec:gl2psBeginPage}
 
 \subsubsection{Specification}
 
@@ -91,8 +92,10 @@ GL2PS begin with \dd{GL2PS}.
 void gl2psBeginPage( const char *title, const char *producer,
                      GLint format, GLint sort, GLint options, 
                      GLint colormode, GLint colorsize, 
-                     GL2PSrgba *colortable, GLint buffersize,
-                     FILE *stream, const char *filename )
+                     GL2PSrgba *colortable, 
+                     GLint nr, GLint ng, GLint nb, 
+                     GLint buffersize, FILE *stream,
+                     const char *filename )
 \end{verbatim}
 
 \begin{verbatim}
@@ -186,11 +189,13 @@ choosing the root primitives leading to the minimum number of splits.
 \item[\dd{GL2PS_NO_TEXT}] All the text strings are suppressed from
 output. This is useful to produce the image part of a \LaTeX\ output.
 
+\item[\dd{GL2PS_NO_PIXMAP}] All the pixmaps are suppressed from output.
+
 \item[\dd{GL2PS_LANDSCAPE}] Landscape orientation instead of portrait.
 
 \item[\dd{GL2PS_NO_PS3_SHADING}] No use is made of the \dd{shfill}
 PostScript level 3 operator (which can lead to problems when converting
-PostScript files to PDF files; see also section~\ref{sec:gl2psNumShadeColors}).
+PostScript files to PDF files; see below).
 
 \item[\dd{GL2PS_OCCLUSION_CULL}] All the hidden polygons are removed from
 the output, thus substantially reducing the size of the output file.
@@ -206,6 +211,17 @@ the output, thus substantially reducing the size of the output file.
 \item[\dd{colortable}] Contains the colormap if \dd{colormode} is
 \dd{GL_COLOR_INDEX}. This colormap must contain \dd{colorsize} elements of type
 \dd{GL2PSrgba}.
+
+\item[\dd{nr}, \dd{ng}, \dd{nb}] Controls the number flat-shaded
+(sub-)triangles used to approximate a smooth-shaded triangle when the
+\dd{shfill} operator is not supported by the system, or when the
+\dd{GL2PS_NO_PS3_SHADING} option is set. The arguments \dd{nr}, \dd{ng} and
+\dd{nb} specify the number of values used for interpolating the full range
+of red, green and blue color components; that is, a triangle is recursively
+subdivided until the color difference between two of its vertices is smaller
+that $1/\mathtt{nr}$ for the red component, $1/\mathtt{ng}$ for the green
+component and $1/\mathtt{nb}$ for the blue component. If the arguments are
+set to zero, default values are used.
 
 \item[\dd{buffersize}] Specifies the size of the feedback buffer.
 
@@ -244,6 +260,38 @@ influence for \LaTeX\ output.
 \item[\dd{fontsize}] Specifies the size of the font. This parameter has no
 influence for \LaTeX\ output.
 \end{description}
+
+\subsection{\texttt{gl2psPixmap}}
+\label{sec:gl2psPixmap}
+
+\subsubsection{Specification}
+
+\begin{verbatim}
+void gl2psPixmap( GLfloat x, GLfloat y, GLsizei w, GLsizei h,
+                  GLfloat* image, GLboolean free )
+\end{verbatim}
+
+\subsubsection{Description}
+
+\dd{gl2psPixmap} permits to include bitmap images in the PostScript
+output. The image is inserted at the current raster position (set by one of
+the \dd{glRasterPos} OpenGL commands). Beware that the image will be sorted
+according to the position of the TODO only. The parameters are:
+
+\begin{description}
+\item[\dd{x}] Specifies ... TODO
+
+\item[\dd{y}] Specifies ...
+
+\item[\dd{w}] Specifies ...
+
+\item[\dd{h}] Specifies ...
+
+\item[\dd{image}] Specifies ...
+
+\item[\dd{free}] Specifies ...
+\end{description}
+
 
 \subsection{\texttt{gl2psEnable} and \texttt{gl2psDisable}}
 \label{sec:gl2psEnable}
@@ -295,27 +343,23 @@ void gl2psLineWidth( GLfloat value )
 since the point sizes and line widths are not saved in the OpenGL feedback
 buffer.
 
-\subsection{\texttt{gl2psNumShadeColors}}
-\label{sec:gl2psNumShadeColors}
+\subsection{\texttt{gl2psBeginViewport} and \texttt{gl2psEndViewport}}
+\label{sec:gl2psBeginViewport}
 
 \subsubsection{Specification}
 
 \begin{verbatim}
-void gl2psNumShadeColors( GLint nr, GLint ng, GLint nb )
+void gl2psBeginViewport ( void )
+\end{verbatim}
+
+\begin{verbatim}
+GLint gl2psEndViewport ( void )
 \end{verbatim}
 
 \subsubsection{Description}
 
-\dd{gl2psNumShadeColors} controls the number flat-shaded (sub-)triangles
-used to approximate a smooth-shaded triangle when the \dd{shfill} operator
-is not supported by the system, or when the \dd{GL2PS_NO_PS3_SHADING} option
-is set. The arguments \dd{nr}, \dd{ng} and \dd{nb} specify the number of
-values used for interpolating the full range of red, green and blue color
-components; that is, a triangle is recursively subdivided until the color
-difference between two of its vertices is smaller that $1/\mathtt{nr}$ for
-the red component, $1/\mathtt{ng}$ for the green component and
-$1/\mathtt{nb}$ for the blue component. The last call before
-\dd{gl2psEndPage} is the one taken into account.
+\dd{gl2psBeginViewport} and \dd{gl2psEndViewport} TODO ...
+
 
 \section{Example}
 
@@ -334,7 +378,8 @@ while( state == GL2PS_OVERFLOW ){
                    GL2PS_EPS, GL2PS_BSP_SORT,
                    GL2PS_SIMPLE_LINE_OFFSET | GL2PS_SILENT |
                    GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT,
-                   GL_RGBA, 0, NULL, buffsize, fp, NULL );
+                   GL_RGBA, 0, NULL, 0, 0, 0, buffsize,
+                   fp, NULL );
   draw(); 
   state = gl2psEndPage();
 }
@@ -382,9 +427,7 @@ the picture was produced, and without altering its quality?) are important.
 Transparency is not supported yet. See the \dd{TODO} file for some
 explanations why this may or may not be possible.
 \item
-GL2PS does not support textures, volumic rendering, fog effects, etc. One
-could imagine producing mixed mode vector/bitmap output, but this has not
-been implemented yet.
+GL2PS does not support textures, volumic rendering, fog effects, etc.
 \end{itemize}
 
 % Other implementation Notes:
@@ -429,7 +472,9 @@ various bug fixes; \email{Diego Santa Cruz}{Diego.SantaCruz@epfl.ch} for the
 new optimized shaded triangle code and the \dd{shfill} management;
 \email{Shahzad Muzaffar}{Shahzad.Muzaffar@cern.ch} and \email{Lassi
 Tuura}{lassi.tuura@cern.ch} for the new occlusion culling code and the
-improvement of \dd{GL2PS_BEST_ROOT}.
+improvement of \dd{GL2PS_BEST_ROOT}; \email{Guy
+Barrand}{barrand@lal.in2p3.fr} for \dd{gl2psPixmap} and the new viewport
+managment.
 
 \section{Links}
 \label{sec:links}
@@ -493,8 +538,13 @@ the code; added example program \dd{gl2psTest.c} to the distribution.
 \item[0.72] (Jan 21, 2003) Fixed crash in occlusion culling code; enhanced
 documentation.
 \item[0.73] (Jan 30, 2003) Minor code cleanup.
-\item[0.74] (Mar ??, 2003) Fixed small bug in occlusion culling code.
+\item[0.8] (Mar ??, 2003) API change: \dd{gl2psNumShadeColors} has been
+removed and the color subdivision parameters \dd{nr}, \dd{ng} and \dd{nb}
+are now given as arguments to \dd{gl2psBeginPage} (see
+section~\ref{sec:gl2psBeginPage}); new \dd{gl2psPixmap} interface to produce
+mixed mode PostScript/Bitmap output; new \dd{gl2psBeginViewport} and
+\dd{gl2psEndViewport} interface to handle multiple OpenGL viewports; fixed
+small bug in occlusion culling code.
 \end{description}
 
 \end{document}
-
