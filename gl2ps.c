@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.142 2003-11-05 05:33:33 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.143 2003-11-05 20:21:41 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -2893,7 +2893,7 @@ int* gl2psPrintPDFPixmapObjects(int firstObjnumber, int firstOffs){
   return offs;
 }
 
-int gl2psPrintPDFText(int obj, GL2PSstring* s, int fontnumber ){
+int gl2psPrintPDFText(int obj, GL2PSstring* s, int fontnumber){
   int offs = 0;
   
   offs += fprintf(gl2ps->stream,
@@ -2922,7 +2922,7 @@ int* gl2psPrintPDFTextObjects(int firstObjnumber, int firstOffs){
   
   for(i = 0; i < size; ++i){
     firstOffs += gl2psPrintPDFText(i+firstObjnumber,
-				   *(GL2PSstring**)gl2psListPointer(gl2ps->slist, i),i);
+				   *(GL2PSstring**)gl2psListPointer(gl2ps->slist, i), i);
     offs[i+1] = firstOffs;
   }
   return offs;
