@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.91 2004-11-27 23:42:23 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.92 2004-12-17 16:01:38 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -145,22 +145,6 @@
 #define GL2PS_TEXT_T  7
 #define GL2PS_TEXT_TL 8
 #define GL2PS_TEXT_TR 9
-
-/* Pass through options */
-
-#define GL2PS_BEGIN_POLYGON_OFFSET_FILL 1
-#define GL2PS_END_POLYGON_OFFSET_FILL   2
-#define GL2PS_BEGIN_POLYGON_BOUNDARY    3
-#define GL2PS_END_POLYGON_BOUNDARY      4
-#define GL2PS_BEGIN_LINE_STIPPLE        5
-#define GL2PS_END_LINE_STIPPLE          6
-#define GL2PS_SET_POINT_SIZE            7
-#define GL2PS_SET_LINE_WIDTH            8
-#define GL2PS_BEGIN_BLEND               9
-#define GL2PS_END_BLEND                10
-#define GL2PS_SRC_BLEND                11
-#define GL2PS_DST_BLEND                12
-#define GL2PS_DRAW_IMAGEMAP_TOKEN      13
 
 typedef GLfloat GL2PSrgba[4];
 
