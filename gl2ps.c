@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.87 2003-03-06 18:10:03 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.88 2003-03-06 18:16:36 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -505,11 +505,7 @@ GLint gl2psFindRoot(GL2PSlist *primitives, GL2PSprimitive **root){
 	if(!count) return index;
       }
     }
-    /* 
-       if(index){
-         gl2psMsg(GL2PS_INFO, "GL2PS_BEST_ROOT was worth it: %d", index);
-       }
-    */
+    /* if(index) gl2psMsg(GL2PS_INFO, "GL2PS_BEST_ROOT was worth it: %d", index); */
     return index;
   }
   else{
@@ -993,8 +989,7 @@ void gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list){
       b->numverts = 2;
       b->verts = (GL2PSvertex *)gl2psMalloc(2 * sizeof(GL2PSvertex));
 
-#define GL2PS_BOUNDARY_OFFSET 0
-#if GL2PS_BOUNDARY_OFFSET
+#if 0 /* need to work on boundary offset... */
       v[0] = c[0] - prim->verts[i].xyz[0];
       v[1] = c[1] - prim->verts[i].xyz[1];
       v[2] = 0.;
@@ -1307,7 +1302,7 @@ void gl2psWriteByte(FILE *stream, unsigned char byte){
 
 int gl2psGetRGB(GLfloat *pixels, GLsizei width, GLsizei height, GLuint x, GLuint y,
 		GLfloat *red, GLfloat *green, GLfloat *blue){
-  /* OpenGL image is from down to up. PS image is up to down. */
+  /* OpenGL image is from down to up, PS image is up to down */
   GLfloat *pimag;
   pimag = pixels + 3 * (width * (height - 1 - y) + x);
   *red   = *pimag; pimag++;
@@ -2209,7 +2204,7 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
   prim->image->height = height;
   prim->image->format = format;
   prim->image->type = type;
-  size = height*width*3*sizeof(GLfloat); /* to generalize... */
+  size = height*width*3*sizeof(GLfloat); /* FIXME: generalize to other types/formats */
   prim->image->pixels = (GLfloat*)gl2psMalloc(size);
   memcpy(prim->image->pixels, pixels, size);
 
