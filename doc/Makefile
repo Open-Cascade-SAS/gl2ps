@@ -11,7 +11,7 @@ default:
 	pdflatex gl2ps
 
 html:
-	rm gl2ps.html
+	rm -f gl2ps.html
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">" >> gl2ps.html
 	echo "<HTML>" >> gl2ps.html
 	echo "<HEAD>" >> gl2ps.html
