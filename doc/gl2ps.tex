@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.152 2003-12-09 00:28:27 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.153 2003-12-09 04:11:40 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -58,15 +58,15 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 1.1.2, 16 November 2003}
+\date{Version 1.1.3, xx December 2003}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.1.2.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.1.3.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.1.2.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.1.3.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
@@ -721,11 +721,14 @@ does not seem to be available anymore).
 \item[1.0.0] (Sep 24, 2003) Native PDF support contributed by Micha Bieber.
 \item[1.1.0] (Nov 4, 2003) New \dd{GL2PS_COMPRESS} option to create
   compressed PostScript and PDF files; fixed small bug in the PDF output
-  that prevented the PDF files to be correctly included in \LaTeX\
-  documents; new alternative license (see \dd{COPYING.GL2PS}).
+ that prevented the PDF files to be correctly included in \LaTeX\ documents;
+ new alternative license (see \dd{COPYING.GL2PS}).
 \item[1.1.1] (Nov 9, 2003) Small memory optimization; documentation update
   (binary files, fonts).
-\item[1.1.2] (Nov 16, 2003) Fixed various compiler warnings.
+\item[1.1.2] (Nov 16, 2003) Fixed various compiler warnings (mostly for
+  Windows Visual C++).
+\item[1.1.3] (Dec xx, 2003) Fixed more compiler warnings (for Windows
+  Borland C++).
 \end{description}
 
 \end{document}
