@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.28 2003-06-11 19:22:12 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.29 2003-06-12 15:52:56 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -352,7 +352,7 @@ void draw_multi(void){
 
   gl2psEndViewport();
 
-  /* Second viewport with cube and image */
+  /* Second viewport with cube, image, etc. */
   glViewport(window_w * 0.05, window_h * 0.025 , 
 	     (GLsizei) (window_w * 0.9), (GLsizei) (window_h * 0.45));
   glScissor(window_w * 0.05, window_h * 0.025 , 
@@ -373,6 +373,7 @@ void draw_multi(void){
   glRotatef(rotation, 1., 1., 1.);
   cube();
   image();
+  extras();
   glPopMatrix();
 
   gl2psEndViewport();
