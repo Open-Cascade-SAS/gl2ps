@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.41 2002-06-06 15:42:20 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.42 2002-06-11 09:51:30 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -26,7 +26,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <malloc.h>
-#include <math.h>
 #include <stdarg.h>
 #include <time.h>
 #include "gl2ps.h"
@@ -175,7 +174,7 @@ GLfloat gl2psNorm(GLfloat *a){
 GLvoid gl2psGetNormal(GLfloat *a, GLfloat *b, GLfloat *c){
   GLfloat norm;
   gl2psPvec(a, b, c);
-  if((norm = gl2psNorm(c))){
+  if(!GL2PS_ZERO(norm = gl2psNorm(c))){
     c[0] = c[0] / norm;
     c[1] = c[1] / norm;
     c[2] = c[2] / norm;
@@ -196,7 +195,8 @@ GLvoid gl2psGetPlane(GL2PSprimitive *prim, GL2PSplane plane){
     w[0] = prim->verts[2].xyz[0] - prim->verts[0].xyz[0]; 
     w[1] = prim->verts[2].xyz[1] - prim->verts[0].xyz[1]; 
     w[2] = prim->verts[2].xyz[2] - prim->verts[0].xyz[2]; 
-    if((!v[0] && !v[1] && !v[2]) || (!w[0] && !w[1] && !w[2])){
+    if((GL2PS_ZERO(v[0]) && GL2PS_ZERO(v[1]) && GL2PS_ZERO(v[2])) || 
+       (GL2PS_ZERO(w[0]) && GL2PS_ZERO(w[1]) && GL2PS_ZERO(w[2]))){
       plane[0] = plane[1] = 0.;
       plane[2] = 1.;
       plane[3] = -prim->verts[0].xyz[2];
@@ -213,15 +213,15 @@ GLvoid gl2psGetPlane(GL2PSprimitive *prim, GL2PSplane plane){
     v[0] = prim->verts[1].xyz[0] - prim->verts[0].xyz[0]; 
     v[1] = prim->verts[1].xyz[1] - prim->verts[0].xyz[1]; 
     v[2] = prim->verts[1].xyz[2] - prim->verts[0].xyz[2]; 
-    if(!v[0] && !v[1] && !v[2]){
+    if(GL2PS_ZERO(v[0]) && GL2PS_ZERO(v[1]) && GL2PS_ZERO(v[2])){
       plane[0] = plane[1] = 0.;
       plane[2] = 1.;
       plane[3] = -prim->verts[0].xyz[2];
     }
     else{
-      if(!v[0])      w[0] = 1.;
-      else if(!v[1]) w[1] = 1.;
-      else           w[2] = 1.;
+      if(GL2PS_ZERO(v[0]))      w[0] = 1.;
+      else if(GL2PS_ZERO(v[1])) w[1] = 1.;
+      else                      w[2] = 1.;
       gl2psGetNormal(v, w, plane);
       plane[3] = 
 	- plane[0] * prim->verts[0].xyz[0] 
