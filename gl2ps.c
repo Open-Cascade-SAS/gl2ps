@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.200 2004-12-21 22:25:47 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.201 2004-12-29 16:28:48 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -4366,17 +4366,14 @@ static GLint gl2psPrintPrimitives(void)
 
   used = glRenderMode(GL_RENDER);
 
-  if(used < 0){
-    gl2psMsg(GL2PS_INFO, "OpenGL feedback buffer overflow");
-    return GL2PS_OVERFLOW;
-  }
-
-  if(used > 0){
-    if(gl2ps->format == GL2PS_PS || 
-       gl2ps->format == GL2PS_EPS ||
-       gl2ps->format == GL2PS_PDF){
-      gl2psParseFeedbackBuffer(used);
+  if(gl2ps->format != GL2PS_TEX){
+    /* only report the overflow if we actually parse the buffer! */
+    if(used < 0){
+      gl2psMsg(GL2PS_INFO, "OpenGL feedback buffer overflow");
+      return GL2PS_OVERFLOW;
     }
+    if(used > 0)
+      gl2psParseFeedbackBuffer(used);
   }
 
   if(!gl2psListNbr(gl2ps->primitives)){
