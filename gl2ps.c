@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.165 2004-03-16 22:18:45 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.166 2004-03-17 17:02:38 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -324,10 +324,10 @@ static void *gl2psReallocCompress(unsigned int srcsize)
   gl2ps->compress->srcLen = srcsize;
   gl2ps->compress->destLen = (int)ceil(1.001 * gl2ps->compress->srcLen + 12);
   gl2ps->compress->src = (Bytef*)gl2psRealloc(gl2ps->compress->src, 
-					      gl2ps->compress->srcLen);
+                                              gl2ps->compress->srcLen);
   gl2ps->compress->start = gl2ps->compress->src;
   gl2ps->compress->dest = (Bytef*)gl2psRealloc(gl2ps->compress->dest, 
-					       gl2ps->compress->destLen);
+                                               gl2ps->compress->destLen);
   
   return gl2ps->compress->start;
 }
@@ -425,7 +425,7 @@ static void gl2psAssignTriangleProperties(GL2PStriangle *t)
 }
 
 static void gl2psFillTriangleFromPrimitive(GL2PStriangle* t, GL2PSprimitive* p,
-					   GLboolean assignprops)
+                                           GLboolean assignprops)
 {
   t->vertex[0] = p->verts[0];
   t->vertex[1] = p->verts[1];
@@ -511,7 +511,7 @@ static void gl2psListRead(GL2PSlist *list, GLint index, void *data)
 }
 
 static void gl2psListSort(GL2PSlist *list,
-			  int (*fcmp)(const void *a, const void *b))
+                          int (*fcmp)(const void *a, const void *b))
 {
   qsort(list->array, list->n, list->size, fcmp);
 }
@@ -814,7 +814,7 @@ static void gl2psGetPlane(GL2PSprimitive *prim, GL2PSplane plane)
 }
 
 static void gl2psCutEdge(GL2PSvertex *a, GL2PSvertex *b, GL2PSplane plane,
-			 GL2PSvertex *c)
+                         GL2PSvertex *c)
 {
   GL2PSxyz v;
   GLfloat sect;
@@ -835,8 +835,8 @@ static void gl2psCutEdge(GL2PSvertex *a, GL2PSvertex *b, GL2PSplane plane,
 }
 
 static void gl2psCreateSplitPrimitive(GL2PSprimitive *parent, GL2PSplane plane,
-				      GL2PSprimitive *child, GLshort numverts,
-				      GLshort *index0, GLshort *index1)
+                                      GL2PSprimitive *child, GLshort numverts,
+                                      GLshort *index0, GLshort *index1)
 {
   GLshort i;
 
@@ -871,7 +871,7 @@ static void gl2psCreateSplitPrimitive(GL2PSprimitive *parent, GL2PSplane plane,
 }
 
 static void gl2psAddIndex(GLshort *index0, GLshort *index1, GLshort *nb, 
-			  GLshort i, GLshort j)
+                          GLshort i, GLshort j)
 {
   GLint k;
 
@@ -921,7 +921,7 @@ static GLint gl2psTestSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane)
 }
 
 static GLint gl2psSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane, 
-				 GL2PSprimitive **front, GL2PSprimitive **back)
+                                 GL2PSprimitive **front, GL2PSprimitive **back)
 {
   GLshort i, j, in=0, out=0, in0[5], in1[5], out0[5], out1[5];
   GLint type;
@@ -981,7 +981,7 @@ static GLint gl2psSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane,
 }
 
 static void gl2psDivideQuad(GL2PSprimitive *quad, 
-			    GL2PSprimitive **t1, GL2PSprimitive **t2)
+                            GL2PSprimitive **t1, GL2PSprimitive **t2)
 {
   *t1 = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
   *t2 = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
@@ -1192,8 +1192,8 @@ static void gl2psBuildBspTree(GL2PSbsptree *tree, GL2PSlist *primitives)
 }
 
 static void gl2psTraverseBspTree(GL2PSbsptree *tree, GL2PSxyz eye, GLfloat epsilon,
-				 GLboolean (*compare)(GLfloat f1, GLfloat f2),
-				 void (*action)(void *data), int inverse)
+                                 GLboolean (*compare)(GLfloat f1, GLfloat f2),
+                                 void (*action)(void *data), int inverse)
 {
   GLfloat result;
 
@@ -1276,7 +1276,7 @@ static GLint gl2psCheckPoint(GL2PSxyz point, GL2PSplane plane)
 }
 
 static void gl2psAddPlanesInBspTreeImage(GL2PSprimitive *prim,
-					 GL2PSbsptree2d **tree)
+                                         GL2PSbsptree2d **tree)
 {
   GLint ret = 0;
   GLint i;
@@ -1391,8 +1391,8 @@ static GLint gl2psCheckPrimitive(GL2PSprimitive *prim, GL2PSplane plane)
 }
 
 static GL2PSprimitive *gl2psCreateSplitPrimitive2D(GL2PSprimitive *parent,
-						   GLshort numverts,
-						   GL2PSvertex *vertx)
+                                                   GLshort numverts,
+                                                   GL2PSvertex *vertx)
 {
   GLint i;
   GL2PSprimitive *child = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
@@ -1417,9 +1417,9 @@ static GL2PSprimitive *gl2psCreateSplitPrimitive2D(GL2PSprimitive *parent,
 }
 
 static void gl2psSplitPrimitive2D(GL2PSprimitive *prim,
-				  GL2PSplane plane, 
-				  GL2PSprimitive **front, 
-				  GL2PSprimitive **back)
+                                  GL2PSplane plane, 
+                                  GL2PSprimitive **front, 
+                                  GL2PSprimitive **back)
 {
   /* cur will hold the position of the current vertex
      prev will hold the position of the previous vertex
@@ -1657,9 +1657,9 @@ static void gl2psBuildPolygonBoundary(GL2PSbsptree *tree)
  *********************************************************************/
 
 static void gl2psAddPolyPrimitive(GLshort type, GLshort numverts, 
-				  GL2PSvertex *verts, GLint offset, 
-				  char dash, GLfloat width,
-				  char boundary)
+                                  GL2PSvertex *verts, GLint offset, 
+                                  char dash, GLfloat width,
+                                  char boundary)
 {
   GLshort i;
   GLfloat factor, units, area, dZ, dZdX, dZdY, maxdZ;
@@ -1888,7 +1888,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
  *********************************************************************/
 
 static GLfloat gl2psGetRGB(GL2PSimage* im, GLuint x, GLuint y,
-			   GLfloat *red, GLfloat *green, GLfloat *blue)
+                           GLfloat *red, GLfloat *green, GLfloat *blue)
 {
   
   GLsizei width = im->width;
@@ -3135,7 +3135,7 @@ static int gl2psPrintPDFInfo(void)
                  "/Title (%s)\n"
                  "/Creator (%s)\n"
                  "/Producer (GL2PS %d.%d.%d, "
-		 "(C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>)\n",
+                 "(C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>)\n",
                  gl2ps->title, gl2ps->producer,
                  GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION, GL2PS_PATCH_VERSION);
   
@@ -3390,10 +3390,10 @@ static int gl2psPrintPDFGSObject(void)
 /* Put vertex' edge flag (8bit) and coordinates (32bit) in shader stream */
 
 static int gl2psPrintPDFShaderStreamDataCoord(GL2PSvertex* vertex, 
-					      size_t (*action)(unsigned long data, 
-							       size_t size), 
-					      GLfloat dx, GLfloat dy, 
-					      GLfloat xmin, GLfloat ymin)
+                                              size_t (*action)(unsigned long data, 
+                                                               size_t size), 
+                                              GLfloat dx, GLfloat dy, 
+                                              GLfloat xmin, GLfloat ymin)
 {
   int offs = 0;
   unsigned long imap;
@@ -3434,8 +3434,8 @@ static int gl2psPrintPDFShaderStreamDataCoord(GL2PSvertex* vertex,
 /* Put vertex' rgb value (8bit for every component) in shader stream */
 
 static int gl2psPrintPDFShaderStreamDataRGB(GL2PSvertex *vertex,
-					    size_t (*action)(unsigned long data, 
-							     size_t size))
+                                            size_t (*action)(unsigned long data, 
+                                                             size_t size))
 {
   int offs = 0;
   unsigned long imap;
@@ -3456,9 +3456,9 @@ static int gl2psPrintPDFShaderStreamDataRGB(GL2PSvertex *vertex,
 /* Put vertex' alpha (8/16bit) in shader stream */
 
 static int gl2psPrintPDFShaderStreamDataAlpha(GL2PSvertex* vertex, 
-					      size_t (*action)(unsigned long data, 
-							       size_t size),
-					      int sigbyte)
+                                              size_t (*action)(unsigned long data, 
+                                                               size_t size),
+                                              int sigbyte)
 {
   int offs = 0;
   unsigned long imap;
@@ -3479,11 +3479,11 @@ static int gl2psPrintPDFShaderStreamDataAlpha(GL2PSvertex* vertex,
 /* Put a triangles raw data in shader stream */
 
 static int gl2psPrintPDFShaderStreamData(GL2PStriangle* triangle, 
-					 GLfloat dx, GLfloat dy, 
-					 GLfloat xmin, GLfloat ymin,
-					 size_t (*action)(unsigned long data, 
-							  size_t size),
-					 int gray)
+                                         GLfloat dx, GLfloat dy, 
+                                         GLfloat xmin, GLfloat ymin,
+                                         size_t (*action)(unsigned long data, 
+                                                          size_t size),
+                                         int gray)
 {
   int i, offs = 0;
   GL2PSvertex v;
@@ -3507,8 +3507,8 @@ static int gl2psPrintPDFShaderStreamData(GL2PStriangle* triangle,
 }
 
 static void gl2psPDFRectHull(GLfloat *xmin, GLfloat *xmax, 
-			     GLfloat *ymin, GLfloat *ymax, 
-			     GL2PStriangle *triangles, int cnt)
+                             GLfloat *ymin, GLfloat *ymax, 
+                             GL2PStriangle *triangles, int cnt)
 {
   int i, j;
 
@@ -3537,7 +3537,7 @@ static void gl2psPDFRectHull(GLfloat *xmin, GLfloat *xmax,
    gray == 16            16bit-grayscale (for alpha masks) */
 
 static int gl2psPrintPDFShader(int obj, GL2PStriangle *triangles, 
-			       int size, int gray)
+                               int size, int gray)
 {
   int i, offs = 0, vertexbytes, done = 0;
   GLfloat xmin, xmax, ymin, ymax;
@@ -3700,9 +3700,9 @@ static int gl2psPrintPDFShaderSimpleExtGS(int obj, GLfloat alpha)
 /* Similar groups of  functions for pixmaps and text */
 
 static int gl2psPrintPDFPixmapStreamData(GL2PSimage* im,
-					 size_t (*action)(unsigned long data, 
-							  size_t size), 
-					 int gray)
+                                         size_t (*action)(unsigned long data, 
+                                                          size_t size), 
+                                         int gray)
 {
   int x, y;
   GLfloat r, g, b, a;
@@ -4311,8 +4311,8 @@ GL2PSDLL_API GLint gl2psEndViewport(void)
 }
 
 GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname, 
-				GLshort fontsize, GLint alignment, 
-				GL2PSrgba rgba)
+                                GLshort fontsize, GLint alignment, 
+                                GL2PSrgba rgba)
 {
   GLfloat pos[4];
   GL2PSprimitive *prim;
@@ -4362,7 +4362,7 @@ GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname,
 }
 
 GL2PSDLL_API GLint gl2psText(const char *str, const char *fontname,
-			     GLshort fontsize)
+                             GLshort fontsize)
 {
   return gl2psTextOpt(str, fontname, fontsize, GL2PS_TEXT_BL, NULL);
 }
@@ -4385,7 +4385,7 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
 
   if((format != GL_RGB && format != GL_RGBA) || type != GL_FLOAT){
     gl2psMsg(GL2PS_ERROR, "gl2psDrawPixels only implemented for "
-	     "GL_RGB/GL_RGBA, GL_FLOAT pixels");
+             "GL_RGB/GL_RGBA, GL_FLOAT pixels");
     return GL2PS_ERROR;
   }
 
