@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to Postscript Printing Library
  * Copyright (C) 1999-2001  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.7 2001-06-11 11:10:06 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.8 2001-06-11 11:26:14 geuzaine Exp $
  *
  * E-mail: Christophe.Geuzaine@AdValvas.be
  * URL: http://www.geuz.org/gl2ps/
@@ -22,8 +22,6 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  */
-
-#include "GmshUI.h"
 
 #include <string.h>
 #include <sys/types.h>

@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to Postscript Printing Library
 %  Copyright (C) 1999-2001  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.5 2001-06-11 11:10:06 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.6 2001-06-11 11:26:14 geuzaine Exp $
 % 
 %  E-mail: Christophe.Geuzaine@advalvas.be
 %  URL: http://www.geuz.org/gl2ps/
@@ -217,14 +217,14 @@ mode is applied. These modes are:
 
 
 \begin{description}
-\item[\dd{GL2PS_POLYGON_OFFSET_FILL}] Tries to mimmic the
+\item[\dd{GL2PS_POLYGON_OFFSET_FILL}] Tries to mimic the
 \dd{GL_POLYGON_OFFSET_FILL} functionnality. The value of the offset is taken as
 the current value of the corresponding OpenGL offset (set with
 \dd{glPolygonOffset}). Not fully functionnal yet.
 
 \item[\dd{GL2PS_POLYGON_BOUNDARY}] Not implemented yet.
 
-\item[\dd{GL2PS_LINE_STIPPLE}] Tries to mimmic the
+\item[\dd{GL2PS_LINE_STIPPLE}] Tries to mimic the
 \dd{GL_LINE_STIPPLE} functionnality.
 \end{description}
 
@@ -249,8 +249,9 @@ void gl2psLineWidth( GLint value )
 
 \subsubsection{Description}
 
-\dd{gl2psPointSize} and \dd{gl2psLineSize} mimmic the 
-\dd{glPointSize} and the \dd{glLineWidth} functionnality.
+\dd{gl2psPointSize} and \dd{gl2psLineSize} mimic the \dd{glPointSize} and
+the \dd{glLineWidth} functions. These functions are necessary since the
+point sizes and line widths are not saved in the OpenGL feedback buffer.
 
 \section{Example}
 
