@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.13 2003-03-05 23:55:46 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.14 2003-03-06 00:31:43 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -128,10 +128,19 @@ void pixmap(){
   /* Fill a pixmap (each pixel contains three floats defining an RGB color) */
   pixels = (float*)malloc(3*w*h*sizeof(float));
 
-  /* Fill with something (a blue gradient) */
+  /* Fill with something (a blue gradient) with some stripes */
   for(row=0;row<w;row++) {
-    r = 0;
-    g = 0;
+    r = 0.;
+    if((row > 10 && row < 20) || 
+       (row > 80 && row < 90)){
+      g = 1.;
+    }
+    else if(row > 40 && row < 60){
+      g = 0.5;
+    }
+    else{
+      g = 0.;
+    }
     b = (float)(row+1)/(float)w;
     for(col=0;col<h;col++) {
       pixels[pos] = r; pos++;
