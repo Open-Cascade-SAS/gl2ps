@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.170 2004-05-09 03:58:38 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.171 2004-05-09 08:19:33 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -445,13 +445,13 @@ static void gl2psListRealloc(GL2PSlist *list, GLint n)
   if(n <= 0) return;
   if(!list->array){
     list->nmax = ((n - 1) / list->incr + 1) * list->incr;
-    list->array = (char *)gl2psMalloc(list->nmax * list->size);
+    list->array = (char*)gl2psMalloc(list->nmax * list->size);
   }
   else{
     if(n > list->nmax){
       list->nmax = ((n - 1) / list->incr + 1) * list->incr;
-      list->array = (char *)gl2psRealloc(list->array,
-                                         list->nmax * list->size);
+      list->array = (char*)gl2psRealloc(list->array,
+                                        list->nmax * list->size);
     }
   }
 }
@@ -462,7 +462,7 @@ static GL2PSlist *gl2psListCreate(GLint n, GLint incr, GLint size)
 
   if(n < 0) n = 0;
   if(incr <= 0) incr = 1;
-  list = (GL2PSlist *)gl2psMalloc(sizeof(GL2PSlist));
+  list = (GL2PSlist*)gl2psMalloc(sizeof(GL2PSlist));
   list->nmax = 0;
   list->incr = incr;
   list->size = size;
@@ -857,7 +857,7 @@ static void gl2psCreateSplitPrimitive(GL2PSprimitive *parent, GL2PSplane plane,
   child->dash = parent->dash;
   child->width = parent->width;
   child->numverts = numverts;
-  child->verts = (GL2PSvertex *)gl2psMalloc(numverts * sizeof(GL2PSvertex));
+  child->verts = (GL2PSvertex*)gl2psMalloc(numverts * sizeof(GL2PSvertex));
 
   for(i = 0; i < numverts; i++){
     if(index1[i] < 0){
@@ -991,8 +991,8 @@ static void gl2psDivideQuad(GL2PSprimitive *quad,
   (*t1)->culled = (*t2)->culled = quad->culled;
   (*t1)->dash = (*t2)->dash = quad->dash;
   (*t1)->width = (*t2)->width = quad->width;
-  (*t1)->verts = (GL2PSvertex *)gl2psMalloc(3 * sizeof(GL2PSvertex));
-  (*t2)->verts = (GL2PSvertex *)gl2psMalloc(3 * sizeof(GL2PSvertex));
+  (*t1)->verts = (GL2PSvertex*)gl2psMalloc(3 * sizeof(GL2PSvertex));
+  (*t2)->verts = (GL2PSvertex*)gl2psMalloc(3 * sizeof(GL2PSvertex));
   (*t1)->verts[0] = quad->verts[0];
   (*t1)->verts[1] = quad->verts[1];
   (*t1)->verts[2] = quad->verts[2];
@@ -1414,7 +1414,7 @@ static GL2PSprimitive *gl2psCreateSplitPrimitive2D(GL2PSprimitive *parent,
   child->dash = parent->dash;
   child->width = parent->width;
   child->numverts = numverts;
-  child->verts = (GL2PSvertex *)gl2psMalloc(numverts * sizeof(GL2PSvertex));
+  child->verts = (GL2PSvertex*)gl2psMalloc(numverts * sizeof(GL2PSvertex));
   for(i = 0; i < numverts; i++){
     child->verts[i] = vertx[i];
   }
@@ -1597,7 +1597,7 @@ static void gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list)
       b->width = prim->width;
       b->boundary = 0;
       b->numverts = 2;
-      b->verts = (GL2PSvertex *)gl2psMalloc(2 * sizeof(GL2PSvertex));
+      b->verts = (GL2PSvertex*)gl2psMalloc(2 * sizeof(GL2PSvertex));
 
 #if 0 /* FIXME: need to work on boundary offset... */
       v[0] = c[0] - prim->verts[i].xyz[0];
@@ -1669,10 +1669,10 @@ static void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
   GLfloat factor, units, area, dZ, dZdX, dZdY, maxdZ;
   GL2PSprimitive *prim;
 
-  prim = (GL2PSprimitive *)gl2psMalloc(sizeof(GL2PSprimitive));
+  prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
   prim->type = type;
   prim->numverts = numverts;
-  prim->verts = (GL2PSvertex *)gl2psMalloc(numverts * sizeof(GL2PSvertex));
+  prim->verts = (GL2PSvertex*)gl2psMalloc(numverts * sizeof(GL2PSvertex));
   memcpy(prim->verts, verts, numverts * sizeof(GL2PSvertex));
   prim->boundary = boundary;
   prim->dash = dash;
@@ -4312,11 +4312,11 @@ GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname,
 
   glGetFloatv(GL_CURRENT_RASTER_POSITION, pos);
 
-  prim = (GL2PSprimitive *)gl2psMalloc(sizeof(GL2PSprimitive));
+  prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
   prim->type = GL2PS_TEXT;
   prim->boundary = 0;
   prim->numverts = 1;
-  prim->verts = (GL2PSvertex *)gl2psMalloc(sizeof(GL2PSvertex));
+  prim->verts = (GL2PSvertex*)gl2psMalloc(sizeof(GL2PSvertex));
   prim->verts[0].xyz[0] = pos[0];
   prim->verts[0].xyz[1] = pos[1];
   prim->verts[0].xyz[2] = GL2PS_DEPTH_FACT * pos[2];
@@ -4379,11 +4379,11 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
 
   glGetFloatv(GL_CURRENT_RASTER_POSITION, pos);
 
-  prim = (GL2PSprimitive *)gl2psMalloc(sizeof(GL2PSprimitive));
+  prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
   prim->type = GL2PS_PIXMAP;
   prim->boundary = 0;
   prim->numverts = 1;
-  prim->verts = (GL2PSvertex *)gl2psMalloc(sizeof(GL2PSvertex));
+  prim->verts = (GL2PSvertex*)gl2psMalloc(sizeof(GL2PSvertex));
   prim->verts[0].xyz[0] = pos[0] + xorig;
   prim->verts[0].xyz[1] = pos[1] + yorig;
   prim->verts[0].xyz[2] = GL2PS_DEPTH_FACT * pos[2];
