@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.153 2003-12-09 04:09:34 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.154 2003-12-10 04:17:20 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -333,8 +333,7 @@ GL2PSimage* gl2psCopyPixmap(GL2PSimage* im){
 void gl2psFreePixmap(GL2PSimage* im){
   if(!im)
     return;
-  if(im->pixels)
-    gl2psFree(im->pixels);
+  gl2psFree(im->pixels);
   gl2psFree(im);
 }
 
@@ -353,10 +352,8 @@ GL2PSstring* gl2psCopyText(GL2PSstring* t){
 void gl2psFreeText(GL2PSstring* text){
   if(!text)
     return;
-  if(text->str)
-    gl2psFree(text->str);
-  if(text->fontname)
-    gl2psFree(text->fontname);
+  gl2psFree(text->str);
+  gl2psFree(text->fontname);
   gl2psFree(text);
 }
 
@@ -755,13 +752,10 @@ void gl2psFreePrimitive(void *data){
   q = *(GL2PSprimitive**)data;
   gl2psFree(q->verts);
   if(q->type == GL2PS_TEXT){
-    gl2psFree(q->data.text->str);
-    gl2psFree(q->data.text->fontname);
-    gl2psFree(q->data.text);
+    gl2psFreeText(q->data.text);
   }
-  if(q->type == GL2PS_PIXMAP){
-    gl2psFree(q->data.image->pixels);
-    gl2psFree(q->data.image);
+  else if(q->type == GL2PS_PIXMAP){
+    gl2psFreePixmap(q->data.image);
   }
   gl2psFree(q);
 }
