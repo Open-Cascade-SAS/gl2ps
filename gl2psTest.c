@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.35 2003-09-17 07:18:50 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.36 2003-09-17 21:23:22 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -26,7 +26,7 @@
 
 /*
   To compile on Linux:
-  gcc -O3 gl2psTest.c gl2ps.c -lglut -lGL -L/usr/X11R6/lib -lX11 -lm
+  gcc -O3 gl2psTest.c gl2ps.c -lglut -lGL -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm
 
   To compile on MacOSX:
   gcc -O3 gl2psTest.c gl2ps.c -framework OpenGL -framework GLUT -framework Cocoa
@@ -123,14 +123,13 @@ void init(void){
 
   glEnable(GL_DEPTH_TEST);
   glShadeModel(GL_SMOOTH);
-  glEnable(GL_LIGHT0);
   glLightfv(GL_LIGHT0, GL_POSITION, pos);
+  glEnable(GL_LIGHT0);
   glEnable(GL_SCISSOR_TEST);
 }
 
 void triangles(void){
   /* two intersecting triangles */
-  glDisable(GL_LIGHTING);
   glBegin(GL_TRIANGLES);
   
   glColor3f(1., 0., 0.);
@@ -218,8 +217,8 @@ void extras(void){
 }
 
 void objects(void){
-  glEnable(GL_LIGHTING);
   glPushMatrix();
+  glEnable(GL_LIGHTING);
   glRotatef(rotation, 2., 0., 1.);
   if(teapot){
     glutSolidTeapot(0.7);
@@ -227,6 +226,7 @@ void objects(void){
   else{
     glutSolidTorus(0.3, 0.6, 20, 20);
   }
+  glDisable(GL_LIGHTING);
   glPopMatrix();
 }
 
@@ -245,7 +245,6 @@ void printstring(char *string){
 void text(){
   double x = -1.25, y = -0.46, dy = 0.13;
 
-  glDisable(GL_LIGHTING);
   glColor3f(1., 1., 0.);
 
   glRasterPos2d(x, y); y -= dy;
@@ -265,7 +264,6 @@ void text(){
 }
 
 void cube(void) {
-  glDisable(GL_LIGHTING);
   glLineWidth(4.0);
   glColor3d (1.0,0.0,0.);   
   glBegin(GL_POLYGON);

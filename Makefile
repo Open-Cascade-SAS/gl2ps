@@ -14,7 +14,7 @@ default:
 
 linux:
 	gcc -Wall -g -O3 -I/usr/X11R6/include -o gl2psTest gl2psTest.c gl2ps.c\
-            -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
+            -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm
 
 mac:
 	gcc -Wall -g -O3 -o gl2psTest gl2psTest.c gl2ps.c\
