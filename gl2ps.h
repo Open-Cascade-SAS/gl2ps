@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine
  *
- * $Id: gl2ps.h,v 1.38 2003-01-30 18:09:17 geuzaine Exp $
+ * $Id: gl2ps.h,v 1.39 2003-01-30 18:13:18 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -55,7 +55,7 @@
 #endif
 
 
-#define GL2PS_VERSION                    0.72
+#define GL2PS_VERSION                    0.73
 #define GL2PS_NONE                       0
 
 /* Output file format */
