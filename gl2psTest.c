@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.8 2003-02-14 18:38:37 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.9 2003-02-24 23:55:06 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -84,7 +84,7 @@ void display(void){
   glDisable(GL_LIGHTING);
   glColor3f(1., 0., 0.);
   glRasterPos2d(0.1,-0.8); 
-  gl2psText("Hello, world!","Helvetica", 12);
+  gl2psText("Hello, world!", "Helvetica", 12);
 
   glFlush();
 }
