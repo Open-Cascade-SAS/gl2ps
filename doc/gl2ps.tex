@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.80 2003-03-06 01:46:31 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.81 2003-03-06 01:49:35 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -226,7 +226,7 @@ printed.
 \item[\dd{GL2PS_OVERFLOW}] if the size of the feedback buffer given to
 \dd{gl2psBeginPage} is not large enough;
 \item[\dd{GL2PS_UNINITIALIZED}] if \dd{gl2psEndPage} is called when the
-library is not unitialized (e.g.\ if \dd{gl2psEndPage} is called before
+library is not initialized (e.g.\ if \dd{gl2psEndPage} is called before
 \dd{gl2psBeginPage});
 \item[\dd{GL2PS_ERROR}] if an error occurred;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
@@ -266,7 +266,7 @@ for \LaTeX\ output.
 \dd{gl2psText} returns:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if \dd{string} is \dd{NULL} or if the
-library is not unitialized;
+library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
 \item[\dd{GL2PS_SUCCESS}] if no error occurred.
 \end{description}
@@ -293,8 +293,8 @@ commands). Beware that the image will be sorted according to the position of
 the current raster position only. The arguments are:
 
 \begin{description}
-\item[\dd{width}] Specifies the width of the image;
-\item[\dd{height}] Specifies the height of the image;
+\item[\dd{width}] Specifies the width of the image.
+\item[\dd{height}] Specifies the height of the image.
 \item[\dd{format}] Specifies the format of the pixel data. The symbolic
 constant \dd{GL_RGB} is the only one accepted at the moment.
 \item[\dd{type}] Specifies the data type for pixels. The symbolic constant
@@ -307,9 +307,9 @@ constant \dd{GL_RGB} is the only one accepted at the moment.
 \dd{gl2psDrawPixels} returns:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if \dd{pixels} is \dd{NULL} or if the
-library is not unitialized;
+library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
-\item[\dd{GL2PS_SUCCESS}] otherwise;
+\item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
 
 % -------------------------------------------------------------------------
@@ -346,9 +346,9 @@ functionality.
 
 \dd{gl2psEnable} and \dd{gl2psDisable} return:
 \begin{description}
-\item[\dd{GL2PS_UNINITIALIZED}] if the library is not unitialized;
+\item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
-\item[\dd{GL2PS_SUCCESS}] otherwise;
+\item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
 
 % -------------------------------------------------------------------------
@@ -377,9 +377,9 @@ buffer.
 
 \dd{gl2psPointSize} and \dd{gl2psLineWidth} return:
 \begin{description}
-\item[\dd{GL2PS_UNINITIALIZED}] if the library is not unitialized;
+\item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
-\item[\dd{GL2PS_SUCCESS}] otherwise;
+\item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
 
 % -------------------------------------------------------------------------
@@ -409,9 +409,9 @@ viewport)}).
 
 \dd{gl2psBeginViewport} returns:
 \begin{description}
-\item[\dd{GL2PS_UNINITIALIZED}] if the library is not unitialized;
+\item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
-\item[\dd{GL2PS_SUCCESS}] otherwise;
+\item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
 
 \dd{gl2psEndViewport} returns:
@@ -420,7 +420,7 @@ viewport)}).
 \item[\dd{GL2PS_OVERFLOW}] if the size of the feedback buffer given to
 \dd{gl2psBeginPage} is not large enough;
 \item[\dd{GL2PS_UNINITIALIZED}] if \dd{gl2psEndPage} is called when the
-library is not unitialized (e.g.\ if \dd{gl2psEndPage} is called before
+library is not initialized (e.g.\ if \dd{gl2psEndPage} is called before
 \dd{gl2psBeginPage});
 \item[\dd{GL2PS_ERROR}] if an error occurred;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
