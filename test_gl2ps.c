@@ -46,27 +46,20 @@ void reshape(int w, int h){
   glMatrixMode(GL_MODELVIEW);
 }
 
-void write_with_gl2ps(int sort, int format, char *file){
+void write_with_gl2ps(int format, int sort, int options, int nbcol, char *file){
   FILE *fp;
   int state = GL2PS_OVERFLOW;
   int bufsize = 0;
-  //int options = GL2PS_DRAW_BACKGROUND|GL2PS_NO_PS3_SHADING;
-  int options = GL2PS_DRAW_BACKGROUND;
-  
+ 
   if ((fp=fopen(file, "w"))==NULL) {
     fprintf(stderr, "unable to open file %s for writing\n", file);
     exit(1);
   }
   
   while (state == GL2PS_OVERFLOW) {
-    gl2psBeginPage(file, 
-		   "test",
-		   format,
-		   sort,
-		   options,
-		   GL_RGBA, 0, NULL,
+    gl2psBeginPage(file, "test", format, sort, options, GL_RGBA, 0, NULL,
 		   bufsize, fp, file);
-    //gl2psNumShadeColors(20,20,20);
+    gl2psNumShadeColors(nbcol,nbcol,nbcol);
     display();
     state = gl2psEndPage();
   }
@@ -77,18 +70,23 @@ void write_with_gl2ps(int sort, int format, char *file){
 }
 
 void keyboard(unsigned char key, int x, int y){
+  int opt;
   switch (key) {
   case 27:
   case 'q':
     exit(0);
     break;
   case 'w':
-    write_with_gl2ps(GL2PS_BSP_SORT, GL2PS_PS, "file_bsp.ps");
-    write_with_gl2ps(GL2PS_BSP_SORT, GL2PS_EPS, "file_bsp.eps");
-    break;
-  case 'x':
-    write_with_gl2ps(GL2PS_SIMPLE_SORT, GL2PS_PS, "file_simple.ps");
-    write_with_gl2ps(GL2PS_SIMPLE_SORT, GL2PS_EPS, "file_simple.eps");
+    opt = 0;
+    write_with_gl2ps(GL2PS_PS,  GL2PS_BSP_SORT, opt, 1, "test_bsp.ps");
+
+    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 1, "test_bsp.eps");
+    write_with_gl2ps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 1, "test_simple.eps");
+
+    opt |= GL2PS_NO_PS3_SHADING;
+    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 2, "test_bsp_div2.eps");
+    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 7, "test_bsp_div7.eps");
+    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 20, "test_bsp_div20.eps");
     break;
   }
 }
@@ -107,8 +105,7 @@ int main(int argc, char **argv){
   putchar('\n');
   printf("in the image window:\n");
   putchar('\n');
-  printf("\tw: save image to postscript file, BSP_SORT\n");
-  printf("\tx: save image to postscript file, SIMPLE_SORT\n");
+  printf("\tw: save images\n");
   printf("\tq: quit\n");
   putchar('\n');
   

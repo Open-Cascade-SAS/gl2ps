@@ -13,3 +13,7 @@ default:
 test:
 	gcc -Wall -g -O3 -o test_gl2ps test_gl2ps.c gl2ps.c\
             -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
+
+clean:
+	rm -f *.ps *.eps test_gl2ps *~
+
