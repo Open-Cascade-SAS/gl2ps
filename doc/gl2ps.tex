@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.158 2004-03-06 04:05:12 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.159 2004-03-06 17:12:21 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -728,9 +728,9 @@ does not seem to be available anymore).
   are now given as arguments to \dd{gl2psBeginPage}; API change:
   \dd{gl2psBeginPage} takes an additional argument (\dd{viewport}) to
   specify the print viewport; new \dd{gl2psDrawPixels} interface to produce
-  mixed mode PostScript/bitmap output; new \dd{gl2psBeginViewport} and
-  \dd{gl2psEndViewport} interface to handle multiple OpenGL viewports; fixed
-  small bug in occlusion culling code; better error handling.
+  mixed mode (vector+raster) PostScript output; new \dd{gl2psBeginViewport}
+  and \dd{gl2psEndViewport} interface to handle multiple OpenGL viewports;
+  fixed small bug in occlusion culling code; better error handling.
 \item[0.81] (Mar 22, 2003) Fixed small typos in comments and documentation.
 \item[0.9.0] (Jun 2, 2003) Fixed smooth shading detection for mixed
   smooth/flat shaded scenes; new library numbering scheme
