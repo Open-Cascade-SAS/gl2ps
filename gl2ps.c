@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.75 2003-03-04 21:19:11 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.76 2003-03-04 21:23:56 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1288,14 +1288,14 @@ GLint gl2psPrintPrimitives(void);
    gl2psPrintXXXBeginViewport and gl2psPrintXXXEndViewport) for the
    new format. */
 
-void gl2psWriteByte(FILE* stream, unsigned char byte){
+void gl2psWriteByte(FILE *stream, unsigned char byte){
   unsigned char h = byte / 16;
   unsigned char l = byte % 16;
   fprintf(stream, "%x%x", h, l);
 }
 
-int gl2psGetRGB(GLfloat* image, GLsizei width, GLsizei height, GLuint x, GLuint y,
-		GLfloat* red, GLfloat* green, GLfloat* blue){
+int gl2psGetRGB(GLfloat *image, GLsizei width, GLsizei height, GLuint x, GLuint y,
+		GLfloat *red, GLfloat *green, GLfloat *blue){
   /* OpenGL image is from down to up. PS image is up to down. */
   float *pimag;
   pimag = image + 3 * (width * (height - 1 - y) + x);
@@ -1306,7 +1306,7 @@ int gl2psGetRGB(GLfloat* image, GLsizei width, GLsizei height, GLuint x, GLuint 
 }
 
 void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei height,
-				GLfloat* image, FILE* stream){
+				GLfloat *image, FILE *stream){
   int status = 1, nbhex, nbyte2, nbyte4, nbyte8;;
   unsigned int row, col, col_max;
   float dr, dg, db, fgrey;;
@@ -1318,10 +1318,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
 
   if((width <= 0) || (height <= 0)) return;
 
-  /*
-    printf("debug : gl2psPrintPostScriptPixmap : x %g y %g w %d h %d\n",
-           x, y, width, height);
-  */
+  /* Msg(INFO, "gl2psPrintPostScriptPixmap: x %g y %g w %d h %d", x, y, width, height); */
 
   fprintf(stream, "gsave\n");
   fprintf(stream, "%.2f %.2f translate\n", x, y); 
@@ -2150,7 +2147,7 @@ GL2PSDLL_API void gl2psText(const char *str, const char *fontname, GLshort fonts
 }
 
 GL2PSDLL_API GLboolean gl2psPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei height,
-				   GLfloat* image, GLboolean free){
+				   GLfloat *image, GLboolean free){
   GLfloat pos[4];
   GL2PSprimitive *prim;
   GLboolean valid;
