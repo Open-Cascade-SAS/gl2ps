@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to Postscript Printing Library, version 0.32
  * Copyright (C) 1999-2000  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.3 2001-05-23 14:59:01 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.4 2001-05-23 15:06:56 geuzaine Exp $
  *
  * E-mail: Christophe.Geuzaine@AdValvas.be
  * URL: http://www.geuz.org/gl2ps/
@@ -467,7 +467,7 @@ GLint gl2psFindRoot(GL2PSlist *primitives, GL2PSprimitive **root){
 	if(!count) return index;
       }
     }
-    if(index) printf("GL2PS_BEST_ROOT was worth it: %d\n", index);
+    if(index) gl2psMsg("GL2PS_BEST_ROOT was worth it: %d", index);
     return index;
   }
   else{
