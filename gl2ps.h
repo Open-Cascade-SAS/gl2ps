@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.72 2003-11-06 21:41:40 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.73 2003-11-06 21:57:36 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -28,7 +28,8 @@
  * library in the file named "COPYING.GL2PS"; if not, I will be glad
  * to provide one.
  *
- * For the latest info about gl2ps, see http://www.geuz.org/gl2ps/
+ * For the latest info about gl2ps, see http://www.geuz.org/gl2ps/.
+ * Please report all bugs and problems to "gl2ps@geuz.org".
  */
 
 #ifndef __GL2PS_H__
