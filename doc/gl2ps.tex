@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.47 2002-11-12 18:00:56 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.48 2002-11-12 19:05:59 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -49,7 +49,7 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.63, ?? December 2002}
+\date{Version 0.63, 12 November 2002}
 
 \maketitle
 
@@ -435,8 +435,9 @@ PostScript files; optimized drawing of shaded primitives; new
 \dd{GL2PS_NO_PS3_SHADING} option and \dd{gl2psNumShadeColors} function to
 control the use of the PostScript level 3 \dd{shfill} operator (usually not
 well handled when converting to PDF).
-\item[0.63] (Dec ??, 2002) Changed GLvoid to void to accomodate some SUN
-compilers; revised documentation.
+\item[0.63] (Nov 12, 2002) Changed \dd{GLvoid} to \dd{void} to accomodate
+some SUN compilers; made subdivision parameters modifiable a posteriori in
+the output file; revised documentation.
 \end{description}
 
 % Occlusion culling... In version 9.99? :-(

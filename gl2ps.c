@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.51 2002-11-12 18:00:55 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.52 2002-11-12 19:05:59 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -994,14 +994,13 @@ void gl2psPrintPostScriptHeader(void){
 	  "%%%%BeginProlog\n"
 	  "/gl2psdict 64 dict def gl2psdict begin\n"
 	  "1 setlinecap 1 setlinejoin\n"
-	  "%% RGB subdivision thresholds\n"
-	  "/RTh  %g def\n"
-	  "/GTh  %g def\n"
-	  "/BTh  %g def\n"
+	  "/tryPS3shading %s def %% set to false to force subdivision\n"
+	  "/rThreshold %g def %% red component subdivision threshold\n"
+	  "/gThreshold %g def %% green component subdivision threshold\n"
+	  "/bThreshold %g def %% blue component subdivision threshold\n"
 	  "/BD { bind def } bind def\n"
 	  "/C  { setrgbcolor } BD\n"
-	  "/G  { 0.082 mul exch 0.6094 mul add exch 0.3086 mul add neg 1.0 add\n"
-	  "      setgray } BD\n"
+	  "/G  { 0.082 mul exch 0.6094 mul add exch 0.3086 mul add neg 1.0 add setgray } BD\n"
 	  "/W  { setlinewidth } BD\n"
 	  "/FC { findfont exch scalefont setfont } BD\n"
 	  "/S  { FC moveto show } BD\n"
@@ -1009,6 +1008,7 @@ void gl2psPrintPostScriptHeader(void){
 	  "/L  { newpath moveto lineto stroke } BD\n"
 	  "/SL { C moveto C lineto stroke } BD\n"
 	  "/T  { newpath moveto lineto lineto closepath fill } BD\n",
+	  (gl2ps->options & GL2PS_NO_PS3_SHADING) ? "false" : "true",
           gl2ps->threshold[0], gl2ps->threshold[1], gl2ps->threshold[2]);
 
   /* Smooth-shaded triangle with PostScript level 3 shfill operator:
@@ -1072,29 +1072,43 @@ void gl2psPrintPostScriptHeader(void){
 
   fprintf(gl2ps->stream,
           "/STnoshfill {\n"
-	  "      2 index 8 index sub abs RTh gt { STsplit }\n" /* |r1-r2|>rth */
-          "      { 1 index 7 index sub abs GTh gt { STsplit }\n" /* |g1-g2|>gth */
-          "        { dup 6 index sub abs BTh gt { STsplit }\n" /* |b1-b2|>bth */
-          "          { 2 index 13 index sub abs RTh gt { STsplit }\n" /* |r1-r3|>rht */
-          "            { 1 index 12 index sub abs GTh gt { STsplit }\n" /* |g1-g3|>gth */
-          "              { dup 11 index sub abs BTh gt { STsplit }\n" /* |b1-b3|>bth */
-          "                { 7 index 13 index sub abs RTh gt { STsplit }\n" /* |r2-r3|>rht */
-          "                  { 6 index 12 index sub abs GTh gt { STsplit }\n" /* |g2-g3|>gth */
-          "                    { 5 index 11 index sub abs BTh gt { STsplit }\n" /* |b2-b3|>bth */
-          "                      { Tm\n" /* all colors sufficiently similar */
-          "                      } ifelse\n"
-          "                    } ifelse\n"
-          "                  } ifelse\n"
-          "                } ifelse\n"
-          "              } ifelse\n"
-          "            } ifelse\n"
-          "          } ifelse\n"
-          "        } ifelse\n"
-          "      } ifelse } BD\n");
+	  "      2 index 8 index sub abs rThreshold gt\n" /* |r1-r2|>rth */
+	  "      { STsplit }\n"
+          "      { 1 index 7 index sub abs gThreshold gt\n" /* |g1-g2|>gth */
+	  "        { STsplit }\n"
+          "        { dup 6 index sub abs bThreshold gt\n" /* |b1-b2|>bth */
+	  "          { STsplit }\n"
+          "          { 2 index 13 index sub abs rThreshold gt\n" /* |r1-r3|>rht */
+	  "            { STsplit }\n"
+          "            { 1 index 12 index sub abs gThreshold gt\n" /* |g1-g3|>gth */
+	  "              { STsplit }\n"
+          "              { dup 11 index sub abs bThreshold gt\n" /* |b1-b3|>bth */
+	  "                { STsplit }\n"
+          "                { 7 index 13 index sub abs rThreshold gt\n" /* |r2-r3|>rht */
+	  "                  { STsplit }\n"
+          "                  { 6 index 12 index sub abs gThreshold gt\n" /* |g2-g3|>gth */
+	  "                    { STsplit }\n"
+          "                    { 5 index 11 index sub abs bThreshold gt\n" /* |b2-b3|>bth */
+	  "                      { STsplit }\n"
+          "                      { Tm }\n" /* all colors sufficiently similar */
+          "                      ifelse }\n"
+          "                    ifelse }\n"
+          "                  ifelse }\n"
+          "                ifelse }\n"
+          "              ifelse }\n"
+          "            ifelse }\n"
+          "          ifelse }\n"
+          "        ifelse }\n"
+          "      ifelse } BD\n");
 
   fprintf(gl2ps->stream,
-	  (gl2ps->options & GL2PS_NO_PS3_SHADING) ? "/ST { STnoshfill } BD\n" :
-	  "/shfill where { pop /ST { STshfill } BD } { /ST { STnoshfill } BD } ifelse\n");
+	  "tryPS3shading\n"
+	  "{ /shfill where\n"
+	  "  { /ST { STshfill } BD }\n"
+	  "  { /ST { STnoshfill } BD }\n"
+	  "  ifelse }\n"
+	  "{ /ST { STnoshfill } BD }\n"
+	  "ifelse\n");
 
   fprintf(gl2ps->stream,
 	  "end\n"
