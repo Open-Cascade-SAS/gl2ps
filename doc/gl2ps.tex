@@ -1,8 +1,8 @@
 %
-%  GL2PS, an OpenGL to Postscript Printing Library, version 0.32
+%  GL2PS, an OpenGL to Postscript Printing Library
 %  Copyright (C) 1999-2001  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.4 2001-05-23 19:08:09 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.5 2001-06-11 11:10:06 geuzaine Exp $
 % 
 %  E-mail: Christophe.Geuzaine@advalvas.be
 %  URL: http://www.geuz.org/gl2ps/
@@ -48,13 +48,13 @@
 
 \title{GL2PS, an OpenGL to Postscript Printing Library}
 \author{Christophe Geuzaine}
-\date{Version 0.32, 23 May 2001}
+\date{Version 0.33, 11 June 2001}
 
 \maketitle
 
 %%tth:\section*{Download}
 %%tth:The current archive of the package is available
-%%tth:\href{http://www.geuz.org/gl2ps/gl2ps-0.32.tar.gz}{here}.
+%%tth:\href{http://www.geuz.org/gl2ps/gl2ps-0.33.tar.gz}{here}.
 
 \tableofcontents
 
@@ -228,6 +228,29 @@ the current value of the corresponding OpenGL offset (set with
 \dd{GL_LINE_STIPPLE} functionnality.
 \end{description}
 
+\subsection{\texttt{gl2psPointSize} and \texttt{gl2psLineWidth}}
+\label{sec:gl2psPointSize}
+
+\subsubsection{Specification}
+
+\begin{verbatim}
+void gl2psPointSize( GLint value )
+\end{verbatim}
+
+\begin{verbatim}
+void gl2psLineWidth( GLint value )
+\end{verbatim}
+
+\subsubsection{Parameters}
+
+\begin{description}
+\item[\dd{value}] Specifies the size or the width of points and lines.
+\end{description}
+
+\subsubsection{Description}
+
+\dd{gl2psPointSize} and \dd{gl2psLineSize} mimmic the 
+\dd{glPointSize} and the \dd{glLineWidth} functionnality.
 
 \section{Example}
 
@@ -291,6 +314,9 @@ allocation stuff. First version of this user's guide.
 \item[0.3] Code cleaning. Added \dd{GL2PS_LINE_STIPPLE}.
 \item[0.31] Better handling of erroneous primitives.
 \item[0.32] Fixed memory leaks. 
+\item[0.33] Added \dd{gl2psPointSize} and \dd{gl2psLineWidth}. Some code
+cleaning to allow easier generation of other vector file formats than
+postscript.
 % Occlusion culling.
 \end{description}
 
