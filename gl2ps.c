@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.189 2004-11-22 18:00:09 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.190 2004-11-27 23:42:23 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -1320,32 +1320,32 @@ static void gl2psRescaleAndOffset()
     if((gl2ps->options & GL2PS_SIMPLE_LINE_OFFSET) &&
        (prim->type == GL2PS_LINE)){
       if(gl2ps->sort == GL2PS_SIMPLE_SORT){
-	prim->verts[0].xyz[2] -= GL2PS_ZOFFSET_LARGE;
-	prim->verts[1].xyz[2] -= GL2PS_ZOFFSET_LARGE;
+        prim->verts[0].xyz[2] -= GL2PS_ZOFFSET_LARGE;
+        prim->verts[1].xyz[2] -= GL2PS_ZOFFSET_LARGE;
       }
       else{
-	prim->verts[0].xyz[2] -= GL2PS_ZOFFSET;
-	prim->verts[1].xyz[2] -= GL2PS_ZOFFSET;
+        prim->verts[0].xyz[2] -= GL2PS_ZOFFSET;
+        prim->verts[1].xyz[2] -= GL2PS_ZOFFSET;
       }
     }
     else if(prim->offset && (prim->type == GL2PS_TRIANGLE)){
       factor = gl2ps->offset[0];
       units = gl2ps->offset[1];
       area = 
-	(prim->verts[1].xyz[0] - prim->verts[0].xyz[0]) * 
-	(prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) - 
-	(prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) * 
-	(prim->verts[1].xyz[1] - prim->verts[0].xyz[1]);
+        (prim->verts[1].xyz[0] - prim->verts[0].xyz[0]) * 
+        (prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) - 
+        (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) * 
+        (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]);
       dZdX = 
-	(prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) *
-	(prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) -
-	(prim->verts[1].xyz[1] - prim->verts[0].xyz[1]) *
-	(prim->verts[2].xyz[2] - prim->verts[1].xyz[2]) / area;
+        (prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) *
+        (prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) -
+        (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]) *
+        (prim->verts[2].xyz[2] - prim->verts[1].xyz[2]) / area;
       dZdY = 
-	(prim->verts[1].xyz[0] - prim->verts[0].xyz[0]) *
-	(prim->verts[2].xyz[2] - prim->verts[1].xyz[2]) -
-	(prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) *
-	(prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) / area;
+        (prim->verts[1].xyz[0] - prim->verts[0].xyz[0]) *
+        (prim->verts[2].xyz[2] - prim->verts[1].xyz[2]) -
+        (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) *
+        (prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) / area;
       maxdZ = (GLfloat)sqrt(dZdX*dZdX + dZdY*dZdY);
       dZ = factor * maxdZ + units;
       prim->verts[0].xyz[2] += dZ;

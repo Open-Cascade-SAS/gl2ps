@@ -1,17 +1,5 @@
 RELEASE = 1.2.3
-UNAME = `uname -s`
-
-default:
-	rm -rf gl2ps-${RELEASE}/ gl2ps-${RELEASE}.t*
-	mkdir gl2ps-${RELEASE}
-	cd doc && ${MAKE}
-	cp TODO COPYING.GL2PS COPYING.LGPL gl2ps.c gl2ps.h gl2psTest.c\
-           doc/gl2ps.pdf gl2ps-${RELEASE}
-	chmod 644 gl2ps-${RELEASE}/*
-	tar zcvf gl2ps-${RELEASE}.tgz gl2ps-${RELEASE}
-	@echo "********************************************************************"
-	@echo "Did you remember to untabify both gl2ps.c and gl2ps.h?"
-	@echo "********************************************************************"
+DATE = `date "+%Y%m%d"`
 
 clean:
 	rm -f *.tex *.ps *.eps *.eps.gz *.pdf *.o gl2psTest a.out *~
@@ -37,10 +25,29 @@ linuxz:
 	gcc -DHAVE_ZLIB -Wall -g -O3 -I/usr/X11R6/include -o gl2psTest gl2psTest.c gl2ps.c\
             -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm -lz
 
-
 # -Wbad-function-cast
 test:
 	gcc -g -O3 -W -Wall\
            -Wredundant-decls -Wcast-align -Wmissing-prototypes\
            -Wsign-compare -Wpointer-arith -Wundef -pedantic\
            -c gl2ps.c
+
+distrib:
+	rm -rf gl2ps-${RELEASE}/ gl2ps-${RELEASE}.tgz
+	mkdir gl2ps-${RELEASE}
+	cd doc && ${MAKE}
+	cp TODO COPYING.GL2PS COPYING.LGPL gl2ps.c gl2ps.h gl2psTest.c\
+           doc/gl2ps.pdf gl2ps-${RELEASE}
+	tar zcvf gl2ps-${RELEASE}.tgz gl2ps-${RELEASE}
+	@echo "********************************************************************"
+	@echo "Did you remember to untabify both gl2ps.c and gl2ps.h?"
+	@echo "********************************************************************"
+
+distrib-nightly:
+	rm -rf gl2ps-nightly*
+	mkdir gl2ps-${DATE}
+	cd doc && ${MAKE}
+	cp TODO COPYING.GL2PS COPYING.LGPL gl2ps.c gl2ps.h gl2psTest.c\
+           doc/gl2ps.pdf gl2ps-${DATE}
+	tar zcvf gl2ps-nightly.tgz gl2ps-${DATE}
+	rm -rf gl2ps-${DATE}

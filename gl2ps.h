@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.90 2004-11-15 00:01:49 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.91 2004-11-27 23:42:23 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -39,12 +39,10 @@
 #include <stdlib.h>
 #include <math.h>
 
-/* To generate a Windows dll, you should define GL2PSDLL at compile
-   time */
+/* Define GL2PSDLL at compile time to build a Windows dll */
 
 #if defined (WIN32) || defined(_WIN32)
-/* Shut up warning due to bad windows header file */
-#  if defined(_MSC_VER) 
+#  if defined(_MSC_VER)
 #    pragma warning(disable:4115)
 #  endif
 #  include <windows.h>
