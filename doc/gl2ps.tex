@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2001  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.22 2001-11-19 10:54:04 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.23 2001-11-19 11:02:11 geuzaine Exp $
 % 
 %  E-mail: Christophe.Geuzaine@advalvas.be
 %  URL: http://www.geuz.org/gl2ps/
@@ -92,10 +92,11 @@ GL2PS begin with \dd{GL2PS}.
 \subsubsection{Specification}
 
 \begin{verbatim}
-void gl2psBeginPage( char *title, char *producer, 
-                     GLint format, GLint sort, GLint options, 
-                     GLint colormode, GLint colorsize, GL2PSrgba *colortable, 
-                     GLint buffersize, FILE *stream , char *filename)
+void gl2psBeginPage( char *title, char *producer, GLint format,
+                     GLint sort, GLint options, GLint colormode,
+                     GLint colorsize, GL2PSrgba *colortable,
+                     GLint buffersize,
+                     FILE *stream, char *filename )
 \end{verbatim}
 
 \begin{verbatim}
@@ -113,8 +114,9 @@ string is placed in the \texttt{\%\%For} field.
 
 \item[\dd{format}] Specifies the output format, chosen among: \dd{GL2PS_PS},
 \dd{GL2PS_TEX}. \dd{GL2PS_TEX} produces a \LaTeX\ file containing the text
-parts of the images, and including an image having the same basename. This
-image should be generated with the \dd{GL2PS_NO_TEXT} option.
+strings of the plot and including a graphic file having the same basename as
+\dd{filename}. In order to avoid duplicate text strings, the graphic file
+should be generated with the \dd{GL2PS_NO_TEXT} option.
 
 \item[\dd{sort}] Specifies the sorting algorithm, chosen among:
 \dd{GL2PS_NO_SORT}, \dd{GL2PS_SIMPLE_SORT}, \dd{GL2PS_BSP_SORT}.
@@ -138,8 +140,8 @@ options are combined with the bitwise inclusive OR symbol,~\dd{|}.
 
 \item[\dd{stream}] Specifies the stream to which data is printed.
 
-\item[\dd{filename}] Specifies name of the stream to which data is
-printed. This argument is optional.
+\item[\dd{filename}] Specifies a name for the stream to which data is
+printed.
 \end{description}
 
 \subsubsection{Description}
@@ -287,7 +289,8 @@ int buffsize = 0, state = GL2PS_OVERFLOW;
 
 while( state == GL2PS_OVERFLOW ){ 
   buffsize += 1024*1024;
-  gl2psBeginPage ( "MyTitle", "MySoftware", GL2PS_PS, GL2PS_BSP_SORT,
+  gl2psBeginPage ( "MyTitle", "MySoftware", 
+                   GL2PS_PS, GL2PS_BSP_SORT,
                    GL2PS_SIMPLE_LINE_OFFSET | GL2PS_SILENT, 
                    GL_RGBA, 0, NULL, buffsize, fp, NULL );
   draw(); 
@@ -347,9 +350,9 @@ file formats other than postscript.
 short). Set smaller default line width.
 \item[0.42] (Oct 8, 2001) Optimization of output file size. PostScript
 header cleaning. Better line width computation.
-\item[0.5] (Nov 19, 2001) New format argument in \dd{gl2psBeginPage}. Better
-PostScript handling of smooth shaded primitives. New options for LaTeX
-output.
+\item[0.5] (Nov 19, 2001) New \dd{format} and \dd{filename} arguments for
+\dd{gl2psBeginPage}. Better PostScript handling of smooth shaded
+primitives. New options for LaTeX output.
 \end{description}
 
 % Occlusion culling... In version 9.99? :-(
