@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.111 2003-07-04 15:12:24 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.112 2003-08-25 06:04:34 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1353,12 +1353,12 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
 
   fprintf(stream, "gsave\n");
   fprintf(stream, "%.2f %.2f translate\n", x, y); 
-  fprintf(stream, "%d %d scale\n", width, height); 
+  fprintf(stream, "%d %d scale\n", (int)width, (int)height); 
 
   if(greyscale){ /* greyscale, 8 bits per pixel */
-    fprintf(stream, "/picstr %d string def\n", width); 
-    fprintf(stream, "%d %d %d\n", width, height, 8); 
-    fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", width, height, height); 
+    fprintf(stream, "/picstr %d string def\n", (int)width); 
+    fprintf(stream, "%d %d %d\n", (int)width, (int)height, 8); 
+    fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", (int)width, (int)height, (int)height); 
     fprintf(stream, "{ currentfile picstr readhexstring pop }\n");
     fprintf(stream, "image\n");
     for(row = 0; row < height; row++){
@@ -1379,8 +1379,8 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     nbyte2 *=3;
     col_max = (nbyte2 * 4)/3;
     fprintf(stream, "/rgbstr %d string def\n", nbyte2); 
-    fprintf(stream, "%d %d %d\n", col_max, height, 2); 
-    fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", col_max, height, height); 
+    fprintf(stream, "%d %d %d\n", (int)col_max, (int)height, 2); 
+    fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", (int)col_max, (int)height, (int)height); 
     fprintf(stream, "{ currentfile rgbstr readhexstring pop }\n" );
     fprintf(stream, "false 3\n" );
     fprintf(stream, "colorimage\n" );
@@ -1427,8 +1427,8 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     nbyte4 *=3;
     col_max = (nbyte4 * 2)/3;
     fprintf(stream, "/rgbstr %d string def\n", nbyte4);
-    fprintf(stream, "%d %d %d\n", col_max, height, 4);
-    fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", col_max, height, height);
+    fprintf(stream, "%d %d %d\n", (int)col_max, (int)height, 4);
+    fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", (int)col_max, (int)height, (int)height);
     fprintf(stream, "{ currentfile rgbstr readhexstring pop }\n");
     fprintf(stream, "false 3\n");
     fprintf(stream, "colorimage\n");
@@ -1452,8 +1452,8 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
   else{ /* color, 8 bits for r and g and b; rgbs following each other */
     nbyte8 = width * 3;
     fprintf(stream, "/rgbstr %d string def\n", nbyte8);
-    fprintf(stream, "%d %d %d\n", width, height, 8);
-    fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", width, height, height); 
+    fprintf(stream, "%d %d %d\n", (int)width, (int)height, 8);
+    fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", (int)width, (int)height, (int)height); 
     fprintf(stream, "{ currentfile rgbstr readhexstring pop }\n");
     fprintf(stream, "false 3\n");
     fprintf(stream, "colorimage\n");
@@ -1504,18 +1504,18 @@ void gl2psPrintPostScriptHeader(void){
 	    "%%%%Orientation: %s\n"
 	    "%%%%DocumentMedia: Default %d %d 0 () ()\n",
 	    (gl2ps->options & GL2PS_LANDSCAPE) ? "Landscape" : "Portrait",
-	    (gl2ps->options & GL2PS_LANDSCAPE) ? gl2ps->viewport[3] : gl2ps->viewport[2],
-	    (gl2ps->options & GL2PS_LANDSCAPE) ? gl2ps->viewport[2] : gl2ps->viewport[3]);
+	    (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[3] : (int)gl2ps->viewport[2],
+	    (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[2] : (int)gl2ps->viewport[3]);
   }
 
   fprintf(gl2ps->stream,
 	  "%%%%BoundingBox: %d %d %d %d\n"
 	  "%%%%Copyright: GNU LGPL (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>\n"
 	  "%%%%EndComments\n",
-	  (gl2ps->options & GL2PS_LANDSCAPE) ? gl2ps->viewport[1] : gl2ps->viewport[0],
-	  (gl2ps->options & GL2PS_LANDSCAPE) ? gl2ps->viewport[0] : gl2ps->viewport[1],
-	  (gl2ps->options & GL2PS_LANDSCAPE) ? gl2ps->viewport[3] : gl2ps->viewport[2],
-	  (gl2ps->options & GL2PS_LANDSCAPE) ? gl2ps->viewport[2] : gl2ps->viewport[3]);
+	  (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[1] : (int)gl2ps->viewport[0],
+	  (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[0] : (int)gl2ps->viewport[1],
+	  (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[3] : (int)gl2ps->viewport[2],
+	  (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[2] : (int)gl2ps->viewport[3]);
 
   /* RGB color: r g b C (replace C by G in output to change from rgb to gray)
      Grayscale: r g b G
@@ -1661,7 +1661,7 @@ void gl2psPrintPostScriptHeader(void){
   if(gl2ps->options & GL2PS_LANDSCAPE){
     fprintf(gl2ps->stream,
 	    "%d 0 translate 90 rotate\n",
-	    gl2ps->viewport[3]);
+	    (int)gl2ps->viewport[3]);
   }
 
   fprintf(gl2ps->stream, 
@@ -1686,9 +1686,9 @@ void gl2psPrintPostScriptHeader(void){
 	    "newpath %d %d moveto %d %d lineto %d %d lineto %d %d lineto\n"
 	    "closepath fill\n",
 	    rgba[0], rgba[1], rgba[2], 
-	    gl2ps->viewport[0], gl2ps->viewport[1], gl2ps->viewport[2], 
-	    gl2ps->viewport[1], gl2ps->viewport[2], gl2ps->viewport[3], 
-	    gl2ps->viewport[0], gl2ps->viewport[3]);
+	    (int)gl2ps->viewport[0], (int)gl2ps->viewport[1], (int)gl2ps->viewport[2], 
+	    (int)gl2ps->viewport[1], (int)gl2ps->viewport[2], (int)gl2ps->viewport[3], 
+	    (int)gl2ps->viewport[0], (int)gl2ps->viewport[3]);
   }
 }
 
@@ -1870,7 +1870,7 @@ void gl2psPrintTeXHeader(void){
 	  "\\end{picture}%%\n"
 	  "%s\\begin{picture}(%d,%d)(0,0)\n",
 	  name, (gl2ps->options & GL2PS_LANDSCAPE) ? "\\rotatebox{90}{" : "",
-	  gl2ps->viewport[2], gl2ps->viewport[3]);
+	  (int)gl2ps->viewport[2], (int)gl2ps->viewport[3]);
 }
 
 void gl2psPrintTeXPrimitive(void *a, void *b){

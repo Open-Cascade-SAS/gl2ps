@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.29 2003-06-12 15:52:56 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.30 2003-08-25 06:04:34 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -27,12 +27,19 @@
  */
 
 /*
-  To compile on a Linux system, type:
-
+  To compile on Linux:
   gcc -O3 gl2psTest.c gl2ps.c -lglut -lGL -L/usr/X11R6/lib -lX11 -lm
+
+  To compile on MacOSX:
+  gcc -O3 gl2psTest.c gl2ps.c -framework OpenGL -framework GLUT -framework Cocoa
 */
 
-#include <GL/glut.h>
+#ifdef __APPLE__
+#  include <GLUT/glut.h>
+#else
+#  include <GL/glut.h>
+#endif
+
 #include <string.h>
 #include "gl2ps.h"
 
@@ -108,12 +115,12 @@ static char *pixmap[] = {
   "................................................................"};
 
 void init(void){
-  float pos[3] = {0.,0.,1000.};
+  float pos[3] = {0.,0.,100.};
 
   glEnable(GL_DEPTH_TEST);
   glShadeModel(GL_SMOOTH);
-  glLightfv(GL_LIGHT0, GL_POSITION, pos);
   glEnable(GL_LIGHT0);
+  glLightfv(GL_LIGHT0, GL_POSITION, pos);
   glEnable(GL_SCISSOR_TEST);
 }
 
@@ -326,14 +333,14 @@ void draw_single(void){
 void draw_multi(void){
   GLint viewport[4];
 
-  glScissor(0., 0., window_w, window_h);
+  glScissor(0, 0, window_w, window_h);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
   /* First viewport with triangles, teapot or torus, etc. */
-  glViewport(window_w * 0.05, window_h * 0.525 , 
-	     (GLsizei) (window_w * 0.9), (GLsizei) (window_h * 0.45));
-  glScissor(window_w * 0.05, window_h * 0.525 , 
-	    (GLsizei) (window_w * 0.9), (GLsizei) (window_h * 0.45));
+  glViewport((GLint)(window_w * 0.05), (GLint)(window_h * 0.525), 
+	     (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
+  glScissor((GLint)(window_w * 0.05), (GLint)(window_h * 0.525), 
+	    (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
   glClearColor(0.3, 0.3, 0.3, 0.);
   glGetIntegerv(GL_VIEWPORT, viewport);
 
@@ -353,10 +360,10 @@ void draw_multi(void){
   gl2psEndViewport();
 
   /* Second viewport with cube, image, etc. */
-  glViewport(window_w * 0.05, window_h * 0.025 , 
-	     (GLsizei) (window_w * 0.9), (GLsizei) (window_h * 0.45));
-  glScissor(window_w * 0.05, window_h * 0.025 , 
-	     (GLsizei) (window_w * 0.9), (GLsizei) (window_h * 0.45));
+  glViewport((GLint)(window_w * 0.05), (GLint)(window_h * 0.025), 
+	     (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
+  glScissor((GLint)(window_w * 0.05), (GLint)(window_h * 0.025), 
+	     (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
   glClearColor(0.5, 0.5, 0.5, 0.);
 
   glGetIntegerv(GL_VIEWPORT, viewport);
@@ -395,7 +402,7 @@ void reshape(int w, int h){
   window_w = w;
   window_h = h;
 
-  glViewport(0, 0, (GLsizei) window_w, (GLsizei) window_h);
+  glViewport(0, 0, (GLsizei)window_w, (GLsizei)window_h);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(-1.3,1.3, -1.3,1.3, -1.3,1.3);
