@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.50 2002-11-15 18:55:01 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.51 2002-12-11 16:37:53 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -49,15 +49,15 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.63, 12 November 2002}
+\date{Version 0.7, ?? December 2002}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.63.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.7.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.63.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.7.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
@@ -186,8 +186,7 @@ simple anti-aliasing solution, e.g. for finite element like meshes.
 stream are suppressed.
 
 \item[\dd{GL2PS_BEST_ROOT}] The construction of the BSP tree is optimized by
-choosing the root primitives leading to the minimum number of splits. This
-is (really) not efficient yet.
+choosing the root primitives leading to the minimum number of splits.
 
 \item[\dd{GL2PS_NO_TEXT}] All the text strings are suppressed from
 output. This is useful to produce the image part of a \LaTeX\ output.
@@ -198,9 +197,9 @@ output. This is useful to produce the image part of a \LaTeX\ output.
 PostScript level 3 operator (which can lead to problems when converting
 PostScript files to PDF files; see also section~\ref{sec:gl2psNumShadeColors}).
 
-%\item[\dd{GL2PS_OCCLUSION_CULL}] All the hidden polygons are removed from
-%the output, thus substancially reducing the size of the output file. This
-%is not functional yet.
+\item[\dd{GL2PS_OCCLUSION_CULL}] All the hidden polygons are removed from
+the output, thus substancially reducing the size of the output file. This
+is not functional yet.
 
 \end{description}
 
@@ -397,7 +396,10 @@ smooth shaded triangle code; Shane Hill
 implementation; Romain Boman (\email{r_boman@yahoo.fr}) for the Windows dll
 generation; Rouben Rostamian (\email{rostamian@umbc.edu}) for various bug
 fixes; Diego Santa Cruz (\email{Diego.SantaCruz@epfl.ch}) for the new
-optimized shaded triangle code and the \dd{shfill} management.
+optimized shaded triangle code and the \dd{shfill} management; Shahzad
+Muzaffar (\email{Shahzad.Muzaffar@cern.ch}) and Lassi Tuura
+(\email{lassi.tuura@cern.ch}) for the new occlusion culling code and the
+improvement of \dd{GL2PS_BEST_ROOT}.
 
 %Bruce Naylor (\email{naylor@comp-graphics.com}) for some BSP tree and occlusion
 %culling hints;
@@ -450,9 +452,9 @@ well handled when converting to PDF).
 \item[0.63] (Nov 12, 2002) Changed \dd{GLvoid} to \dd{void} to accomodate
 some SUN compilers; made subdivision parameters modifiable a posteriori in
 the output file; revised documentation.
+\item[0.7] (Dec ??, 2002) Occlusion culling (\dd{GL2PS_OCCLUSION_CULL}) is
+back; enhanced \dd{GL2PS_BEST_ROOT}.
 \end{description}
-
-% Occlusion culling... In version 9.99? :-(
 
 \end{document}
 
