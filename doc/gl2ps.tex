@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.44 2002-09-06 19:01:00 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.45 2002-09-06 21:33:01 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -195,9 +195,9 @@ output. This is useful to produce the image part of a \LaTeX\ output.
 
 \item[\dd{GL2PS_LANDSCAPE}] Landscape orientation instead of portrait.
 
-\item[\dd{GL2PS_NO_PS3_SHADING}] Disables the use of the \dd{shfill}
-PostScript level 3 operator, which is usually not well handled when
-converting to PDF (see also section~\ref{sec:gl2psNumShadeColors}).
+\item[\dd{GL2PS_NO_PS3_SHADING}] No use is made of the \dd{shfill}
+PostScript level 3 operator (which can lead to problems when converting
+PostScript files to PDF files; see also section~\ref{sec:gl2psNumShadeColors}).
 
 %\item[\dd{GL2PS_OCCLUSION_CULL}] All the hidden polygons are removed from
 %the output, thus substancially reducing the size of the output file. This
@@ -324,8 +324,8 @@ void gl2psNumShadeColors( GLint nr, GLint ng, GLint nb )
 \subsubsection{Description}
 
 \dd{gl2psNumShadeColors} sets the number of colors to use when approximating
-shaded triangles with small flat shaded ones (either if the \dd{shfill}
-operator is not supported by your system, or if the
+shaded triangles with small flat-shaded ones (either when the \dd{shfill}
+operator is not supported by the system, or when the
 \dd{GL2PS_NO_PS3_SHADING} option is set). The last call before
 \dd{gl2psEndPage} is the one that counts.
 
@@ -374,12 +374,13 @@ the feedback buffer parser; Marc Um{\'e}
 Jean-Fran\c{c}ois Remacle (\email{remacle@scorec.rpi.edu}) for plane
 equation fixes; Bart Kaptein (\email{B.L.Kaptein@lumc.nl}) for memory leak
 fixes; Quy Nguyen-Dai (\email{quy@vnilux.com}) for output file size
-optimization; Sam Buss (\email{sbuss@ucsd.edu}) for the new smooth shaded
-triangle code; Shane Hill (\email{Shane.Hill@dsto.defence.gov.au}) for the
-landscape option implementation; Romain Boman (\email{r_boman@yahoo.fr}) for
-the Windows dll generation; Rouben Rostamian (\email{rostamian@umbc.edu})
-for various bug fixes; Diego Santa Cruz (\email{Diego.SantaCruz@epfl.ch})
-for the new shaded primitives drawing code.
+optimization; Sam Buss (\email{sbuss@ucsd.edu}) for the \dd{shfill}-based
+smooth shaded triangle code; Shane Hill
+(\email{Shane.Hill@dsto.defence.gov.au}) for the landscape option
+implementation; Romain Boman (\email{r_boman@yahoo.fr}) for the Windows dll
+generation; Rouben Rostamian (\email{rostamian@umbc.edu}) for various bug
+fixes; Diego Santa Cruz (\email{Diego.SantaCruz@epfl.ch}) for the new
+optimized shaded triangle code and the \dd{shfill} management.
 
 %Bruce Naylor (\email{naylor@comp-graphics.com}) for some BSP tree and occlusion
 %culling hints;
@@ -424,12 +425,11 @@ fixed handling of color and line width attributes when gl2ps was called
 multiple times inside the same program.
 \item[0.61] (Jun 21, 2002) Fixed the fix for the sorting of text objects;
 introduced tolerance for floating point comparisons.
-\item[0.62] (Sep 6, 2002) Added \dd{GL2PS_EPS} option to produce Encapsulated
-PostScript files; optimized drawing of shaded primitives; New
-\dd{GL2PS_NO_PS3_SHADING} option to disable the use of the PostScript level
-3 \dd{shfill} operator (usually not well handled when converting to PDF);
-new \texttt{gl2psNumShadeColors} function to set the number colors to use
-when approximating shaded triangles with small flat shaded ones.
+\item[0.62] (Sep 6, 2002) New \dd{GL2PS_EPS} option to produce Encapsulated
+PostScript files; optimized drawing of shaded primitives; new
+\dd{GL2PS_NO_PS3_SHADING} option and \dd{gl2psNumShadeColors} function to
+control the use of the PostScript level 3 \dd{shfill} operator (usually not
+well handled when converting to PDF).
 \end{description}
 
 % Occlusion culling... In version 9.99? :-(
