@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.163 2004-03-16 00:29:21 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.164 2004-03-16 00:53:07 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -207,13 +207,13 @@ determine the way primitives are handled:
 \begin{description}
 \item[\dd{GL2PS_NONE}] No option.
 \item[\dd{GL2PS_DRAW_BACKGROUND}] The background frame is drawn in the
-  output stream.
+  plot.
 \item[\dd{GL2PS_SIMPLE_LINE_OFFSET}] A small offset is added in the z-buffer
   to all the lines in the plot. This is a simplified version of the
   \dd{GL2PS_POLYGON_OFFSET_FILL} functionality
   (cf. section~\ref{sec:gl2psEnable}), putting all the lines of the rendered
   image slightly in front of their actual position. This thus performs a
-  simple anti-aliasing solution, e.g. for finite element like meshes.
+  simple anti-aliasing solution, e.g.\ for finite-element-like meshes.
 \item[\dd{GL2PS_SILENT}] All the messages written by GL2PS on the error
   stream are suppressed.
 \item[\dd{GL2PS_BEST_ROOT}] The construction of the BSP tree is optimized by
@@ -225,10 +225,10 @@ determine the way primitives are handled:
 \item[\dd{GL2PS_LANDSCAPE}] The plot is output in landscape orientation
   instead of portrait.
 \item[\dd{GL2PS_NO_PS3_SHADING}] (for PostScript output only) No use is made
-  of the \dd{shfill} PostScript level 3 operator (which can lead to problems
-  when converting PostScript files to PDF files, instead of generating PDF
-  files directly with GL2PS; see also options \dd{nr}, \dd{ng}, \dd{nb}
-  below).
+  of the \dd{shfill} PostScript level 3 operator. Using \dd{shfill} enhances
+  the plotting of smooth shaded primitives but can lead to problems when
+  converting PostScript files into PDF files. See also options \dd{nr},
+  \dd{ng}, \dd{nb} below.
 \item[\dd{GL2PS_OCCLUSION_CULL}] All the hidden polygons are removed from
   the output, thus substantially reducing the size of the output file.
 \item[\dd{GL2PS_USE_CURRENT_VIEWPORT}] The current OpenGL viewport is used
@@ -240,9 +240,11 @@ determine the way primitives are handled:
 
   A word of caution: PostScript files generated with this option turned on
   are simply compressed ``as a whole'', i.e., they are identical to regular
-  files compressed with the gzip program--and may thus not be readable by
-  all interpreters. This is not the case for compressed PDF files, for which
-  the compression is part of the official specification.
+  files compressed with the gzip program--and may thus not be readable
+  directly by all PostScript interpreters. This is not the case for
+  compressed PDF files (the compression is done ``locally'' for each group
+  of primitives in the output stream, in accordance to the official PDF
+  specification), which should thus be as portable as uncompressed ones.
 \end{description}
 
 \item[\dd{colormode}] Specifies the color mode: \dd{GL_RGBA} or
@@ -351,7 +353,7 @@ GLint gl2psDrawPixels( GLsizei width, GLsizei height,
 
 \subsubsection{Description and arguments}
 
-\dd{gl2psDrawPixels} emulates the \dd{glDrawPixels} function, i.e.\ permits
+\dd{gl2psDrawPixels} emulates the \dd{glDrawPixels} function, i.e., permits
 to include bitmap images in the PostScript or PDF output. The image is
 inserted at the current raster position (set by one of the \dd{glRasterPos}
 OpenGL commands). Beware that the image will be sorted according to the
@@ -558,7 +560,7 @@ gl2psText("MyText", "Courier", 12);
 \end{verbatim}
 
 If you plan to convert the PostScript file into a PDF file you may need to
-disable the use of the Level 3 PostScript \dd{shfill} operator, i.e.\ add
+disable the use of the Level 3 PostScript \dd{shfill} operator, i.e., add
 \dd{GL2PS_NO_PS3_SHADING} to the list of options. Note that you can also
 edit the output file a posteriori (just set \dd{/tryPS3shading} to
 \dd{false} in the PostScript file header). The best solution is probably to
@@ -616,7 +618,7 @@ GL2PS does not support textures, fog effects, etc.
 %
 % 3. Can GLpr handle 2D texture mapping?
 % 
-%    Only for pixel-based output (i.e. captured with glpImage()).  GLpr
+%    Only for pixel-based output (i.e., captured with glpImage()).  GLpr
 %    cannot duplicate the effects of texture mapping for vector
 %    (move-draw) output.  Unfortunately, the information required is not
 %    present in the OpenGL feedback buffer.  
@@ -624,7 +626,7 @@ GL2PS does not support textures, fog effects, etc.
 % 4. Can GLpr handle 1D texture mapping?
 %
 %    Not in the present release.  However, future releases may provide
-%    support for 1D texture maps (e.g. color lookup).
+%    support for 1D texture maps (e.g.\ color lookup).
 %
 % Add references:
 % - Fuchs, Kedem and Naylor for the BSP
