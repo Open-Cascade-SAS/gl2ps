@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.179 2004-11-15 00:01:48 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.180 2004-11-15 17:39:43 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -2043,7 +2043,7 @@ static void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GL2PSimage *im)
   GLuint nbhex, nbyte, nrgb, nbits;
   GLuint row, col, ibyte, icase;
   GLfloat dr, dg, db, fgrey;
-  unsigned char red, green, blue, b, grey;
+  unsigned char red = 0, green = 0, blue = 0, b, grey;
   GLuint width = (GLuint)im->width;
   GLuint height = (GLuint)im->height;
 
