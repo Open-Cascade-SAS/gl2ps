@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.46 2003-11-06 23:54:49 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.47 2003-11-08 01:14:23 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -242,10 +242,15 @@ void objects(void){
 
 void printstring(char *string){
   int len, i;
-
+  char *fonts[] = 
+    { "Times-Roman", "Times-Bold", "Times-Italic", "Times-BoldItalic",
+      "Helvetica", "Helvetica-Bold", "Helvetica-Oblique", "Helvetica-BoldOblique",
+      "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique",
+      "Symbol", "ZapfDingbats" };
+  
   /* call gl2psText before the glut function since glutBitmapCharacter
      changes the raster position... */
-  gl2psText(string, "Helvetica", 12);
+  gl2psText(string, fonts[4], 12);
 
   len = (int)strlen(string);
   for (i = 0; i < len; i++)

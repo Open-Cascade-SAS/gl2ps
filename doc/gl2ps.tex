@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.144 2003-11-07 05:54:21 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.145 2003-11-08 01:14:23 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -298,9 +298,17 @@ string only. The arguments are:
 
 \begin{description}
 \item[\dd{string}] Specifies the text string to print.
-\item[\dd{fontname}] Specifies the name of a valid PostScript font (for
-  example \dd{"TimesNewRoman"} or \dd{"Helvetica-Bold"}). This has no
-  effect on the \LaTeX\ output.
+\item[\dd{fontname}] Specifies the PostScript name of a valid Type 1
+  font\footnote{The names of the 14 standard Type 1 fonts are as follows:
+    \dd{Times-Roman}, \dd{Times-Bold}, \dd{Times-Italic},
+    \dd{Times-BoldItalic}, \dd{Helvetica}, \dd{Helvetica-Bold},
+    \dd{Helvetica-Oblique}, \dd{Helvetica-BoldOblique}, \dd{Courier},
+    \dd{Courier-Bold}, \dd{Courier-Oblique}, \dd{Courier-BoldOblique},
+    \dd{Symbol} and \dd{ZapfDingbats}.  These fonts, or their font metrics
+    and suitable substitution fonts, are guaranteed to be available to the
+    viewer application. Using any other font will result in a non-portable
+    PostScript or PDF file, as GL2PS does not include any font description
+    in its output stream.}.  This has no effect on the \LaTeX\ output.
 \item[\dd{fontsize}] Specifies the size of the font.
 \end{description}
 
@@ -708,6 +716,7 @@ product does not seem to be available anymore).
   compressed PostScript and PDF files; fixed small bug in the PDF output
   that prevented the PDF files to be correctly included in \LaTeX\
   documents; new alternative license (see \dd{COPYING.GL2PS}).
+\item[1.1.1] (Nov??, 2003) Documentation update.
 \end{description}
 
 \end{document}
