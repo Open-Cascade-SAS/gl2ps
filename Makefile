@@ -14,7 +14,7 @@ default:
 	mv gl2ps-${RELEASE}/gl2ps-${RELEASE}.zip .
 
 clean:
-	rm -f *.tex *.ps *.eps *.eps.gz *.pdf gl2psTest a.out *~
+	rm -f *.tex *.ps *.eps *.eps.gz *.pdf *.o gl2psTest a.out *~
 	cd doc && ${MAKE} clean
 
 mac:
@@ -33,3 +33,5 @@ linuxz:
 	gcc -DHAVE_ZLIB -Wall -g -O3 -I/usr/X11R6/include -o gl2psTest gl2psTest.c gl2ps.c\
             -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm -lz
 
+test:
+	gcc -g -O3 -Wall -pedantic -c gl2ps.c
