@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to Postscript Printing Library
  * Copyright (C) 1999-2001  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.24 2001-10-31 11:11:20 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.25 2001-11-05 12:30:07 geuzaine Exp $
  *
  * E-mail: Christophe.Geuzaine@AdValvas.be
  * URL: http://www.geuz.org/gl2ps/
@@ -31,6 +31,16 @@
 #include <time.h>
 
 #include "gl2ps.h"
+
+/* Define the following if you dare use the new postscript shading
+   primitives. Currently, most printers will not understand the
+   generated postscript, though. */
+/* #define GL2PS_NEW_PS_SHADING  */
+
+/* Define the following if you dare use the boundary offset
+   stuff. This does ot work well at the moment. */
+/* #define GL2PS_BOUNDARY_OFFSET */
+
 
 /* The static gl2ps context. gl2ps is not thread safe (we should
    create a local GL2PScontext during gl2psBeginPage). */
@@ -1101,7 +1111,7 @@ GLvoid gl2psPrintPostscriptHeader(GLvoid){
 	  "/S  { FC moveto show } BD\n"
 	  "/P  { newpath 0.0 360.0 arc closepath fill } BD\n"
 	  "/L  { newpath moveto lineto stroke } BD\n"
-#if NEWSHADING
+#if GL2PS_NEW_PS_SHADING
 	  "/SL { C moveto C lineto stroke } BD\n"
 #else
           "/SL { /b1 exch def /g1 exch def /r1 exch def /y1 exch def\n"
@@ -1113,7 +1123,7 @@ GLvoid gl2psPrintPostscriptHeader(GLvoid){
           "      g2 b2 SL } { x1 y1 x2 y2 r1 g1 b1 C L } ifelse } BD\n"
 #endif
 	  "/T  { newpath moveto lineto lineto closepath fill } BD\n"
-#if NEWSHADING
+#if GL2PS_NEW_PS_SHADING
 	  "/ST { /b1 exch def /g1 exch def /r1 exch def /y1 exch def /x1 exch def\n"
           "      /b2 exch def /g2 exch def /r2 exch def /y2 exch def /x2 exch def\n"
           "      /b3 exch def /g3 exch def /r3 exch def /y3 exch def /x3 exch def\n"
