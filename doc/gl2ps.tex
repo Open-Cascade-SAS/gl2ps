@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.73 2003-03-05 02:35:15 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.74 2003-03-05 18:29:33 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -27,7 +27,9 @@
 \pagestyle{headings}
 \setcounter{tocdepth}{2}
 \sloppypar
+
 \usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+
 \ifx\pdfoutput\undefined\else
   \pdfinfo{
     /Title (GL2PS: an OpenGL to PostScript printing library)
@@ -36,6 +38,7 @@
     /Keywords (OpenGL, PostScript, Printing)
   } 
 \fi
+
 \newcommand{\dd}{\begingroup\Url}
 \newcommand{\email}[2]{\href{mailto:#2}{#1}}
 
@@ -84,30 +87,32 @@ GL2PS begin with \dd{GL2PS}.
 
 \section{Usage}
 
+% -------------------------------------------------------------------------
+
 \subsection{\texttt{gl2psBeginPage} and \texttt{gl2psEndPage}}
 \label{sec:gl2psBeginPage}
 
 \subsubsection{Specification}
 
 \begin{verbatim}
-void gl2psBeginPage( const char *title, const char *producer,
-                     GLint format, GLint sort, GLint options, 
-                     GLint colormode, GLint colorsize, 
-                     GL2PSrgba *colortable, 
-                     GLint nr, GLint ng, GLint nb, 
-                     GLint buffersize, FILE *stream,
-                     const char *filename )
+GLboolean gl2psBeginPage( const char *title, const char *producer,
+                          GLint format, GLint sort, GLint options, 
+                          GLint colormode, GLint colorsize, 
+                          GL2PSrgba *colortable, 
+                          GLint nr, GLint ng, GLint nb, 
+                          GLint buffersize, FILE *stream,
+                          const char *filename )
 \end{verbatim}
 
 \begin{verbatim}
-void gl2psEndPage( void )
+GLint gl2psEndPage( void )
 \end{verbatim}
 
-\subsubsection{Description}
+\subsubsection{Description and arguments}
 
 \dd{gl2psBeginPage} and \dd{gl2psEndPage} delimit the OpenGL commands that
 will be caught in the feedback buffer and output to \dd{stream}. The
-parameters given to \dd{gl2psBeginPage} determine the way primitives are
+arguments given to \dd{gl2psBeginPage} determine the way primitives are
 handled:
 
 \begin{description}
@@ -233,34 +238,46 @@ printed.
 
 \end{description}
 
+\subsubsection{Return value}
+
+TODO
+
+% -------------------------------------------------------------------------
+
 \subsection{\texttt{gl2psText}}
 \label{sec:gl2psText}
 
 \subsubsection{Specification}
 
 \begin{verbatim}
-void gl2psText( const char *string, const char *fontname,
-                GLint fontsize )
+GLboolean gl2psText( const char *string, const char *fontname,
+                     GLint fontsize )
 \end{verbatim}
 
-\subsubsection{Description}
+\subsubsection{Description and arguments}
 
 \dd{gl2psText} permits to include text in the PostScript or \LaTeX\ output
 in a very simple way. The text is inserted at the current raster position
 (set by one of the \dd{glRasterPos} OpenGL commands). Beware that text will
 be sorted according to the position of the leftmost element of the string
-only. The parameters are:
+only. The arguments are:
 
 \begin{description}
 \item[\dd{string}] Specifies the text string to print.
 
 \item[\dd{fontname}] Specifies the name of a valid PostScript font (for
-example \dd{"Times"} or \dd{"HelveticaBoldItalic"}). This parameter has no
-influence for \LaTeX\ output.
+example \dd{"Times"} or \dd{"HelveticaBoldItalic"}). This has no influence
+for \LaTeX\ output.
 
-\item[\dd{fontsize}] Specifies the size of the font. This parameter has no
-influence for \LaTeX\ output.
+\item[\dd{fontsize}] Specifies the size of the font. This has no influence
+for \LaTeX\ output.
 \end{description}
+
+\subsubsection{Return value}
+
+TODO
+
+% -------------------------------------------------------------------------
 
 \subsection{\texttt{gl2psPixmap}}
 \label{sec:gl2psPixmap}
@@ -268,16 +285,16 @@ influence for \LaTeX\ output.
 \subsubsection{Specification}
 
 \begin{verbatim}
-void gl2psPixmap( GLfloat x, GLfloat y, GLsizei w, GLsizei h,
-                  GLfloat* image, GLboolean free )
+GLboolean gl2psPixmap( GLfloat x, GLfloat y, GLsizei w, GLsizei h,
+                       GLfloat* image, GLboolean free )
 \end{verbatim}
 
-\subsubsection{Description}
+\subsubsection{Description and arguments}
 
 \dd{gl2psPixmap} permits to include bitmap images in the PostScript
 output. The image is inserted at the current raster position (set by one of
 the \dd{glRasterPos} OpenGL commands). Beware that the image will be sorted
-according to the position of the TODO only. The parameters are:
+according to the position of the TODO only. The arguments are:
 
 \begin{description}
 \item[\dd{x}] Specifies ... TODO
@@ -293,6 +310,11 @@ according to the position of the TODO only. The parameters are:
 \item[\dd{free}] Specifies ...
 \end{description}
 
+\subsubsection{Return value}
+
+TODO
+
+% -------------------------------------------------------------------------
 
 \subsection{\texttt{gl2psEnable} and \texttt{gl2psDisable}}
 \label{sec:gl2psEnable}
@@ -300,14 +322,14 @@ according to the position of the TODO only. The parameters are:
 \subsubsection{Specification}
 
 \begin{verbatim}
-void gl2psEnable( GLint mode )
+GLboolean gl2psEnable( GLint mode )
 \end{verbatim}
 
 \begin{verbatim}
-void gl2psDisable( GLint mode )
+GLboolean gl2psDisable( GLint mode )
 \end{verbatim}
 
-\subsubsection{Description}
+\subsubsection{Description and arguments}
 
 \dd{gl2psEnable} and \dd{gl2psDisable} delimit OpenGL commands to which a local
 \dd{mode} is applied. These modes are:
@@ -324,25 +346,37 @@ the current value of the corresponding OpenGL offset (set with
 functionality.
 \end{description}
 
+\subsubsection{Return value}
+
+TODO
+
+% -------------------------------------------------------------------------
+
 \subsection{\texttt{gl2psPointSize} and \texttt{gl2psLineWidth}}
 \label{sec:gl2psPointSize}
 
 \subsubsection{Specification}
 
 \begin{verbatim}
-void gl2psPointSize( GLfloat value )
+GLboolean gl2psPointSize( GLfloat value )
 \end{verbatim}
 
 \begin{verbatim}
-void gl2psLineWidth( GLfloat value )
+GLboolean gl2psLineWidth( GLfloat value )
 \end{verbatim}
 
-\subsubsection{Description}
+\subsubsection{Description and arguments}
 
 \dd{gl2psPointSize} and \dd{gl2psLineSize} emulate the standard
 \dd{glPointSize} and the \dd{glLineWidth} functions. They are necessary
 since the point sizes and line widths are not saved in the OpenGL feedback
 buffer.
+
+\subsubsection{Return value}
+
+TODO
+
+% -------------------------------------------------------------------------
 
 \subsection{\texttt{gl2psBeginViewport} and \texttt{gl2psEndViewport}}
 \label{sec:gl2psBeginViewport}
@@ -350,17 +384,22 @@ buffer.
 \subsubsection{Specification}
 
 \begin{verbatim}
-void gl2psBeginViewport ( void )
+GLboolean gl2psBeginViewport ( void )
 \end{verbatim}
 
 \begin{verbatim}
 GLint gl2psEndViewport ( void )
 \end{verbatim}
 
-\subsubsection{Description}
+\subsubsection{Description and arguments}
 
 \dd{gl2psBeginViewport} and \dd{gl2psEndViewport} TODO ...
 
+\subsubsection{Return value}
+
+TODO
+
+% -------------------------------------------------------------------------
 
 \section{Example}
 

@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine
  *
- * $Id: gl2ps.h,v 1.43 2003-03-05 02:35:15 geuzaine Exp $
+ * $Id: gl2ps.h,v 1.44 2003-03-05 18:29:33 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -207,22 +207,21 @@ typedef struct {
 extern "C" {
 #endif
 
-GL2PSDLL_API void gl2psBeginPage(const char *title, const char *producer, 
-				 GLint format, GLint sort, GLint options, 
-				 GLint colormode, GLint colorsize, GL2PSrgba *colormap, 
-				 GLint nr, GLint ng, GLint nb, GLint buffersize,
-				 FILE *stream, const char *filename);
-GL2PSDLL_API GLint gl2psEndPage(void);
-GL2PSDLL_API void gl2psBeginViewport(void);
-GL2PSDLL_API GLint gl2psEndViewport(void);
-GL2PSDLL_API void gl2psText(const char *str, const char *fontname, GLshort fontsize);
-GL2PSDLL_API void gl2psPixmap(GLfloat x, GLfloat y, GLsizei w, GLsizei h,
-			      GLfloat* image, GLboolean free);
-GL2PSDLL_API void gl2psEnable(GLint mode);
-GL2PSDLL_API void gl2psDisable(GLint mode);
-GL2PSDLL_API void gl2psPointSize(GLfloat value);
-GL2PSDLL_API void gl2psLineWidth(GLfloat value);
-GL2PSDLL_API void gl2psNumShadeColors(GLint nr, GLint ng, GLint nb);
+GL2PSDLL_API GLboolean gl2psBeginPage(const char *title, const char *producer, 
+				      GLint format, GLint sort, GLint options, 
+				      GLint colormode, GLint colorsize, GL2PSrgba *colormap, 
+				      GLint nr, GLint ng, GLint nb, GLint buffersize,
+				      FILE *stream, const char *filename);
+GL2PSDLL_API GLboolean gl2psBeginViewport(void);
+GL2PSDLL_API GLint     gl2psEndPage(void);
+GL2PSDLL_API GLint     gl2psEndViewport(void);
+GL2PSDLL_API GLboolean gl2psText(const char *str, const char *fontname, GLshort fontsize);
+GL2PSDLL_API GLboolean gl2psPixmap(GLfloat x, GLfloat y, GLsizei w, GLsizei h,
+				   GLfloat* image, GLboolean free);
+GL2PSDLL_API GLboolean gl2psEnable(GLint mode);
+GL2PSDLL_API GLboolean gl2psDisable(GLint mode);
+GL2PSDLL_API GLboolean gl2psPointSize(GLfloat value);
+GL2PSDLL_API GLboolean gl2psLineWidth(GLfloat value);
 
 #ifdef __cplusplus
 };
