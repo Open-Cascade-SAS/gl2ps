@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.127 2003-10-25 08:36:32 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.128 2003-10-25 08:41:51 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -2011,7 +2011,7 @@ void gl2psPrintPostScriptFooter(void){
       gl2psMsg(GL2PS_ERROR, "Zlib deflate error");
     else
       fwrite(gl2ps->compress->dest+2, gl2ps->compress->destLen-6, 1, gl2ps->stream);
-    // FIXME: I don't understand the +2 and -6 above
+    /* FIXME: I don't understand the +2 and -6 above */
 
     crc = crc32(0L, gl2ps->compress->start, gl2ps->compress->srcLen);
     for(n = 0; n < 4; ++n) {
