@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.71 2003-01-30 18:05:43 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.72 2003-01-30 18:07:07 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1029,7 +1029,7 @@ void gl2psBuildPolygonBoundary(GL2PSbsptree *tree){
 
 void gl2psAddPolyPrimitive(GLshort type, GLshort numverts, 
 			   GL2PSvertex *verts, GLint offset, 
-			   GLshort dash, GLfloat width,
+			   char dash, GLfloat width,
 			   char boundary){
   GLshort i;
   GLfloat factor, units, area, dZ, dZdX, dZdY, maxdZ;
@@ -1133,9 +1133,9 @@ GLint gl2psGetVertex(GL2PSvertex *v, GLfloat *p){
 }
 
 GLint gl2psParseFeedbackBuffer(void){
-  char flag;
+  char flag, dash = 0;
+  GLshort boundary;
   GLint i, used, count, v, vtot, offset = 0;
-  GLshort boundary, dash = 0;
   GLfloat lwidth = 1., psize = 1.;
   GLfloat *current;
   GL2PSvertex vertices[3];
