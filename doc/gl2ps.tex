@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to Postscript Printing Library
 %  Copyright (C) 1999-2001  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.12 2001-08-06 12:22:19 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.13 2001-08-08 21:58:16 geuzaine Exp $
 % 
 %  E-mail: Christophe.Geuzaine@advalvas.be
 %  URL: http://www.geuz.org/gl2ps/
@@ -26,25 +26,28 @@
 
 \pagestyle{headings}
 \setcounter{tocdepth}{2}
-
+\sloppypar
 \ifx\pdfoutput\undefined
   \usepackage{url}
 \else
   \usepackage[colorlinks=true,urlcolor=blue]{hyperref}
-  \pdfinfo {
+  \pdfinfo{
     /Title (GL2PS, an OpenGL to Postscript Printing Library)
     /Author (Christophe Geuzaine)
+    /Subject (Documentation)
+    /Keywords (OpenGL, Postscript, Printing)
   } 
 \fi
 \newcommand\dd{\begingroup\Url}
 \newcommand\email{\dd}
-%%tth:\def\dd#1{\textmd{\texttt{#1}}}
-%%tth:\def\url#1{\href{#1}{#1}}
-%%tth:\def\email#1{\href{mailto:#1}{#1}}
+
+%%tth: \def\dd#1{\textmd{\texttt{#1}}}
+%%tth: \def\url#1{\href{#1}{#1}}
+%%tth: \def\email#1{\href{mailto:#1}{#1}}
 
 \begin{document}
 
-%%tth:\special{html:<BODY TEXT="#000000" BGCOLOR="#ffffff">}
+%%tth: \special{html:<BODY TEXT="#000000" BGCOLOR="#ffffff">}
 
 \title{GL2PS, an OpenGL to Postscript Printing Library}
 \author{Christophe Geuzaine}
@@ -52,9 +55,16 @@
 
 \maketitle
 
-%%tth:\section*{Download}
-%%tth:The current archive of the package is available
-%%tth:\href{http://www.geuz.org/gl2ps/gl2ps-0.41.tar.gz}{here}.
+%%tth: \section*{Download}
+%%tth: The current distribution of GL2PS is available either as a
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.41.tar.gz}{tar.gz}
+%%tth: or as a 
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.41.zip}{zip}
+%%tth: archive. These archives contain both a
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{postscript}
+%%tth: and a
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps.pdf}{pdf}
+%%tth: version of the documentation.
 
 \tableofcontents
 
@@ -62,7 +72,7 @@
 
 GL2PS is a library for creating postscript output from any OpenGL
 application. Though it was primarily designed for three-dimensional geometry,
-mesh and postprocessing visualization, it may be useful everytime high quality
+mesh and post-processing visualization, it may be useful every time high quality
 vector output is desired. The main difference between GL2PS and other similar
 libraries is the use of sorting algorithms capable of handling intersecting and
 stretched polygons, as well as non manifold objects.
@@ -72,7 +82,7 @@ License (see \url{http://www.gnu.org/} for more details), and is available
 at \url{http://www.geuz.org/gl2ps/}. Any corrections, questions or
 suggestions should be e-mailed to \email{Christophe.Geuzaine@advalvas.be}.
 
-The interface consists of five functions, all begining with the prefix
+The interface consists of five functions, all beginning with the prefix
 \dd{gl2ps}. All the data structures and the symbolic constants peculiar to
 GL2PS begin with \dd{GL2PS}.
 
@@ -139,8 +149,10 @@ given to \dd{gl2psBeginPage} determine the way primitives are handled:
 \item[\dd{GL2PS_SIMPLE_SORT}] The primitives are sorted according to their
 barycenter. This can be sufficient for simple scenes.
 
-\item[\dd{GL2PS_BSP_SORT}] The primitives are inserted in a BSP tree. The tree
-is traversed back to front in a painter-like algorithm.
+\item[\dd{GL2PS_BSP_SORT}] The primitives are inserted in a BSP tree. The
+tree is then traversed back to front in a painter-like algorithm. This
+should be used for complex three-dimensional scenes, but keep in mind that
+the BSP tree algorithm is quite memory hungry...
 
 \item[\dd{GL2PS_DRAW_BACKGROUND}] The background frame is drawn.
 
@@ -159,7 +171,7 @@ efficient yet.
 
 %\item[\dd{GL2PS_OCCLUSION_CULL}] Removes (well, tries to remove) all hidden
 %polygons from the output, thus substancially reducing the size of the output
-%file. This is not functionnal yet.
+%file. This is not functional yet.
 \end{description}
 
 
@@ -218,14 +230,14 @@ mode is applied. These modes are:
 
 \begin{description}
 \item[\dd{GL2PS_POLYGON_OFFSET_FILL}] Tries to emulate the
-\dd{GL_POLYGON_OFFSET_FILL} functionnality. The value of the offset is taken as
+\dd{GL_POLYGON_OFFSET_FILL} functionality. The value of the offset is taken as
 the current value of the corresponding OpenGL offset (set with
-\dd{glPolygonOffset}). Not fully functionnal yet.
+\dd{glPolygonOffset}). Not fully functional yet.
 
 \item[\dd{GL2PS_POLYGON_BOUNDARY}] Not implemented yet.
 
 \item[\dd{GL2PS_LINE_STIPPLE}] Tries to emulate the \dd{GL_LINE_STIPPLE}
-functionnality.
+functionality.
 \end{description}
 
 \subsection{\texttt{gl2psPointSize} and \texttt{gl2psLineWidth}}
@@ -261,9 +273,8 @@ the file \dd{"MyFile"}, with all lines slightly shifted front in the
 z-buffer. The \dd{draw()} function contains all OpenGL instructions.
 
 \begin{verbatim}
-fp = fopen("MyFile", "w");
-buffsize = 0;
-state = GL2PS_OVERFLOW;
+FILE *fp = fopen("MyFile", "w");
+int buffsize = 0, state = GL2PS_OVERFLOW;
 
 while( state == GL2PS_OVERFLOW ){ 
   buffsize += 1024*1024;
@@ -308,22 +319,23 @@ GLpr library from CEI international (\url{http://www.ceintl.com/}).
 \section{Versions}
 
 \begin{description}
-\item[0.1 (Feb 12, 2000)] First distributed version.
-\item[0.2 (Feb 20, 2000)] Added \dd{GL2PS_POLYGON_BOUNDARY} and
+\item[0.1] (Feb 12, 2000) First distributed version.
+\item[0.2] (Feb 20, 2000) Added \dd{GL2PS_POLYGON_BOUNDARY} and
 \dd{GL2PS_BEST_ROOT}. Changed arguments of \dd{gl2psBeginPage} and
 \dd{gl2psText}. Corrected some memory allocation stuff. First version of
 this user's guide.
-\item[0.21 (Mar 16, 2000)] Initialization fixes.
-\item[0.3 (Jul 29, 2000)] Code cleaning. Added \dd{GL2PS_LINE_STIPPLE}.
-\item[0.31 (Aug 14, 2000)] Better handling of erroneous primitives.
-\item[0.32 (May 23, 2001)] Fixed memory leaks.
-\item[0.4 (Jun 12, 2001)] Added \dd{gl2psPointSize} and
+\item[0.21] (Mar 16, 2000) Initialization fixes.
+\item[0.3] (Jul 29, 2000) Code cleaning. Added \dd{GL2PS_LINE_STIPPLE}.
+\item[0.31] (Aug 14, 2000) Better handling of erroneous primitives.
+\item[0.32] (May 23, 2001) Fixed memory leaks.
+\item[0.4] (Jun 12, 2001) Added \dd{gl2psPointSize} and
 \dd{gl2psLineWidth}. Some code cleaning to allow easier generation of vector
 file formats other than postscript.
-\item[0.41 (August 6, 2001)] Fixed string allocation (1 char too
+\item[0.41] (Aug 6, 2001) Fixed string allocation (1 char too
 short). Set smaller default line width.
-% Occlusion culling.
 \end{description}
+
+% Occlusion culling... In version 9.99? :-(
 
 \end{document}
 

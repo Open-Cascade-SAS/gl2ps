@@ -1,10 +1,11 @@
-
-Testing + documenting
+$Id: TODO,v 1.2 2001-08-08 21:58:16 geuzaine Exp $
 
 Culling of occluded primitives. Anyone having experience with this,
-please send me an e-mail!
+please send me an e-mail! There are already some routines written, but
+it's not ready for primetime yet...
 
-Enhance the polygon/line/point offset stuff, set line/point sizes,
-enhance shading treatment, fix memory leaks, choose BSP root in a
-deterministic way, handle transparency(?), etc.
+Enhance the polygon/line/point offset stuff, enhance shading
+treatment, better choice of BSP root, handle transparency (is this
+possible in postscript?).
 
+Better testing + documenting

@@ -1,4 +1,4 @@
-#! /bin/csh -f
+#!/bin/csh -f
 
 if ( "$#argv" < "1" ) then
   echo  usage: MakeDistribution number
@@ -13,7 +13,7 @@ latex gl2ps
 latex gl2ps
 dvips gl2ps -o
 l2h gl2ps
-rm -f gl2ps.toc gl2ps.out
+rm -f gl2ps.toc gl2ps.out gl2ps.aux
 pdflatex gl2ps
 pdflatex gl2ps
 
@@ -21,6 +21,12 @@ cd ..
 cp TODO COPYING.LIB gl2ps.c gl2ps.h\
    doc/gl2ps.ps doc/gl2ps.pdf gl2ps-$1/
 chmod -R 755 gl2ps-$1
+rm -f gl2ps-$1.tar* gm2ps.ps gl2ps.pdf gl2ps.html
 tar cvf gl2ps-$1.tar gl2ps-$1
 gzip gl2ps-$1.tar
 touch gl2ps-$1.tar.gz
+cd gl2ps-$1 && zip -r gl2ps-$1.zip *
+mv gl2ps-$1.zip ..
+cd ..
+rm -rf gl2ps-$1
+cp doc/gl2ps.ps doc/gl2ps.pdf doc/gl2ps.html .
