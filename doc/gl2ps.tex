@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.67 2003-01-31 02:27:14 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.68 2003-02-17 03:21:40 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -27,10 +27,8 @@
 \pagestyle{headings}
 \setcounter{tocdepth}{2}
 \sloppypar
-\ifx\pdfoutput\undefined
-  \usepackage{url}
-\else
-  \usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\ifx\pdfoutput\undefined\else
   \pdfinfo{
     /Title (GL2PS: an OpenGL to PostScript printing library)
     /Author (Christophe Geuzaine)
@@ -38,12 +36,10 @@
     /Keywords (OpenGL, PostScript, Printing)
   } 
 \fi
-\newcommand\dd{\begingroup\Url}
-\newcommand\email{\dd}
+\newcommand{\dd}{\begingroup\Url}
+\newcommand{\email}[2]{\href{mailto:#2}{#1}}
 
 %%tth: \def\dd#1{\textmd{\texttt{#1}}}
-%%tth: \def\url#1{\href{#1}{#1}}
-%%tth: \def\email#1{\href{mailto:#1}{#1}}
 
 \begin{document}
 
@@ -78,7 +74,7 @@ as well as non manifold objects.
 The library, written in C, is released under the GNU Library General Public
 License (see \url{http://www.gnu.org/} for more details), and is available
 at \url{http://www.geuz.org/gl2ps/}. Any corrections, questions or
-suggestions should be e-mailed to \email{geuz@geuz.org}.
+suggestions should be e-mailed to \email{geuz@geuz.org}{geuz@geuz.org}.
 
 The interface consists of eight functions, all beginning with the prefix
 \dd{gl2ps}. All the data structures and the symbolic constants peculiar to
@@ -401,25 +397,38 @@ been implemented yet.
 % polygon offsets
 % PostScript shading
 
+% From the GLpr FAQ:
+%
+% 3. Can GLpr handle 2D texture mapping?
+% 
+%    Only for pixel-based output (i.e. captured with glpImage()).  GLpr
+%    cannot duplicate the effects of texture mapping for vector
+%    (move-draw) output.  Unfortunately, the information required is not
+%    present in the OpenGL feedback buffer.  
+%
+% 4. Can GLpr handle 1D texture mapping?
+%
+%    Not in the present release.  However, future releases may provide
+%    support for 1D texture maps (e.g. color lookup).
+
 \section{Contributors}
 \label{sec:contrib}
 
-Michael Sweet (\email{mike@easysw.com}) for the original implementation of
-the feedback buffer parser; Bruce Naylor (\email{naylor@comp-graphics.com})
-for BSP tree and occlusion culling hints; Marc Um{\'e}
-(\email{marc.ume@digitalgraphics.be}) for the original list code;
-Jean-Fran\c{c}ois Remacle (\email{remacle@scorec.rpi.edu}) for plane
-equation fixes; Bart Kaptein (\email{B.L.Kaptein@lumc.nl}) for memory leak
-fixes; Quy Nguyen-Dai (\email{quy@vnilux.com}) for output file size
-optimization; Sam Buss (\email{sbuss@ucsd.edu}) for the \dd{shfill}-based
-smooth shaded triangle code; Shane Hill
-(\email{Shane.Hill@dsto.defence.gov.au}) for the landscape option
-implementation; Romain Boman (\email{r_boman@yahoo.fr}) for the Windows dll
-generation; Rouben Rostamian (\email{rostamian@umbc.edu}) for various bug
-fixes; Diego Santa Cruz (\email{Diego.SantaCruz@epfl.ch}) for the new
-optimized shaded triangle code and the \dd{shfill} management; Shahzad
-Muzaffar (\email{Shahzad.Muzaffar@cern.ch}) and Lassi Tuura
-(\email{lassi.tuura@cern.ch}) for the new occlusion culling code and the
+\email{Michael Sweet}{mike@easysw.com} for the original implementation of
+the feedback buffer parser; \email{Bruce Naylor}{naylor@comp-graphics.com}
+for BSP tree and occlusion culling hints; \email{Marc
+Um{\'e}}{marc.ume@digitalgraphics.be} for the original list code;
+\email{Jean-Fran\c{c}ois Remacle}{remacle@scorec.rpi.edu} for plane equation
+fixes; \email{Bart Kaptein}{B.L.Kaptein@lumc.nl} for memory leak fixes;
+\email{Quy Nguyen-Dai}{quy@vnilux.com} for output file size optimization;
+\email{Sam Buss}{sbuss@ucsd.edu} for the \dd{shfill}-based smooth shaded
+triangle code; \email{Shane Hill}{Shane.Hill@dsto.defence.gov.au} for the
+landscape option implementation; \email{Romain Boman}{r_boman@yahoo.fr} for
+the Windows dll generation; \email{Rouben Rostamian}{rostamian@umbc.edu} for
+various bug fixes; \email{Diego Santa Cruz}{Diego.SantaCruz@epfl.ch} for the
+new optimized shaded triangle code and the \dd{shfill} management;
+\email{Shahzad Muzaffar}{Shahzad.Muzaffar@cern.ch} and \email{Lassi
+Tuura}{lassi.tuura@cern.ch} for the new occlusion culling code and the
 improvement of \dd{GL2PS_BEST_ROOT}.
 
 \section{Links}
@@ -431,7 +440,7 @@ rendereps (\url{http://www.opengl.org/developers/code/mjktips/Feedback.html}); t
 GLpr library from CEI international (\url{http://www.ceintl.com/}; this
 product does not seem to be available anymore).
 
-Toby White (\email{tow@sdf.lonestar.org}) maintains a Python wrapper for
+\email{Toby White}{tow@sdf.lonestar.org} maintains a Python wrapper for
 \dd{GL2PS}, available at \url{http://tow.freeshell.org/software.html}.
 
 \section{Versions}
