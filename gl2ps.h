@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine
  *
- * $Id: gl2ps.h,v 1.24 2002-09-03 23:35:35 geuzaine Exp $
+ * $Id: gl2ps.h,v 1.25 2002-09-06 19:00:31 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -79,6 +79,7 @@
 #define GL2PS_OCCLUSION_CULL             (1<<4)
 #define GL2PS_NO_TEXT                    (1<<5)
 #define GL2PS_LANDSCAPE                  (1<<6)
+#define GL2PS_NO_PS3_SHADING             (1<<7)
 
 /* Arguments for gl2psEnable/gl2psDisable */
 
@@ -172,7 +173,7 @@ typedef struct {
   char *title, *producer, *filename;
   GLboolean shade, boundary;
   GLfloat *feedback, offset[2];
-  GL2PSrgba *colormap, lastrgba;
+  GL2PSrgba *colormap, lastrgba, threshold;
   float lastlinewidth;
   GL2PSlist *primitives;
   FILE *stream;
@@ -196,6 +197,7 @@ GL2PSDLL_API GLvoid gl2psEnable(GLint mode);
 GL2PSDLL_API GLvoid gl2psDisable(GLint mode);
 GL2PSDLL_API GLvoid gl2psPointSize(GLfloat value);
 GL2PSDLL_API GLvoid gl2psLineWidth(GLfloat value);
+GL2PSDLL_API GLvoid gl2psNumShadeColors(GLint nr, GLint ng, GLint nb);
 
 #ifdef __cplusplus
 };
