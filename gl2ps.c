@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.137 2003-10-31 23:24:44 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.138 2003-11-02 18:39:15 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -2025,11 +2025,14 @@ void gl2psPrintPostScriptFooter(void){
       gl2psMsg(GL2PS_ERROR, "Zlib deflate error");
     }
     else{
-      /* write the data, without the 2 header bytes and the 4 footer
-	 bytes from the zlib stream */
-      /* FIXME: we should actually check the header to be sure that
-	 there is no extra data appended to it */
-      fwrite(gl2ps->compress->dest+2, gl2ps->compress->destLen-6, 1, gl2ps->stream);
+      /* determine the length of the header in the zlib stream */
+      n = 2; /* CMF+FLG */
+      if(gl2ps->compress->dest[1] & (1<<5)){
+	n += 4; /* DICTID */
+      }
+      /* write the data, without the zlib header and footer */
+      fwrite(gl2ps->compress->dest+n, gl2ps->compress->destLen-(n+4), 
+	     1, gl2ps->stream);
       /* add the gzip file footer */
       crc = crc32(0L, gl2ps->compress->start, gl2ps->compress->srcLen);
       for(n = 0; n < 4; ++n) {
