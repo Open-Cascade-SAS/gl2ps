@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.82 2003-03-06 00:12:59 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.83 2003-03-06 01:01:42 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1927,9 +1927,6 @@ GLint gl2psPrintPrimitives(void){
     case GL2PS_EPS :
       pprim = gl2psPrintPostScriptPrimitive;
       break;
-    default :
-      gl2psMsg(GL2PS_ERROR, "Unknown output format: %d", gl2ps->format);
-      break;
     }
 
     switch(gl2ps->sort){
@@ -2004,13 +2001,11 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
   gl2ps->threshold[2] = nb ? 1./(GLfloat)nb : 0.05;
   gl2ps->colormode = colormode;
   gl2ps->buffersize = buffersize > 0 ? buffersize : 2048 * 2048;
-  gl2ps->feedback = (GLfloat*)gl2psMalloc(gl2ps->buffersize * sizeof(GLfloat));
   for(i = 0; i < 4; i++){
     gl2ps->lastrgba[i] = -1.;
   }
   gl2ps->lastlinewidth = -1.;
   gl2ps->imagetree = NULL;
-  gl2ps->primitives = gl2psListCreate(500, 500, sizeof(GL2PSprimitive*));
 
   if(gl2ps->colormode == GL_RGBA){
     gl2ps->colorsize = 0;
@@ -2019,6 +2014,8 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
   else if(gl2ps->colormode == GL_COLOR_INDEX){
     if(!colorsize || !colormap){
       gl2psMsg(GL2PS_ERROR, "Missing colormap for GL_COLOR_INDEX rendering");
+      gl2psFree(gl2ps);
+      gl2ps = NULL;
       return GL2PS_ERROR;
     }
     gl2ps->colorsize = colorsize;
@@ -2027,23 +2024,24 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
   }
   else{
     gl2psMsg(GL2PS_ERROR, "Unknown color mode in gl2psBeginPage");
+    gl2psFree(gl2ps);
+    gl2ps = NULL;
     return GL2PS_ERROR;
   }
 
-  if(stream){
+  if(!stream){
+    gl2psMsg(GL2PS_ERROR, "Bad file pointer");
+    gl2psFree(gl2ps);
+    gl2ps = NULL;
+    return GL2PS_ERROR;
+  }
+  else{
     gl2ps->stream = stream;
     /* In case gl2psEndPage failed (e.g. due to a GL2PS_OVERFLOW) and
        we didn't reopen the stream before calling gl2psBeginPage
        again, we need to rewind the stream */
     rewind(gl2ps->stream);
   }
-  else{
-    gl2psMsg(GL2PS_ERROR, "Bad file pointer");
-    return GL2PS_ERROR;
-  }
-
-  glFeedbackBuffer(gl2ps->buffersize, GL_3D_COLOR, gl2ps->feedback);
-  glRenderMode(GL_FEEDBACK);  
 
   switch(gl2ps->format){
   case GL2PS_TEX :
@@ -2055,8 +2053,15 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
     break;
   default :
     gl2psMsg(GL2PS_ERROR, "Unknown output format: %d", gl2ps->format);
+    gl2psFree(gl2ps);
+    gl2ps = NULL;
     return GL2PS_ERROR;
   }
+
+  gl2ps->primitives = gl2psListCreate(500, 500, sizeof(GL2PSprimitive*));
+  gl2ps->feedback = (GLfloat*)gl2psMalloc(gl2ps->buffersize * sizeof(GLfloat));
+  glFeedbackBuffer(gl2ps->buffersize, GL_3D_COLOR, gl2ps->feedback);
+  glRenderMode(GL_FEEDBACK);  
 
   return GL2PS_SUCCESS;
 }
@@ -2081,9 +2086,6 @@ GL2PSDLL_API GLint gl2psEndPage(void){
   case GL2PS_EPS :
     gl2psPrintPostScriptFooter();
     break;
-  default :
-    gl2psMsg(GL2PS_ERROR, "Unknown output format: %d", gl2ps->format);
-    return GL2PS_ERROR;
   }
 
   fflush(gl2ps->stream);
