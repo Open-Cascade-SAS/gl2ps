@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.14 2003-03-06 00:31:43 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.15 2003-03-06 01:30:21 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -32,6 +32,7 @@
 */
 
 #include <GL/glut.h>
+#include <string.h>
 #include "gl2ps.h"
 
 static float rotation = 0.;
@@ -78,11 +79,34 @@ void teapot(void){
   glPopMatrix();
 }
 
-void text(void){
+void printstring(char *string){
+  int len, i;
+
+  /* call gl2psText before the glut function since
+     glutBitmapCharacter messes up the raster position... */
+  gl2psText(string, "Helvetica", 12);
+
+  len = (int)strlen(string);
+  for (i = 0; i < len; i++)
+    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, string[i]);
+}
+
+void text(){
+  double x = -1., y = -0.55, dy = 0.12;
+
   glDisable(GL_LIGHTING);
-  glColor3f(1., 0., 0.);
-  glRasterPos2d(0.1,-0.8); 
-  gl2psText("Hello, world!", "Helvetica", 12);
+  glColor3f(1., 1., 0.);
+
+  glRasterPos2d(x, y); y -= dy;
+  printstring("Press:");
+  glRasterPos2d(x, y); y -= dy;
+  printstring("  s: to save the images");
+  glRasterPos2d(x, y); y -= dy;
+  printstring("  m: to alternate between single and multiple viewport modes");
+  glRasterPos2d(x, y); y -= dy;
+  printstring("  q: to quit");
+  glRasterPos2d(x, y); y -= dy;
+  printstring("Click and move the mouse to rotate the objects");
 }
 
 void cube(void) {
@@ -217,7 +241,6 @@ void draw_multi(void){
   cube();
   pixmap();
   glPopMatrix();
-  text();
 
   gl2psEndViewport();
 
@@ -303,7 +326,7 @@ void keyboard(unsigned char key, int x, int y){
     reshape(window_w, window_h);
     display();
     break;
-  case 'w':
+  case 's':
     opt = GL2PS_DRAW_BACKGROUND;
     writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 0, "outSimple.eps");
 
@@ -342,12 +365,6 @@ int main(int argc, char **argv){
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);
   glutMotionFunc(motion);
-  
-  printf("Press:\n");
-  printf("  w: to save images\n");
-  printf("  m: to switch from single to multiple viewport mode\n");
-  printf("  q: to quit\n");
-  printf("Move the mouse to rotate the teapot\n");
   
   glutMainLoop();
   return 0;
