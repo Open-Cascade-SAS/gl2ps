@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.115 2003-09-16 23:22:45 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.116 2003-09-16 23:28:59 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -52,7 +52,7 @@ GL2PScontext *gl2ps = NULL;
 
 /********************************************************************* 
  *
- * Utility routines (system stuff, list code, etc.)
+ * Utility routines
  *
  *********************************************************************/
 
@@ -1203,7 +1203,7 @@ void gl2psBuildPolygonBoundary(GL2PSbsptree *tree){
 
 /********************************************************************* 
  *
- * The feedback buffer parser
+ * Feedback buffer parser
  *
  *********************************************************************/
 
@@ -1418,7 +1418,7 @@ void gl2psParseFeedbackBuffer(GLint used){
 
 /********************************************************************* 
  *
- * The PostScript routines
+ * PostScript routines
  *
  *********************************************************************/
 
@@ -1944,7 +1944,7 @@ GLint gl2psPrintPostScriptEndViewport(void){
 
 /********************************************************************* 
  *
- * The LaTeX routines
+ * LaTeX routines
  *
  *********************************************************************/
 
@@ -2042,8 +2042,7 @@ GLint gl2psPrintTeXEndViewport(void){
 
 /********************************************************************* 
  *
- * The PDF routines. tlist, tidxlist, ilist and slist contain
- * triangles, indexes for consecutive triangles, images and strings.
+ * PDF routines
  *
  *********************************************************************/
 
@@ -2208,6 +2207,8 @@ int gl2psOpenPDFDataStreamWritePreface(){
 void gl2psPrintPDFHeader(){
   int offs;
   
+  /* tlist, tidxlist, ilist and slist contain triangles, indexes for
+     consecutive triangles, images and strings */
   gl2ps->tlist = gl2psListCreate(0, 1, sizeof(GL2PStriangle));
   gl2ps->tidxlist = gl2psListCreate(0, 1, sizeof(int));
   gl2ps->ilist = gl2psListCreate(0, 1, sizeof(GL2PSimage));
@@ -2837,7 +2838,7 @@ GLint gl2psPrintPDFEndViewport(){
 
 /********************************************************************* 
  *
- * The general primitive printing routine
+ * General primitive printing routine
  *
  *********************************************************************/
 
@@ -2927,7 +2928,7 @@ GLint gl2psPrintPrimitives(void){
 
 /********************************************************************* 
  *
- * The public routines
+ * Public routines
  *
  *********************************************************************/
 
@@ -3140,7 +3141,15 @@ GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname, GLshort f
   prim->culled = 0;
   prim->dash = 0;
   prim->width = 1;
-  glGetFloatv(GL_CURRENT_RASTER_COLOR, prim->verts[0].rgba);
+  if(rgba){
+    prim->verts[0].rgba[0] = rgba[0];
+    prim->verts[0].rgba[1] = rgba[1];
+    prim->verts[0].rgba[2] = rgba[2];
+    prim->verts[0].rgba[3] = rgba[3];
+  }
+  else{
+    glGetFloatv(GL_CURRENT_RASTER_COLOR, prim->verts[0].rgba);
+  }
   prim->text = (GL2PSstring*)gl2psMalloc(sizeof(GL2PSstring));
   prim->text->str = (char*)gl2psMalloc((strlen(str)+1)*sizeof(char));
   strcpy(prim->text->str, str); 
@@ -3148,12 +3157,6 @@ GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname, GLshort f
   strcpy(prim->text->fontname, fontname);
   prim->text->fontsize = fontsize;
   prim->text->alignment = alignment;
-  if(rgba){
-    prim->verts[0].rgba[0] = rgba[0];
-    prim->verts[0].rgba[1] = rgba[1];
-    prim->verts[0].rgba[2] = rgba[2];
-    prim->verts[0].rgba[3] = rgba[3];
-  }
 
   gl2psListAdd(gl2ps->primitives, &prim);
 

@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.32 2003-09-16 23:22:45 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.33 2003-09-16 23:28:59 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -518,7 +518,6 @@ void keyboard(unsigned char key, int x, int y){
 
     opt = GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT | GL2PS_DRAW_BACKGROUND;
     writefile(format, GL2PS_BSP_SORT, opt, 0, "outBspCulled", ext);
-    writefile(GL2PS_PDF, GL2PS_BSP_SORT, opt, 0, "outBspCulled", ext);
 
     opt = GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT | GL2PS_NO_TEXT;
     writefile(format, GL2PS_BSP_SORT, opt, 0, "outLatex", ext);
