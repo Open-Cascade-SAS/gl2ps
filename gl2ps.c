@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.175 2004-07-11 22:56:19 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.176 2004-07-12 17:49:56 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -1825,6 +1825,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
   GLfloat *current;
   GL2PSvertex vertices[3];
   GL2PSprimitive *prim;
+  GL2PSimagemap *node;
 
   current = gl2ps->feedback;
   boundary = gl2ps->boundary = GL_FALSE;
@@ -1932,7 +1933,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
         prim->dash = 0;
         prim->width = 1;
         
-        GL2PSimagemap *node = (GL2PSimagemap*)gl2psMalloc(sizeof(GL2PSimagemap));
+        node = (GL2PSimagemap*)gl2psMalloc(sizeof(GL2PSimagemap));
         node->image = (GL2PSimage*)gl2psMalloc(sizeof(GL2PSimage));
         node->image->type = 0;
         node->image->format = 0;
@@ -2176,8 +2177,7 @@ static void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GL2PSimage *im)
 
 static void gl2psPrintPostScriptImagemap(GLfloat x, GLfloat y,
                                          GLsizei width, GLsizei height,
-                                         const unsigned char *imagemap,
-                                         FILE *stream){
+                                         const unsigned char *imagemap){
   int i, size;
   
   if((width <= 0) || (height <= 0)) return;
@@ -2284,8 +2284,9 @@ static void gl2psPrintPostScriptHeader(void)
   gl2psPrintf("/BD { bind def } bind def\n"
               "/C  { setrgbcolor } BD\n"
               "/G  { 0.082 mul exch 0.6094 mul add exch 0.3086 mul add neg 1.0 add setgray } BD\n"
-              "/W  { setlinewidth } BD\n"
-              "/FC { findfont exch /SH exch def SH scalefont setfont } BD\n"
+              "/W  { setlinewidth } BD\n");
+
+  gl2psPrintf("/FC { findfont exch /SH exch def SH scalefont setfont } BD\n"
               "/SW { dup stringwidth pop } BD\n"
               "/S  { FC moveto show } BD\n"
               "/SBC{ FC moveto SW -2 div 0 rmoveto show } BD\n"
@@ -2295,8 +2296,9 @@ static void gl2psPrintPostScriptHeader(void)
               "/SCR{ FC moveto SW neg SH -2 div rmoveto show } BD\n"
               "/STL{ FC moveto 0 SH neg rmoveto show } BD\n"
               "/STC{ FC moveto SW -2 div SH neg rmoveto show } BD\n"
-              "/STR{ FC moveto SW neg SH neg rmoveto show } BD\n"
-              "/P  { newpath 0.0 360.0 arc closepath fill } BD\n"
+              "/STR{ FC moveto SW neg SH neg rmoveto show } BD\n");
+
+  gl2psPrintf("/P  { newpath 0.0 360.0 arc closepath fill } BD\n"
               "/L  { newpath moveto lineto stroke } BD\n"
               "/SL { C moveto C lineto stroke } BD\n"
               "/T  { newpath moveto lineto lineto closepath fill } BD\n");
@@ -2473,8 +2475,7 @@ static void gl2psPrintPostScriptPrimitive(void *data)
       gl2psPrintPostScriptImagemap(prim->data.image->pixels[0],
                                    prim->data.image->pixels[1],
                                    prim->data.image->width, prim->data.image->height,
-                                   (const unsigned char*)(&(prim->data.image->pixels[2])),
-                                   gl2ps->stream);
+                                   (const unsigned char*)(&(prim->data.image->pixels[2])));
       prim->data.image->type = GL2PS_IMAGEMAP_WRITTEN;
     }
     break;
