@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.168 2004-03-19 16:47:25 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.169 2004-03-21 20:35:19 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -31,9 +31,9 @@
  * Contributors:
  *   Michael Sweet <mike@easysw.com>
  *   Marc Ume <marc.ume@digitalgraphics.be>
- *   Jean-Francois Remacle <remacle@scorec.rpi.edu>
+ *   Jean-Francois Remacle <remacle@gce.ucl.ac.be>
  *   Bart Kaptein <B.L.Kaptein@lumc.nl>
- *   Quy Nguyen-Dai<quy@vnilux.com>
+ *   Quy Nguyen-Dai <quy@nguyendai.org>
  *   Sam Buss <sbuss@ucsd.edu>
  *   Shane Hill <Shane.Hill@dsto.defence.gov.au>
  *   Romain Boman <r_boman@yahoo.fr>
