@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.90 2003-03-22 16:16:42 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.91 2003-05-08 17:33:21 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -155,10 +155,11 @@ also use a bitmap image (e.g.\ JPEG or PNG) and still combine it with
 \dd{stream} in the order they appear in the feedback buffer.
 \item[\dd{GL2PS_SIMPLE_SORT}] The primitives are sorted according to their
 barycenter. This can be sufficient for simple scenes.
-\item[\dd{GL2PS_BSP_SORT}] The primitives are inserted in a BSP tree. The
-tree is then traversed back to front in a painter-like algorithm. This
-should be used for complex three-dimensional scenes, but keep in mind that
-the BSP tree algorithm is quite memory hungry...
+\item[\dd{GL2PS_BSP_SORT}] The primitives are inserted in a Binary Space
+Partition (BSP) tree. The tree is then traversed back to front in a
+painter-like algorithm. This should be used for complex three-dimensional
+scenes, but keep in mind that the BSP tree algorithm is quite memory
+hungry...
 \end{description}
 
 \item[\dd{options}] Sets global plot options, chosen among (multiple options
