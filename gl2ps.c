@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to Postscript Printing Library
  * Copyright (C) 1999-2001  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.21 2001-10-08 21:36:01 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.22 2001-10-08 22:26:58 geuzaine Exp $
  *
  * E-mail: Christophe.Geuzaine@AdValvas.be
  * URL: http://www.geuz.org/gl2ps/
@@ -1082,6 +1082,8 @@ GLvoid gl2psPrintPostscriptHeader(GLvoid){
 	  "%%%%CreationDate: %s"
 	  "%%%%LanguageLevel: 2\n"
 	  "%%%%DocumentData: Clean7Bit\n"
+	  "%%%%Pages: 1\n"
+	  "%%%%PageOrder: Ascend\n"
 	  "%%%%Orientation: Portrait\n"
 	  "%%%%DocumentMedia: Default %d %d 0 () ()\n"
 	  "%%%%BoundingBox: %d %d %d %d\n"
@@ -1130,6 +1132,9 @@ GLvoid gl2psPrintPostscriptHeader(GLvoid){
 	  "/DeviceRGB setcolorspace\n"
 	  "gl2psdict begin\n"
 	  "%%%%EndSetup\n"
+	  "%%%%Page: 1 1\n"
+	  "%%%%BeginPageSetup\n"
+	  "%%%%EndPageSetup\n"
 	  "mark\n"
 	  "gsave\n"
 	  "1.0 1.0 scale\n",
