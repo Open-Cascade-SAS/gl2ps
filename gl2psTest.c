@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.58 2004-07-11 22:56:19 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.59 2004-07-14 21:00:35 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -359,6 +359,7 @@ void image(float x, float y, GLboolean opaque){
 
 /* A simple drawing function, using the default viewport */
 void draw_single(void){
+  glScissor(0, 0, window_w, window_h);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   triangles();
   extras();
@@ -530,12 +531,6 @@ void keyboard(unsigned char key, int x, int y){
     break;
   case 'v':
     display_multi = display_multi ? GL_FALSE : GL_TRUE;
-    if(display_multi == GL_TRUE){
-      glEnable(GL_SCISSOR_TEST);
-    }
-    else{
-      glDisable(GL_SCISSOR_TEST);
-    }
     reshape(window_w, window_h);
     display();
     break;
