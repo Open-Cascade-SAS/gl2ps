@@ -15,7 +15,7 @@ html:
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">" >> gl2ps.html
 	echo "<HTML>" >> gl2ps.html
 	echo "<HEAD>" >> gl2ps.html
-	echo "<TITLE>GL2PS: an OpenGL to Postscript printing library</TITLE>" >> gl2ps.html
+	echo "<TITLE>GL2PS: an OpenGL to PostScript printing library</TITLE>" >> gl2ps.html
 	echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">" >> gl2ps.html
 	echo "<META name=\"Autor-Handle\" content=\"geuz@geuz.org\">" >> gl2ps.html
 	echo "<LINK href=\"/general.css\" rel=\"stylesheet\">" >> gl2ps.html
