@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.192 2004-12-17 01:57:13 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.193 2004-12-17 02:52:04 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -1805,7 +1805,7 @@ static void gl2psBuildPolygonBoundary(GL2PSbsptree *tree)
 static void gl2psAddPolyPrimitive(GLshort type, GLshort numverts, 
                                   GL2PSvertex *verts, GLint offset, 
                                   GLushort pattern, GLint factor,
-				  GLfloat width, char boundary)
+                                  GLfloat width, char boundary)
 {
   GL2PSprimitive *prim;
 
@@ -1875,7 +1875,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
       current += i;
       used    -= i;
       gl2psAddPolyPrimitive(GL2PS_POINT, 1, vertices, 0, 
-			    pattern, factor, psize, 0);
+                            pattern, factor, psize, 0);
       break;
     case GL_LINE_TOKEN :
     case GL_LINE_RESET_TOKEN :
@@ -1888,7 +1888,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
       current += i;
       used    -= i;
       gl2psAddPolyPrimitive(GL2PS_LINE, 2, vertices, 0, 
-			    pattern, factor, lwidth, 0);
+                            pattern, factor, lwidth, 0);
       break;
     case GL_POLYGON_TOKEN :
       count = (GLint)current[1];
@@ -1912,7 +1912,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
           else
             flag = 0;
           gl2psAddPolyPrimitive(GL2PS_TRIANGLE, 3, vertices, offset,
-				pattern, factor, 1, flag);
+                                pattern, factor, 1, flag);
           vertices[1] = vertices[2];
         }
         else
@@ -1940,11 +1940,11 @@ static void gl2psParseFeedbackBuffer(GLint used)
       case GL2PS_BEGIN_LINE_STIPPLE : 
         current += 2;
         used -= 2; 
-	pattern = (GLushort)current[1]; 
+        pattern = (GLushort)current[1]; 
         current += 2;
         used -= 2; 
-	factor = (GLint)current[1]; 
-	break;
+        factor = (GLint)current[1]; 
+        break;
       case GL2PS_SRC_BLEND : 
         current += 2; 
         used -= 2; 
@@ -3052,7 +3052,7 @@ static void gl2psPDFgroupListInit(void)
       break;
     case GL2PS_LINE:
       if(lasttype != p->type || lastwidth != p->width || 
-	 lastpattern != p->pattern || lastfactor != p->factor ||
+         lastpattern != p->pattern || lastfactor != p->factor ||
          !gl2psSameColor(p->verts[0].rgba, lastrgba)){
         gl2psPDFgroupObjectInit(&gro);
         gro.ptrlist = gl2psListCreate(1, 2, sizeof(GL2PSprimitive*));
