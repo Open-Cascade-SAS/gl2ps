@@ -19,7 +19,7 @@ html:
 	echo "<LINK href=\"/general.css\" rel=\"stylesheet\">" >> gl2ps.html
 	echo "</HEAD>" >> gl2ps.html
 	echo "<BODY>" >> gl2ps.html
-	tth -r < gl2ps.tex >> gl2ps.html -Lgl2ps
+	tth -r -Lgl2ps < gl2ps.tex | sed -e "/<title>/D" >> gl2ps.html
 	echo "<P>Back to <a href=\"/\">geuz.org</a>" >> gl2ps.html
 	echo "</BODY>" >> gl2ps.html
 	echo "</HTML>" >> gl2ps.html
