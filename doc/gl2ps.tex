@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.82 2003-03-06 01:55:34 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.83 2003-03-06 03:08:11 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -196,7 +196,7 @@ the output, thus substantially reducing the size of the output file.
 \item[\dd{colortable}] Contains the colormap if \dd{colormode} is
 \dd{GL_COLOR_INDEX}. This colormap must contain \dd{colorsize} elements of type
 \dd{GL2PSrgba}.
-\item[\dd{nr}, \dd{ng}, \dd{nb}] Controls the number flat-shaded
+\item[\dd{nr}, \dd{ng}, \dd{nb}] Control the number flat-shaded
 (sub-)triangles used to approximate a smooth-shaded triangle when the
 \dd{shfill} operator is not supported by the system, or when the
 \dd{GL2PS_NO_PS3_SHADING} option is set. The arguments \dd{nr}, \dd{ng} and
@@ -219,7 +219,6 @@ printed.
 \item[\dd{GL2PS_ERROR}] if an error occured;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
-
 \dd{gl2psEndPage} returns:
 \begin{description}
 \item[\dd{GL2PS_NO_FEEDBACK}] if the feedback buffer is empty;
@@ -400,10 +399,11 @@ GLint gl2psEndViewport ( void )
 \subsubsection{Description and arguments}
 
 \dd{gl2psBeginViewport} and \dd{gl2psEndViewport} permit to output different
-viewports (see the OpenGL \dd{glViewport} and \dd{glScissor} functions).
-The argument given to \dd{gl2psBeginViewport} specifies the viewport
-(obtained for example with a call to \dd{glGetIntegerv(GL_VIEWPORT,
-viewport)}).
+viewports\footnote{See the description of \dd{glViewport} and \dd{glScissor}
+in the OpenGL documentation.} in the output stream. Each viewport is sorted
+separately and has its own backgound frame. The argument given to
+\dd{gl2psBeginViewport} specifies the viewport (obtained for example with a
+call to \dd{glGetIntegerv(GL_VIEWPORT, viewport)}).
 
 \subsubsection{Return value}
 
@@ -413,7 +413,6 @@ viewport)}).
 \item[\dd{GL2PS_ERROR}] if an error occurred;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
-
 \dd{gl2psEndViewport} returns:
 \begin{description}
 \item[\dd{GL2PS_NO_FEEDBACK}] if the feedback buffer is empty;
@@ -464,7 +463,7 @@ fclose(fp);
 gl2psText("MyText", "Courier", 12);
 \end{verbatim}
 
-If you plan to convert the PostScript file to a PDF file you may need to
+If you plan to convert the PostScript file into a PDF file you may need to
 disable the use of the Level 3 PostScript \dd{shfill} operator, i.e.\ add
 \dd{GL2PS_NO_PS3_SHADING} to the list of options. Note that you can also
 edit the output file a posteriori (just set \dd{/tryPS3shading} to
@@ -476,13 +475,13 @@ A complete example (\dd{gl2psTest.c}) is included in the distribution.
 \label{sec:limitations}
 
 GL2PS works by capturing the contents of the OpenGL feedback
-buffer\footnote{Check the documentation of \dd{glRenderMode(GL_FEEDBACK)} in
-your favorite OpenGL reference. See also section~\ref{sec:links} for links
-to other libraries using the same principle.}. As such, all the OpenGL
-operations applied in the pipeline after the creation of the feedback buffer
-will be ignored or have to be duplicated by GL2PS (e.g.\ font rendering,
-polygon offset or line stippling: see sections~\ref{sec:gl2psText},
-\ref{sec:gl2psEnable} and \ref{sec:gl2psPointSize}).
+buffer\footnote{See the description of \dd{glFeedbackBuffer} and
+\dd{glRenderMode(GL_FEEDBACK)} in the OpenGL documentation.}. As such, all
+the OpenGL operations applied in the pipeline after the creation of the
+feedback buffer will be ignored or have to be duplicated by GL2PS (e.g.\
+font rendering, polygon offset or line stippling---see
+sections~\ref{sec:gl2psText}, \ref{sec:gl2psEnable} and
+\ref{sec:gl2psPointSize}).
 
 Other limitations include:
 \begin{itemize}

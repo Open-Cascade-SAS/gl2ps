@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.84 2003-03-06 01:04:41 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.85 2003-03-06 03:08:11 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -261,6 +261,8 @@ void gl2psGetPlane(GL2PSprimitive *prim, GL2PSplane plane){
     break;
   default :
     gl2psMsg(GL2PS_ERROR, "Unknown primitive type in BSP tree");
+    plane[0] = plane[1] = plane[3] = 0.;
+    plane[2] = 1.;
     break;
   }
 }
@@ -1171,9 +1173,7 @@ GLint gl2psParseFeedbackBuffer(void){
   }
 
   if(used == 0){
-    /* 
-       gl2psMsg(GL2PS_INFO, "Empty feedback buffer"); 
-    */
+    /* gl2psMsg(GL2PS_INFO, "Empty feedback buffer"); */
     return GL2PS_NO_FEEDBACK;
   }
 
@@ -1939,7 +1939,7 @@ GLint gl2psPrintPrimitives(void){
     case GL2PS_SIMPLE_SORT :
       gl2psListSort(gl2ps->primitives, gl2psCompareDepth);
       if(gl2ps->options & GL2PS_OCCLUSION_CULL){
-	gl2psListAction(gl2ps->primitives,gl2psAddInImageTree);
+	gl2psListAction(gl2ps->primitives, gl2psAddInImageTree);
         gl2psFreeBspImageTree(&gl2ps->imagetree);
       }
       gl2psListActionInverse(gl2ps->primitives, pprim);
@@ -2069,10 +2069,7 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
 GL2PSDLL_API GLint gl2psEndPage(void){
   GLint res;
 
-  if(!gl2ps){
-    gl2psMsg(GL2PS_ERROR, "Uninitialized gl2ps context");
-    return GL2PS_ERROR;
-  }
+  if(!gl2ps) return GL2PS_UNINITIALIZED;
 
   res = gl2psPrintPrimitives();
 
