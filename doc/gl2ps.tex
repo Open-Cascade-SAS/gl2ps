@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.159 2004-03-06 17:12:21 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.160 2004-03-09 23:38:42 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -353,10 +353,10 @@ position of the current raster position only. The arguments are:
 \item[\dd{xorig}, \dd{yorig}] Specify the location of the origin in the
   image.  The origin is measured from the lower left corner of the image,
   with right and up being the positive axes.
-\item[\dd{format}] Specifies the format of the pixel data. The symbolic
-  constant \dd{GL_RGB} is the only one accepted at the moment.
-\item[\dd{type}] Specifies the data type for pixels. The symbolic constant
-  \dd{GL_FLOAT} is the only one accepted at the moment.
+\item[\dd{format}] Specifies the format of the pixel data. \dd{GL_RGB} and
+  \dd{GL_RGBA} are the only values accepted at the moment.
+\item[\dd{type}] Specifies the data type for pixels. \dd{GL_FLOAT} is the
+  only value accepted at the moment.
 \item[\dd{pixels}] Specifies a pointer to the pixel data.
 \end{description}
 
