@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to Postscript Printing Library, version 0.32
  * Copyright (C) 1999-2000  Christophe Geuzaine 
  *
- * Last Mod by Christophe on Mon Aug 14 23:49:15 2000
+ * $Id: gl2ps.c,v 1.2 2001-05-23 14:12:09 geuzaine Exp $
  *
  * E-mail: Christophe.Geuzaine@AdValvas.be
  * URL: http://www.geuz.org/gl2ps/
@@ -537,12 +537,18 @@ GLvoid gl2psBuildBspTree(GL2PSbsptree *tree, GL2PSlist *primitives){
     tree->front = (GL2PSbsptree*)gl2psMalloc(sizeof(GL2PSbsptree));
     gl2psBuildBspTree(tree->front, frontlist);
   }
-  
+   else
+    gl2psListDelete(frontlist);
+
   if(gl2psListNbr(backlist)){
-    gl2psListSort(frontlist, gl2psTrianglesFirst);
+    gl2psListSort(backlist, gl2psTrianglesFirst);
     tree->back = (GL2PSbsptree*)gl2psMalloc(sizeof(GL2PSbsptree));
     gl2psBuildBspTree(tree->back, backlist);
   }
+  else
+    gl2psListDelete(backlist);
+  
+  gl2psListDelete(primitives);
 }
 
 GLvoid  gl2psTraverseBspTree(GL2PSbsptree *tree, GL2PSxyz eye, GLfloat epsilon,
@@ -720,7 +726,7 @@ GLvoid gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list){
   c[1] /= prim->numverts;
 
   for(i=0 ; i<prim->numverts ; i++){
-    if(prim->boundary & (GLint)pow(2, i)){
+    if(prim->boundary & (GLint)pow(2., i)){
       b = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
       b->type = GL2PS_LINE;
       b->dash = prim->dash;
@@ -1198,7 +1204,7 @@ GLvoid gl2psBeginPage(char *title, char *producer, GLint sort, GLint options,
   gl2ps.sort = sort;
   gl2ps.options = options;
   gl2ps.colormode = colormode;
-  gl2ps.buffersize = buffersize > 0 ? buffersize : 1024 * 1024;
+  gl2ps.buffersize = buffersize > 0 ? buffersize : 2048 * 2048;
   gl2ps.feedback = (GLfloat*)gl2psMalloc(gl2ps.buffersize * sizeof(GLfloat));
   gl2ps.primitives = gl2psListCreate(500, 500, sizeof(GL2PSprimitive*));
 
@@ -1258,7 +1264,6 @@ GLint gl2psEndPage(GLvoid){
     case GL2PS_BSP_SORT :
       root = (GL2PSbsptree*)gl2psMalloc(sizeof(GL2PSbsptree));
       gl2psBuildBspTree(root, gl2ps.primitives);
-      gl2psListDelete(gl2ps.primitives);
       if(gl2ps.boundary) gl2psBuildPolygonBoundary(root);
       if(gl2ps.options & GL2PS_OCCLUSION_CULL){
 	gl2psTraverseBspTree(root, eye, -GL2PS_EPSILON, gl2psLess,
