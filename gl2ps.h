@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.70 2003-11-03 19:26:28 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.71 2003-11-05 05:33:33 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -227,8 +227,10 @@ typedef struct {
   char boundary, dash, culled;
   GLfloat width, depth;
   GL2PSvertex *verts;
-  GL2PSstring *text;
-  GL2PSimage *image;
+  union {
+    GL2PSstring *text;
+    GL2PSimage *image;
+  } data;
 } GL2PSprimitive;
 
 typedef struct {
