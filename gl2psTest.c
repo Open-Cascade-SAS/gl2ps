@@ -1,23 +1,34 @@
-/* $Id: gl2psTest.c,v 1.39 2003-10-24 21:06:58 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.40 2003-10-28 05:41:50 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
  *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of either:
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
+ * a) the GNU Libary General Public License as published by the Free
+ * Software Foundation; either version 2 of the Licnese, or (at your
+ * option) any later version, or
+ *
+ * b) the GL2PS License as published by Christophe Geuzaine, either
+ * version 1, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See either
+ * the GNU Libary General Public License or the GL2PS License for more
+ * details.
  *
  * You should have received a copy of the GNU Library General Public
- * License along with this library; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * License along with this library in the file named "COPYING.LGPL";
+ * if not, write to the Free Software Foundation, Inc., 675 Mass Ave,
+ * Cambridge, MA 02139, USA.
  *
- * Contributor(s):
+ * You should also have received a copy of the GL2PS License with this
+ * libary in the file named "COPYING.GL2PS"; if not, I will be glad to
+ * provide one.
+ *
+ * Contributors:
  *   Rouben Rostamian <rostamian@umbc.edu>
  *   Guy Barrand <barrand@lal.in2p3.fr>
  *

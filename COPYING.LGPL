@@ -1,17 +1,4 @@
 
-The GL2PS library and included programs are provided under the terms
-of the GNU Library General Public License (LGPL) with the following
-exception:
-
-  Static linking of applications to the GL2PS library does not
-  constitute a derivative work and does not require the author to
-  provide source code for the application, use the shared GL2PS
-  library, or link their applications against a user-supplied
-  version of GL2PS. If you link the application to a *modified*
-  version of GL2PS, then the changes to GL2PS must be provided 
-  under the terms of the LGPL in sections 1, 2, and 4.
-
-
 		  GNU LIBRARY GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 
