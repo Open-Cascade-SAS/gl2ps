@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.76 2003-03-04 21:23:56 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.77 2003-03-04 22:20:48 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1307,10 +1307,10 @@ int gl2psGetRGB(GLfloat *image, GLsizei width, GLsizei height, GLuint x, GLuint 
 
 void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei height,
 				GLfloat *image, FILE *stream){
-  int status = 1, nbhex, nbyte2, nbyte4, nbyte8;;
-  unsigned int row, col, col_max;
-  float dr, dg, db, fgrey;;
   typedef unsigned char Uchar;
+  int status = 1, nbhex, nbyte2, nbyte4, nbyte8;
+  unsigned int row, col, col_max;
+  float dr, dg, db, fgrey;
   Uchar red, green, blue, b, grey;
   /* Options */
   int shade = 0;
