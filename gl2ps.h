@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine
  *
- * $Id: gl2ps.h,v 1.53 2003-07-03 15:44:48 geuzaine Exp $
+ * $Id: gl2ps.h,v 1.54 2003-07-03 16:03:00 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -57,7 +57,7 @@
 
 #define GL2PS_MAJOR_VERSION 0
 #define GL2PS_MINOR_VERSION 9
-#define GL2PS_PATCH_VERSION 1
+#define GL2PS_PATCH_VERSION 2
 
 #define GL2PS_VERSION (GL2PS_MAJOR_VERSION + \
                        0.01 * GL2PS_MINOR_VERSION + \
@@ -197,7 +197,7 @@ typedef struct {
 typedef struct {
   GLint format, sort, options, colorsize, colormode, buffersize, maxbestroot;
   const char *title, *producer, *filename;
-  GLboolean boundary, traversedirection, zerosurfacearea;
+  GLboolean boundary, zerosurfacearea;
   GLfloat *feedback, offset[2];
   GLint viewport[4];
   GL2PSrgba *colormap, lastrgba, threshold;
