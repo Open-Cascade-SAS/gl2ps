@@ -11,4 +11,5 @@ default:
 	mv gl2ps-${RELEASE}/gl2ps-${RELEASE}.zip .
 
 test:
-	gcc test_gl2ps.c gl2ps.c -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm -Wall -ansi -pedantic
+	gcc -Wall -O3 -o test_gl2ps test_gl2ps.c gl2ps.c\
+            -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm

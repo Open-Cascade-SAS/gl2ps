@@ -47,10 +47,9 @@ void reshape(int w, int h)
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void write_with_gl2ps(void)
+void write_with_gl2ps(int sort, char *file)
 {
 	FILE *fp;
-	char *file = "zz.ps";
 	int state = GL2PS_OVERFLOW;
 	int bufsize = 0;
 
@@ -64,7 +63,7 @@ void write_with_gl2ps(void)
 				file,
 				"test",
 				GL2PS_PS,
-				GL2PS_BSP_SORT,
+				sort,
 				GL2PS_DRAW_BACKGROUND,
 				GL_RGBA, 0, NULL,
 				bufsize, fp, file);
@@ -85,7 +84,10 @@ void keyboard(unsigned char key, int x, int y)
 		exit(0);
 		break;
 	case 'w':
-		write_with_gl2ps();
+		write_with_gl2ps(GL2PS_BSP_SORT, "file_bsp.ps");
+		break;
+	case 'x':
+		write_with_gl2ps(GL2PS_SIMPLE_SORT, "file_simple.ps");
 		break;
 	}
 }
@@ -105,7 +107,8 @@ int main(int argc, char **argv)
 	putchar('\n');
 	printf("in the image window:\n");
 	putchar('\n');
-	printf("\tw: save image to postscript file\n");
+	printf("\tw: save image to postscript file, BSP_SORT\n");
+	printf("\tx: save image to postscript file, SIMPLE_SORT\n");
 	printf("\tq: quit\n");
 	putchar('\n');
 
