@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.148 2003-11-15 05:12:09 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.149 2003-11-15 05:18:28 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -1554,7 +1554,7 @@ void gl2psWriteByte(unsigned char byte){
 }
 
 void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei height,
-                                GLenum format, GLenum type, GLfloat *pixels){
+                                GLfloat *pixels){
   int nbhex, nbyte2, nbyte4, nbyte8;
   GLsizei row, col, col_max;
   GLfloat dr, dg, db;
@@ -1934,7 +1934,6 @@ void gl2psPrintPostScriptPrimitive(void *data){
   case GL2PS_PIXMAP :
     gl2psPrintPostScriptPixmap(prim->verts[0].xyz[0], prim->verts[0].xyz[1],
                                prim->data.image->width, prim->data.image->height,
-                               prim->data.image->format, prim->data.image->type,
                                prim->data.image->pixels);
     break;
   case GL2PS_TEXT :
@@ -2181,13 +2180,6 @@ void gl2psPrintTeXPrimitive(void *data){
 void gl2psPrintTeXFooter(void){
   fprintf(gl2ps->stream, "\\end{picture}%s\n",
           (gl2ps->options & GL2PS_LANDSCAPE) ? "}" : "");
-}
-
-void gl2psPrintTeXBeginViewport(GLint viewport[4]){
-}
-
-GLint gl2psPrintTeXEndViewport(void){
-  return GL2PS_SUCCESS;
 }
 
 /********************************************************************* 
@@ -3322,7 +3314,6 @@ GL2PSDLL_API GLint gl2psBeginViewport(GLint viewport[4]){
     gl2psPrintPDFBeginViewport(viewport);
     break;
   default :
-    /* FIXME: handle other formats */
     break;
   }
   
@@ -3343,7 +3334,6 @@ GL2PSDLL_API GLint gl2psEndViewport(void){
     res = gl2psPrintPDFEndViewport();
     break;
   default :
-    /* FIXME: handle other formats */
     res = GL2PS_SUCCESS;
     break;
   }
