@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.11 2003-03-04 21:19:11 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.12 2003-03-04 22:20:36 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -99,7 +99,7 @@ void reshape(int w, int h){
 void writeps(int format, int sort, int options, int nbcol, char *file){
   FILE *fp;
   int state = GL2PS_OVERFLOW;
-  int bufsize = 0;
+  int buffsize = 0;
  
   fp = fopen(file, "w");
 
@@ -112,8 +112,9 @@ void writeps(int format, int sort, int options, int nbcol, char *file){
   fflush(stdout);
 
   while(state == GL2PS_OVERFLOW){
+    buffsize += 1024*1024;
     gl2psBeginPage(file, "test", format, sort, options, GL_RGBA, 0, NULL,
-		   nbcol, nbcol, nbcol, bufsize, fp, file);
+		   nbcol, nbcol, nbcol, buffsize, fp, file);
     display();
     state = gl2psEndPage();
   }
