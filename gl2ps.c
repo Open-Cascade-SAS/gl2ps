@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.92 2003-03-08 01:08:19 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.93 2003-03-08 01:11:57 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -922,13 +922,16 @@ GLint gl2psAddInBspImageTree(GL2PSprimitive *prim, GL2PSbsptree2d **tree){
   GL2PSprimitive *frontprim = NULL, *backprim = NULL;
   
   /* FIXME: until we consider the actual extent of text strings and
-     pixmaps, never cull them */
+     pixmaps, never cull them. Otherwise the whole string/pixmap gets
+     culled as soon as the reference point is hidden */
   if(prim->type == GL2PS_PIXMAP || prim->type == GL2PS_TEXT){
     return 1;
   }
 
   /* FIXME: we might also want to disable culling of zero-surface
-     primitives, i.e. GL2PS_POINT and GL2PS_LINE... */
+     primitives, i.e. GL2PS_LINE. At the moment, if the two
+     extremities are hidden, the line is culled (which is
+     incorrect) */
 
   if(*tree == NULL){
     gl2psAddPlanesInBspTreeImage(prim, tree);
