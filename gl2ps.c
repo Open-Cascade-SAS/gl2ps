@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.156 2003-12-22 16:31:24 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.157 2003-12-22 18:24:00 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -187,7 +187,7 @@ int gl2psDeflate(void){
 #endif
 
 int gl2psPrintf(const char* fmt, ...){
-  int ret = 0;
+  int ret;
   va_list args;
 
 #ifdef GL2PS_HAVE_ZLIB
@@ -1385,6 +1385,12 @@ void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
       (prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) - 
       (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) * 
       (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]);
+
+    if(!area){
+      gl2psMsg(GL2PS_WARNING, "Primitive has zero area");
+      area = 1.0F;
+    }
+
     dZdX = 
       (prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) *
       (prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) -
@@ -1526,12 +1532,12 @@ void gl2psParseFeedbackBuffer(GLint used){
       case GL2PS_SRC_BLEND : 
         current += 2; 
         used -= 2; 
-        gl2ps->blendfunc[0] = (blending) ? (GLint)current[1] : GL_ONE;
+        gl2ps->blendfunc[0] = blending ? (GLint)current[1] : GL_ONE;
         break;
       case GL2PS_DST_BLEND : 
         current += 2; 
         used -= 2; 
-        gl2ps->blendfunc[1] = (blending) ? (GLint)current[1] : GL_ZERO;
+        gl2ps->blendfunc[1] = blending ? (GLint)current[1] : GL_ZERO;
         break;
       case GL2PS_SET_POINT_SIZE : 
         current += 2; 
@@ -2347,7 +2353,7 @@ int gl2psPrintPDFPages(void){
                  "endobj\n");
 }
 
-/* Open stream for data - graphical objects, fonts etc. PDF object 4*/
+/* Open stream for data - graphical objects, fonts etc. PDF object 4 */
 
 int gl2psOpenPDFDataStream(void){
   int offs = 0;
@@ -2392,7 +2398,7 @@ int gl2psOpenPDFDataStreamWritePreface(void){
   return offs;
 }
 
-/* Use the functions above to create the first part of the PDF*/
+/* Use the functions above to create the first part of the PDF */
 
 void gl2psPrintPDFHeader(void){
   int offs;
@@ -2728,7 +2734,7 @@ int gl2psPrintPDFSinglePage(void){
         
   /* Write variable resources */
 
-  /* Graphics States for shader alpha masks*/
+  /* Graphics States for shader alpha masks */
   if(gl2ps->options & GL2PS_TRANSPARENCY){
     shmasks += gl2psListNbr(gl2ps->tidxlist);
     offs += gl2psPrintPDFShaderExtGSResources(top + shmasks + gap,
@@ -3034,7 +3040,10 @@ int gl2psPrintPDFShaderMask(int obj, int childobj){
                   (int)gl2ps->viewport[0], (int)gl2ps->viewport[1],
                   (int)gl2ps->viewport[2], (int)gl2ps->viewport[3]);
   
-  len = strlen("/TrSh sh\n") + (int)log10(childobj)+1;
+  len = (childobj > 0) 
+    ? strlen("/TrSh sh\n") + (int)log10(childobj) + 1
+    : strlen("/TrSh0 sh\n");
+  
   offs += fprintf(gl2ps->stream,
                   "/Length %d\n"
                   ">>\n"
@@ -3066,11 +3075,11 @@ int gl2psPrintPDFShaderExtGS(int obj, int childobj){
                     "/BM /Multiply\n"
                     "/ca 1");
   }
-  else{*/
+  else{ */
     offs += fprintf(gl2ps->stream,
                     "/SMask << /S /Alpha /G %d 0 R >> ",
                     childobj);
-  /*}*/
+  /* } */
         
   offs += fprintf(gl2ps->stream,
                   ">>\n"
@@ -3365,7 +3374,7 @@ void gl2psPrintPDFFooter(void){
   
   pivot_size = GL2PS_FIXED_XREF_ENTRIES + 1;
   shader_size = gl2psListNbr(gl2ps->tidxlist);
-  image_size = gl2psListNbr(gl2ps->ilist) + gl2psPDFPixmapRGBAs(); /*make room for alpha masks*/
+  image_size = gl2psListNbr(gl2ps->ilist) + gl2psPDFPixmapRGBAs(); /* make room for alpha masks */
   text_size = gl2psListNbr(gl2ps->slist);
 
   shader_offs = gl2psPrintPDFShaderObjects(pivot_size, offs, 0);
