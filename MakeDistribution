@@ -19,7 +19,7 @@ pdflatex gl2ps
 
 cd ..
 cp TODO COPYING.LIB gl2ps.c gl2ps.h\
-   doc/gl2ps.tex doc/gl2ps.html doc/gl2ps.ps doc/gl2ps.pdf gl2ps-$1/
+   doc/gl2ps.ps doc/gl2ps.pdf gl2ps-$1/
 chmod -R 755 gl2ps-$1
 tar cvf gl2ps-$1.tar gl2ps-$1
 gzip gl2ps-$1.tar
