@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.86 2003-03-08 00:26:17 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.87 2003-03-08 00:28:44 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -422,8 +422,7 @@ call to \dd{glGetIntegerv(GL_VIEWPORT, viewport)}).
 \item[\dd{GL2PS_OVERFLOW}] if the size of the feedback buffer given to
 \dd{gl2psBeginPage} is not large enough;
 \item[\dd{GL2PS_UNINITIALIZED}] if \dd{gl2psEndPage} is called when the
-library is not initialized (e.g.\ if \dd{gl2psEndPage} is called before
-\dd{gl2psBeginPage});
+library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
