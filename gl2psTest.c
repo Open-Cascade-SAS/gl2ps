@@ -1,5 +1,5 @@
 /*
-gcc -Wall test_gl2ps.c gl2ps.c -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
+gcc -Wall -g -O3 -o gl2psTest gl2psTest.c gl2ps.c -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
 */
 
 #include <GL/glut.h>
@@ -7,18 +7,23 @@ gcc -Wall test_gl2ps.c gl2ps.c -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
 #include "gl2ps.h"
 
 void init(void){
+  float pos[3] = {0.,0.,1000.};
+
   glClearColor(0.0, 0.0, 0.0, 0.0);
   glEnable(GL_DEPTH_TEST);
   glShadeModel(GL_SMOOTH);
+  glLightfv(GL_LIGHT0, GL_POSITION, pos);
+  glEnable(GL_LIGHT0);
 }
 
 void triangle(void){
+  glDisable(GL_LIGHTING);
   glBegin(GL_TRIANGLES);
   
   glColor3f(1.0, 0.0, 0.0);
-  glVertex3f(0.0, 1.0, 0.0);
+  glVertex3f(-1.0, 1.0, 0.0);
   glColor3f(1.0, 1.0, 0.0);
-  glVertex3f(0.0, 0.0, 0.0);
+  glVertex3f(-1.0, 0.0, 0.0);
   glColor3f(1.0, 0.0, 1.0);
   glVertex3f(1.0, 0.0, 0.2);
   
@@ -27,14 +32,25 @@ void triangle(void){
   glColor3f(0.0, 1.0, 1.0);
   glVertex3f(1.0, 0.5, 0.0);
   glColor3f(0.0, 1.0, 1.0);
-  glVertex3f(0.0, 0.5, 0.1);
+  glVertex3f(-1.0, 0.5, 0.1);
   
   glEnd();
+}
+
+static float rotation = 0.;
+
+void teapot(void){
+  glEnable(GL_LIGHTING);
+  glPushMatrix();
+  glRotatef(rotation,2.,0.,1.0);
+  glutSolidTeapot(0.6);
+  glPopMatrix();
 }
 
 void display(void){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   triangle();
+  teapot();
   glFlush();
 }
 
@@ -42,7 +58,7 @@ void reshape(int w, int h){
   glViewport(0, 0, (GLsizei) w, (GLsizei) h);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho(-0.1,1.1, -0.1,1.1, -1.1,1.1);
+  glOrtho(-1.1,1.1, -1.1,1.1, -1.1,1.1);
   glMatrixMode(GL_MODELVIEW);
 }
 
@@ -55,7 +71,10 @@ void write_with_gl2ps(int format, int sort, int options, int nbcol, char *file){
     fprintf(stderr, "unable to open file %s for writing\n", file);
     exit(1);
   }
-  
+
+  printf("Saving image to file %s... ", file);
+  fflush(stdout);
+
   while (state == GL2PS_OVERFLOW) {
     gl2psBeginPage(file, "test", format, sort, options, GL_RGBA, 0, NULL,
 		   bufsize, fp, file);
@@ -63,10 +82,12 @@ void write_with_gl2ps(int format, int sort, int options, int nbcol, char *file){
     display();
     state = gl2psEndPage();
   }
-  
+
   fclose(fp);
+
+  printf("Done!\n");
+  fflush(stdout);
   
-  printf("image saved to file %s\n", file);
 }
 
 void keyboard(unsigned char key, int x, int y){
@@ -78,20 +99,30 @@ void keyboard(unsigned char key, int x, int y){
     break;
   case 'w':
     opt = 0;
-    write_with_gl2ps(GL2PS_PS,  GL2PS_BSP_SORT, opt, 1, "test_bsp.ps");
-
-    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 1, "test_bsp.eps");
-    write_with_gl2ps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 1, "test_simple.eps");
-
-    opt |= GL2PS_NO_PS3_SHADING;
-    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 2, "test_bsp_div2.eps");
-    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 7, "test_bsp_div7.eps");
-    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 20, "test_bsp_div20.eps");
+    write_with_gl2ps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 1, "outSimple.eps");
 
     opt = GL2PS_OCCLUSION_CULL;
-    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 1, "test_bsp_culled.eps");
+    write_with_gl2ps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 1, "outSimpleCulled.eps");
+
+    opt = GL2PS_NO_PS3_SHADING;
+    write_with_gl2ps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 2, "outSimpleShading2.eps");
+    write_with_gl2ps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 8, "outSimpleShading7.eps");
+    write_with_gl2ps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 16, "outSimpleShading16.eps");
+
+    opt = GL2PS_BEST_ROOT | GL2PS_SILENT;
+    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 1, "outBsp.eps");
+
+    opt = GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT | GL2PS_SILENT;
+    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 1, "outBspCulled.eps");
+
+    printf("Done with all images\n");
     break;
   }
+}
+
+void motion(int x, int y){
+  rotation += 10.;
+  display();
 }
 
 int main(int argc, char **argv){
@@ -104,13 +135,11 @@ int main(int argc, char **argv){
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);
+  glutMotionFunc(motion);
   
-  putchar('\n');
-  printf("in the image window:\n");
-  putchar('\n');
-  printf("\tw: save images\n");
-  printf("\tq: quit\n");
-  putchar('\n');
+  printf("Press:\n");
+  printf("  w: to save images\n");
+  printf("  q: to quit\n");
   
   glutMainLoop();
   return 0;
