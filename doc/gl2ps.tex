@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.184 2004-12-17 02:53:40 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.185 2004-12-17 15:56:54 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -427,14 +427,19 @@ GLint gl2psDisable( GLint mode )
 \dd{mode} is applied. These modes are:
 
 \begin{description}
-\item[\dd{GL2PS_BLEND}] Emulates the \dd{GL_BLEND} functionality.
+\item[\dd{GL2PS_LINE_STIPPLE}] Emulates the \dd{GL_LINE_STIPPLE}
+  functionality. The stippling pattern and repetition factor are taken
+  as the current values of the corresponding OpenGL stippling options
+  (set with \dd{glLineStipple}). You thus need to call
+  \dd{gl2psEnable(GL2PS_LINE_STIPPLE)} \emph{after} calling
+  \dd{glLineStipple(factor, pattern)}.
 \item[\dd{GL2PS_POLYGON_OFFSET_FILL}] Emulates the
   \dd{GL_POLYGON_OFFSET_FILL} functionality. The value of the offset is
   taken as the current value of the corresponding OpenGL offset (set with
-  \dd{glPolygonOffset}). Not fully functional yet.
+  \dd{glPolygonOffset}).
+\item[\dd{GL2PS_BLEND}] Emulates the \dd{GL_BLEND} functionality.
+  (Warning: this might change in future releases.)
 \item[\dd{GL2PS_POLYGON_BOUNDARY}] Not implemented yet.
-\item[\dd{GL2PS_LINE_STIPPLE}] Emulates the \dd{GL_LINE_STIPPLE}
-  functionality.
 \end{description}
 
 \subsubsection{Return value}
@@ -620,7 +625,17 @@ problems:
   PostScript file header.) The best way to generate PDF files is of course
   to set the \dd{format} argument to \dd{GL2PS_PDF} in the
   \dd{gl2psBeginPage} call...
-\end{itemize}
+\item By default, GL2PS checks if blending is globally enabled in
+  \dd{gl2psBeginPage()}. To enable blending for selected primitives
+  only, you should use \dd{gl2psEnable(GL2PS_BLEND)} and
+  \dd{gl2psDisable(GL2PS_BLEND)} pairs around the OpenGL calls that
+  need blending. (Warning: this might change in future releases.)
+\item \dd{gl2psEnable(GL2PS_LINE_STIPPLE)} uses the current values of
+  the OpenGL stippling options to compute the stippling pattern and
+  repetition factor. You thus need to call
+  \dd{gl2psEnable(GL2PS_LINE_STIPPLE)} \emph{after} calling
+  \dd{glLineStipple(factor, pattern)}.
+ \end{itemize}
 
 \section{Limitations}
 \label{sec:limitations}
