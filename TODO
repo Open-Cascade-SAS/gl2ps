@@ -1,4 +1,9 @@
-$Id: TODO,v 1.13 2004-05-09 03:58:38 geuzaine Exp $
+$Id: TODO,v 1.14 2004-05-26 19:26:27 geuzaine Exp $
+
+* Think about a way to provide a (even rough) progress indicator
+  through a callback...
+
+------------------------------------------------------------------------
 
 * Apple's Preview.app doesn't support '/ShadingType 4'... Should we
 submit a bug report to Apple?
