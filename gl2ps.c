@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.150 2003-11-15 08:35:30 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.151 2003-11-15 11:14:24 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -1694,12 +1694,12 @@ void gl2psPrintPostScriptHeader(void){
   time_t now;
 
 #ifdef GL2PS_HAVE_ZLIB
-  char tmp[10] = {0x1f, 0x8b, /* magic numbers */
-                  8, /* compression method = Z_DEFLATED */
+  char tmp[10] = {'\x1f', '\x8b', /* magic numbers: 0x1f, 0x8b */
+		  8, /* compression method: Z_DEFLATED */
 		  0, /* flags */
-                  0, 0, 0, 0, /* time */
-		  0, /* xflags */
-                  0x03}; /* OS code */
+		  0, 0, 0, 0, /* time */
+		  2, /* extra flags: max compression */
+		  '\x03'}; /* OS code: 0x03 (Unix) */
 
   if(gl2ps->options & GL2PS_COMPRESS){
     gl2psSetupCompress();
