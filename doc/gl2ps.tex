@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.58 2003-01-13 01:57:31 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.59 2003-01-17 00:42:07 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -49,15 +49,15 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.71, 13 December 2002}
+\date{Version 0.72, 16 January 2002}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.71.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.72.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.71.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.72.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
@@ -362,33 +362,46 @@ edit the output file a posteriori (just set \dd{/tryPS3shading} to
 A complete example can be found in the distribution in the file
 \dd{gl2psTest.c}.
 
-% \section{Implementation Notes}
-% \label{sec:implementation}
+\section{Limitations}
+\label{sec:limitations}
+
+GL2PS works by capturing the contents of the OpenGL feedback
+buffer\footnote{Check the documentation of \dd{glRenderMode(GL_FEEDBACK)} in
+your favorite OpenGL reference. See also section~\ref{sec:links} for links
+to other libraries using the same principle.}. As such, all the OpenGL
+operations applied in the pipeline after the creation of the feedback buffer
+will be ignored or have to be duplicated by GL2PS (e.g.\ font rendering,
+polygon offset or line stippling: see sections~\ref{sec:gl2psText},
+\ref{sec:gl2psEnable} and \ref{sec:gl2psPointSize}).
+
+Other limitations include:
+\begin{itemize}
+\item 
+Rendering large and/or complicated scenes is slow, and will always
+be. Vector-based images are not destined to replace bitmaps. They just offer
+an alternative when high quality (especially for 2D and small 3D plots) and
+ease of manipluation are important. Think for example about reusing a
+picture from a scientific paper you published a couple of years years ago,
+when you need to modify the labels, rescale the plot, change the colors,
+etc.
+\item
+Transparency is not supported yet. See the \dd{TODO} file for some insight
+on this topic.
+\item
+GL2PS does not support textures, volumic rendering, fog effects, etc. One
+could imagine producing mixed mode vector/bitmap output, but this has not
+been implemented yet.
+\end{itemize}
+
+% Other implementation Notes:
 %
 % OpenGL feedback buffer
-% Simple depth sort
-% 3D BSP tree
-% 2D BSP image tree for occlusion culling
+% describe Simple depth sort
+%          3D BSP tree
+%          2D BSP image tree for occlusion culling
 % float vs. double
 % polygon offsets
 % PostScript shading
-
-% \section{Bugs and limitations}
-% \label{sec:bugs}
-%
-% We can only capture what's in the feedback buffer. All the stuff applied in
-% the pipeline after the creation of the feedback buffer has to be duplicated
-% in gl2ps (fonts, polygon offset, line stipple, etc.)
-%
-% Rendering large/complicated scenes is slow, and will always be. Vector-based
-% images (and thus gl2ps) are not to replace bitmaps. They just offer high
-% quality (especially for 2D and small 3D) and ease of manipluation (e.g.\
-% think about reusing a picture from a paper you published 3 years ago, when
-% you need to modify the labels, rescale the plot, change the colors, etc.).
-%
-% No transparency yet. See TODO file for a discussion.
-%
-% No textures, fog, volumic rendering, etc.
 
 \section{Contributors}
 \label{sec:contrib}
@@ -471,6 +484,7 @@ the output file; revised documentation.
 \dd{GL2PS_BEST_ROOT}.
 \item[0.71] (Dec 13, 2002) Removed C++ style comments inadvertently left in
 the code; added example program \dd{gl2psTest.c} to the distribution.
+\item[0.72] (Jan 16, 2002) Enhanced documentation.
 \end{description}
 
 \end{document}
