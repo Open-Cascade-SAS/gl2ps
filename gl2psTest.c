@@ -1,5 +1,34 @@
 /*
-gcc -Wall -g -O3 -o gl2psTest gl2psTest.c gl2ps.c -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
+ * GL2PS, an OpenGL to PostScript Printing Library
+ * Copyright (C) 1999-2002  Christophe Geuzaine 
+ *
+ * $Id: gl2psTest.c,v 1.2 2002-12-14 02:26:42 geuzaine Exp $
+ *
+ * E-mail: geuz@geuz.org
+ * URL: http://www.geuz.org/gl2ps/
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the Free
+ * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ */
+
+/*
+  Original author: Rouben Rostamian <rostamian@umbc.edu>
+
+  To compile on a Linux system, type:
+
+  gcc -O3 gl2psTest.c gl2ps.c -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
 */
 
 #include <GL/glut.h>
@@ -16,7 +45,7 @@ void init(void){
   glEnable(GL_LIGHT0);
 }
 
-void triangle(void){
+void triangles(void){
   glDisable(GL_LIGHTING);
   glBegin(GL_TRIANGLES);
   
@@ -49,7 +78,7 @@ void teapot(void){
 
 void display(void){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  triangle();
+  triangles();
   teapot();
   glFlush();
 }
@@ -62,7 +91,7 @@ void reshape(int w, int h){
   glMatrixMode(GL_MODELVIEW);
 }
 
-void write_with_gl2ps(int format, int sort, int options, int nbcol, char *file){
+void writeps(int format, int sort, int options, int nbcol, char *file){
   FILE *fp;
   int state = GL2PS_OVERFLOW;
   int bufsize = 0;
@@ -99,21 +128,21 @@ void keyboard(unsigned char key, int x, int y){
     break;
   case 'w':
     opt = 0;
-    write_with_gl2ps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 1, "outSimple.eps");
+    writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 1, "outSimple.eps");
 
     opt = GL2PS_OCCLUSION_CULL;
-    write_with_gl2ps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 1, "outSimpleCulled.eps");
+    writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 1, "outSimpleCulled.eps");
 
     opt = GL2PS_NO_PS3_SHADING;
-    write_with_gl2ps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 2, "outSimpleShading2.eps");
-    write_with_gl2ps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 8, "outSimpleShading7.eps");
-    write_with_gl2ps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 16, "outSimpleShading16.eps");
+    writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 2, "outSimpleShading2.eps");
+    writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 8, "outSimpleShading7.eps");
+    writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 16, "outSimpleShading16.eps");
 
     opt = GL2PS_BEST_ROOT | GL2PS_SILENT;
-    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 1, "outBsp.eps");
+    writeps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 1, "outBsp.eps");
 
     opt = GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT | GL2PS_SILENT;
-    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 1, "outBspCulled.eps");
+    writeps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 1, "outBspCulled.eps");
 
     printf("Done with all images\n");
     break;
@@ -140,6 +169,7 @@ int main(int argc, char **argv){
   printf("Press:\n");
   printf("  w: to save images\n");
   printf("  q: to quit\n");
+  printf("Move the mouse to rotate the teapot\n");
   
   glutMainLoop();
   return 0;
