@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.55 2002-12-11 16:54:05 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.56 2002-12-11 17:05:52 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -618,7 +618,7 @@ void gl2psTraverseBspTree(GL2PSbsptree *tree, GL2PSxyz eye, GLfloat epsilon,
   }
 }
 
-/* The 2D sorting routines (for occlusion culling). */
+/* The 2D sorting routines (for occlusion culling) */
 
 GLint gl2psGetPlaneFromPoints(GL2PSxyz a, GL2PSxyz b, GL2PSplane plane){  
   GLfloat  n; 
@@ -652,9 +652,9 @@ void gl2psFreeBspImageTree(GL2PSbsptree2d **tree){
 GLint gl2psCheckPoint(GL2PSxyz point, GL2PSplane plane){
   GLfloat pt_dis;
   pt_dis = gl2psComparePointPlane(point, plane);
-  if(pt_dis>GL2PS_EPSILON)        return GL2PS_POINT_INFRONT;
-  else if(pt_dis<-GL2PS_EPSILON)  return GL2PS_POINT_BACK;
-  else                            return GL2PS_POINT_COINCIDENT;
+  if(pt_dis > GL2PS_EPSILON)        return GL2PS_POINT_INFRONT;
+  else if(pt_dis < -GL2PS_EPSILON)  return GL2PS_POINT_BACK;
+  else                              return GL2PS_POINT_COINCIDENT;
 }
 
 void gl2psAddPlanesInBspTreeImage(GL2PSprimitive *prim,
@@ -756,9 +756,9 @@ GLint gl2psCheckPrimitive(GL2PSprimitive *prim, GL2PSplane plane){
     pos |= gl2psCheckPoint(prim->verts[i].xyz, plane);
     if(pos == (GL2PS_POINT_INFRONT | GL2PS_POINT_BACK)) return GL2PS_SPANNING;
   }
-  if(pos & GL2PS_POINT_INFRONT)    return GL2PS_IN_FRONT_OF;
-  else if(pos & GL2PS_POINT_BACK)  return GL2PS_IN_BACK_OF;
-  else                             return GL2PS_COINCIDENT;
+  if(pos & GL2PS_POINT_INFRONT)   return GL2PS_IN_FRONT_OF;
+  else if(pos & GL2PS_POINT_BACK) return GL2PS_IN_BACK_OF;
+  else                            return GL2PS_COINCIDENT;
 }
 
 GL2PSprimitive* gl2psCreateSplitPrimitive2D(GL2PSprimitive *parent,
@@ -781,7 +781,6 @@ GL2PSprimitive* gl2psCreateSplitPrimitive2D(GL2PSprimitive *parent,
     child->verts[i] = vertx[i];
   return child;
 }
-
 
 void gl2psSplitPrimitive2D(GL2PSprimitive *prim, 
 			   GL2PSplane plane, 
@@ -891,8 +890,8 @@ GLint gl2psAddInImageTree(GL2PSprimitive *prim, GL2PSbsptree2d **tree){
       gl2psFree(backprim);
       return ret;
     case GL2PS_COINCIDENT:
-      if(prim->numverts<3)  return 1;
-      else                  return 0;
+      if(prim->numverts < 3) return 1;
+      else                   return 0;
     }
   }
   return 0;
@@ -905,9 +904,8 @@ void gl2psAddInImage(void *a, void *b){
     prim->depth = -1.;
   }
 }
-/* Boundary contruction */
 
-#define GL2PS_BOUNDARY_OFFSET 0
+/* Boundary contruction */
 
 void gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list){
   GL2PSprimitive *b;
@@ -932,6 +930,7 @@ void gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list){
       b->numverts = 2;
       b->verts = (GL2PSvertex *)gl2psMalloc(2 * sizeof(GL2PSvertex));
 
+#define GL2PS_BOUNDARY_OFFSET 0
 #if GL2PS_BOUNDARY_OFFSET
       v[0] = c[0] - prim->verts[i].xyz[0];
       v[1] = c[1] - prim->verts[i].xyz[1];
@@ -1020,7 +1019,8 @@ void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
   }
   else if(offset && type == GL2PS_TRIANGLE){
 
-    /* needs some more work... */
+    /* This needs some more work... */
+
     if(gl2ps->sort == GL2PS_SIMPLE_SORT){    
       factor = gl2ps->offset[0];
       units = gl2ps->offset[1];
@@ -1049,8 +1049,6 @@ void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
     maxdZ = sqrt(dZdX*dZdX + dZdY*dZdY);
 
     dZ = factor * maxdZ + units;
-
-    /* printf("dZ = %g  (fact=%g  units=%g)\n", dZ, factor, units); */
 
     prim->verts[0].xyz[2] += dZ;
     prim->verts[1].xyz[2] += dZ;
@@ -1543,7 +1541,7 @@ void gl2psPrintPostScriptFooter(void){
 	  "%%%%EOF\n");
 }
 
-/* The LaTeX routines. */
+/* The LaTeX routines */
 
 void gl2psPrintTeXHeader(void){
   GLint   viewport[4];
