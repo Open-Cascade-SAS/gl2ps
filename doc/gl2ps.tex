@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.140 2003-11-05 17:09:48 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.141 2003-11-06 21:41:40 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -513,7 +513,10 @@ disable the use of the Level 3 PostScript \dd{shfill} operator, i.e.\ add
 edit the output file a posteriori (just set \dd{/tryPS3shading} to
 \dd{false} in the PostScript file header). The best solution is probably to
 output the file directly in PDF, though, by replacing \dd{GL2PS_EPS} with
-\dd{GL2PS_PDF} in the \dd{gl2psBeginPage()} function call above.
+\dd{GL2PS_PDF} in the \dd{gl2psBeginPage()} function call
+above\footnote{Note that for PDF and/or compressed output, files should be
+opened in binary mode, i.e., with \dd{fopen(..., "wb")}, instead of
+\dd{fopen(..., "w")}.}.
 
 A complete example (\dd{gl2psTest.c}) is included in the distribution.
 
@@ -699,8 +702,9 @@ product does not seem to be available anymore).
   \dd{GL2PS_USE_CURRENT_VIEWPORT} option.
 \item[1.0.0] (Sep 24, 2003) Native PDF support contributed by Micha Bieber.
 \item[1.1.0] (Nov 4, 2003) New \dd{GL2PS_COMPRESS} option to create
-  compressed PostScript and PDF files; new alternative license (see
-  \dd{COPYING.GL2PS}).
+  compressed PostScript and PDF files; fixed small bug in the PDF output
+  that prevented the PDF files to be correctly included in \LaTeX\
+  documents; new alternative license (see \dd{COPYING.GL2PS}).
 \end{description}
 
 \end{document}

@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.43 2003-11-03 19:26:29 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.44 2003-11-06 21:41:40 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -244,7 +244,8 @@ void printstring(char *string){
 
   /* call gl2psText before the glut function since glutBitmapCharacter
      changes the raster position... */
-  gl2psText(string, "Helvetica", 12);
+  //gl2psText(string, "Helvetica", 12);
+  gl2psText(string, "ArialItalic", 12);
 
   len = (int)strlen(string);
   for (i = 0; i < len; i++)
@@ -352,9 +353,9 @@ void draw_multi(void){
 
   /* First viewport with triangles, teapot or torus, etc. */
   glViewport((GLint)(window_w * 0.05), (GLint)(window_h * 0.525), 
-	     (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
+             (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
   glScissor((GLint)(window_w * 0.05), (GLint)(window_h * 0.525), 
-	    (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
+            (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
   glClearColor(0.3, 0.3, 0.3, 0.);
   glGetIntegerv(GL_VIEWPORT, viewport);
 
@@ -375,9 +376,9 @@ void draw_multi(void){
 
   /* Second viewport with cube, image, etc. */
   glViewport((GLint)(window_w * 0.05), (GLint)(window_h * 0.025), 
-	     (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
+             (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
   glScissor((GLint)(window_w * 0.05), (GLint)(window_h * 0.025), 
-	     (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
+             (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
   glClearColor(0.5, 0.5, 0.5, 0.);
 
   glGetIntegerv(GL_VIEWPORT, viewport);
@@ -428,7 +429,7 @@ void reshape(int w, int h){
 }
 
 void writefile(int format, int sort, int options, int nbcol,
-	       char *filename, char *extension){
+               char *filename, char *extension){
   FILE *fp;
   char file[256];
   int state = GL2PS_OVERFLOW, buffsize = 0;
@@ -456,8 +457,8 @@ void writefile(int format, int sort, int options, int nbcol,
   while(state == GL2PS_OVERFLOW){
     buffsize += 1024*1024;
     gl2psBeginPage(file, "test", viewport, format, sort, options,
-		   GL_RGBA, 0, NULL, nbcol, nbcol, nbcol, 
-		   buffsize, fp, file);
+                   GL_RGBA, 0, NULL, nbcol, nbcol, nbcol, 
+                   buffsize, fp, file);
     display();
     state = gl2psEndPage();
   }
@@ -492,7 +493,7 @@ void keyboard(unsigned char key, int x, int y){
       ext = "eps";
     }
     printf("Print format changed to '%s'\n",
-	   (format == GL2PS_EPS) ? "EPS" : "PDF");
+           (format == GL2PS_EPS) ? "EPS" : "PDF");
     break;
   case 'v':
     display_multi = !display_multi;
@@ -533,7 +534,7 @@ void keyboard(unsigned char key, int x, int y){
     writefile(GL2PS_TEX, GL2PS_BSP_SORT, opt, 0, "outLatex", "tex");
 
     printf("GL2PS %d.%d.%d done with all images\n",
-	   GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION, GL2PS_PATCH_VERSION);
+           GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION, GL2PS_PATCH_VERSION);
     break;
   }
 }

@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.71 2003-11-05 05:33:33 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.72 2003-11-06 21:41:40 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -277,18 +277,18 @@ extern "C" {
 #endif
 
 GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer, 
-				  GLint viewport[4], GLint format, GLint sort,
-				  GLint options, GLint colormode,
-				  GLint colorsize, GL2PSrgba *colormap, 
-				  GLint nr, GLint ng, GLint nb, GLint buffersize,
-				  FILE *stream, const char *filename);
+                                  GLint viewport[4], GLint format, GLint sort,
+                                  GLint options, GLint colormode,
+                                  GLint colorsize, GL2PSrgba *colormap, 
+                                  GLint nr, GLint ng, GLint nb, GLint buffersize,
+                                  FILE *stream, const char *filename);
 GL2PSDLL_API GLint gl2psEndPage(void);
 GL2PSDLL_API GLint gl2psBeginViewport(GLint viewport[4]);
 GL2PSDLL_API GLint gl2psEndViewport(void);
 GL2PSDLL_API GLint gl2psText(const char *str, const char *fontname, GLshort fontsize);
 GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
-				   GLint xorig, GLint yorig,
-				   GLenum format, GLenum type, const void *pixels);
+                                   GLint xorig, GLint yorig,
+                                   GLenum format, GLenum type, const void *pixels);
 GL2PSDLL_API GLint gl2psEnable(GLint mode);
 GL2PSDLL_API GLint gl2psDisable(GLint mode);
 GL2PSDLL_API GLint gl2psPointSize(GLfloat value);
@@ -296,7 +296,7 @@ GL2PSDLL_API GLint gl2psLineWidth(GLfloat value);
 
 /* Undocumented */
 GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname, GLshort fontsize,
-				GLint align, GL2PSrgba color);
+                                GLint align, GL2PSrgba color);
 
 #ifdef __cplusplus
 };
