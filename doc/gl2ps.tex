@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.164 2004-03-16 00:53:07 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.165 2004-03-16 22:20:22 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -756,18 +756,20 @@ does not seem to be available anymore).
   join''.
 \item[0.9.2] (Jul 4, 2003) Improved occlusion culling; new
   \dd{GL2PS_USE_CURRENT_VIEWPORT} option.
-\item[1.0.0] (Sep 24, 2003) Native PDF support contributed by Micha Bieber.
+\item[1.0.0] (Sep 24, 2003) Native PDF support contributed by Micha
+  Bieber.
 \item[1.1.0] (Nov 4, 2003) New \dd{GL2PS_COMPRESS} option to create
-  compressed PostScript and PDF files; fixed small bug in the PDF output
- that prevented the PDF files to be correctly included in \LaTeX\ documents;
- new alternative license (see \dd{COPYING.GL2PS}).
+  compressed PostScript and PDF files; fixed small bug in the PDF
+  output that prevented the PDF files to be correctly included in
+  \LaTeX\ documents; new alternative license (see \dd{COPYING.GL2PS}).
 \item[1.1.1] (Nov 9, 2003) Small memory optimization; documentation update
   (binary files, fonts).
-\item[1.1.2] (Nov 16, 2003) Fixed various compiler warnings (mostly for
-  Windows Visual C++).
-\item[1.2.0] (Mar xx, 2004) New transparency support for PDF output; fixed
-  bug for empty feedback buffer but non-empty primitive list; fixed more
-  compiler warnings.
+\item[1.1.2] (Nov 16, 2003) Fixed various compiler warnings (mostly
+  for Windows Visual C++).
+\item[1.2.0] (Mar xx, 2004) New transparency support for PDF output;
+  fixed bug for empty feedback buffer but non-empty primitive list;
+  fixed more compiler warnings and cleaned up the code (mostly to
+  reduce the global namespace pollution).
 \end{description}
 
 \end{document}
