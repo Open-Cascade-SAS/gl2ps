@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.139 2003-11-04 17:09:06 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.140 2003-11-05 17:09:48 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -479,7 +479,7 @@ z-buffer and all invisible primitives removed to reduce the size of the
 output file. The \dd{draw()} function contains all the OpenGL commands.
 
 \begin{verbatim}
-FILE *fp = fopen("MyFile", "w");
+FILE *fp = fopen("MyFile", "wb");
 GLint buffsize = 0, state = GL2PS_OVERFLOW;
 GLint viewport[4];
 
