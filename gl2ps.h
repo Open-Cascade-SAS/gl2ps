@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.83 2004-03-16 22:18:45 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.84 2004-03-16 22:28:00 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -39,16 +39,17 @@
 #include <stdlib.h>
 #include <math.h>
 
-/* To generate a Windows dll, define GL2PSDLL at compile time */
+/* To generate a Windows dll, you should define GL2PSDLL at compile
+   time */
 
-#ifdef _WIN32
+#if defined (WIN32) || defined(_WIN32)
 /* Shut up warning due to bad windows header file */
 #  if defined(_MSC_VER) 
 #    pragma warning(disable:4115)
 #  endif
 #  include <windows.h>
-#  ifdef GL2PSDLL
-#    ifdef GL2PSDLL_EXPORTS
+#  if defined(GL2PSDLL)
+#    if defined(GL2PSDLL_EXPORTS)
 #      define GL2PSDLL_API __declspec(dllexport)
 #    else
 #      define GL2PSDLL_API __declspec(dllimport)
@@ -60,17 +61,17 @@
 #  define GL2PSDLL_API
 #endif
 
-#ifdef __APPLE__
+#if defined(__APPLE__)
 #  include <OpenGL/gl.h>
 #else
 #  include <GL/gl.h>
 #endif
 
-/* Support for compressed PDF */
+/* Support for compressed PostScript/PDF */
 
 #if defined(HAVE_ZLIB) || defined(HAVE_LIBZ) || defined(GL2PS_HAVE_ZLIB)
 #  include <zlib.h>
-#  ifndef GL2PS_HAVE_ZLIB
+#  if !defined(GL2PS_HAVE_ZLIB)
 #    define GL2PS_HAVE_ZLIB
 #  endif
 #endif
@@ -159,7 +160,7 @@
 
 typedef GLfloat GL2PSrgba[4];
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -187,7 +188,7 @@ GL2PSDLL_API GLint gl2psBlendFunc(GLenum sfactor, GLenum dfactor);
 GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname, 
 				GLshort fontsize, GLint align, GL2PSrgba color);
 
-#ifdef __cplusplus
+#if defined(__cplusplus)
 };
 #endif
 
