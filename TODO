@@ -1,4 +1,13 @@
-$Id: TODO,v 1.5 2003-03-09 16:32:26 geuzaine Exp $
+$Id: TODO,v 1.6 2003-04-10 18:55:26 geuzaine Exp $
+
+* need to change of we get the shading model (currently,
+glGetIntegerv(GL_SHADE_MODEL, &shademodel) in endPage...): this does
+not work if only part of the scene if shaded and the last mode before
+the call to endPage is "not shaded"...
+
+add an option to force shading??
+
+------------------------------------------------------------------------
 
 * FIXME: some lines seem to not show up in the BSP sorted
 output. Check with 45 deg. cube rot. in sample test.
