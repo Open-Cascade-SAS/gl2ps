@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.202 2005-01-01 19:16:52 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.203 2005-03-05 17:58:39 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -2883,6 +2883,9 @@ static void gl2psPrintTeXPrimitive(void *data)
     fprintf(gl2ps->stream, "\\put(%g,%g){\\makebox(0,0)",
             prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
     switch(prim->data.text->alignment){
+    case GL2PS_TEXT_C:
+      fprintf(gl2ps->stream, "{");
+      break;
     case GL2PS_TEXT_CL:
       fprintf(gl2ps->stream, "[l]{");
       break;
@@ -2891,9 +2894,6 @@ static void gl2psPrintTeXPrimitive(void *data)
       break;
     case GL2PS_TEXT_B:
       fprintf(gl2ps->stream, "[b]{");
-      break;
-    case GL2PS_TEXT_BL:
-      fprintf(gl2ps->stream, "[bl]{");
       break;
     case GL2PS_TEXT_BR:
       fprintf(gl2ps->stream, "[br]{");
@@ -2907,7 +2907,9 @@ static void gl2psPrintTeXPrimitive(void *data)
     case GL2PS_TEXT_TR:
       fprintf(gl2ps->stream, "[tr]{");
       break;
+    case GL2PS_TEXT_BL:
     default:
+      fprintf(gl2ps->stream, "[bl]{");
       break;
     }
     if(prim->data.text->angle)

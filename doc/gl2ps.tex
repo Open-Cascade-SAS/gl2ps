@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.189 2005-01-01 19:16:53 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.190 2005-03-05 17:58:39 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -831,8 +831,8 @@ does not seem to be available anymore).
   list; fixed more compiler warnings and cleaned up the code (mostly to
   reduce the global namespace pollution).
 \item[1.2.1] (Jul 13, 2004) New imagemap support for PostScript output; new
- text alignment support for PostScript and LaTeX output; new support for
- rotated text for LaTeX output; fixed NULL check on input strings in
+ text alignment support for PostScript and \LaTeX\ output; new support for
+ rotated text for \LaTeX\ output; fixed NULL check on input strings in
  \dd{gl2psBeginPage}.
 \item[1.2.2] (Sep 21, 2004) Fixed a couple of small bugs in the example
   code.
@@ -841,7 +841,8 @@ does not seem to be available anymore).
   \dd{GL2PS_SIMPLE_LINE_OFFSET} and occlusion culling); added support
   for general stippling patterns.
 \item[1.2.4] (xx, 2005) Fixed small extra test on feedback buffer for
-  \dd{GL2PS_TEX} output.
+  \dd{GL2PS_TEX} output; fixed missing brace in \LaTeX\ output for
+  text aligned using \dd{\GL2PS_TEXT_C}.
 \end{description}
 
 \end{document}
