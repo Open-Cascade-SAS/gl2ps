@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.68 2003-10-31 21:50:41 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.69 2003-10-31 23:24:44 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -245,10 +245,9 @@ typedef struct {
   GLint format, sort, options, colorsize, colormode, buffersize;
   const char *title, *producer, *filename;
   GLboolean boundary;
-  GLfloat *feedback, offset[2];
+  GLfloat *feedback, offset[2], lastlinewidth;
   GLint viewport[4];
   GL2PSrgba *colormap, lastrgba, threshold;
-  float lastlinewidth;
   GL2PSlist *primitives;
   FILE *stream;
   GL2PScompress *compress;

@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.136 2003-10-31 21:50:41 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.137 2003-10-31 23:24:44 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -364,9 +364,9 @@ void gl2psFreeText(GL2PSstring* text){
 
 /* Helpers for rgba colors */
 
-float gl2psColorDiff(GL2PSrgba rgba1, GL2PSrgba rgba2){
+GLfloat gl2psColorDiff(GL2PSrgba rgba1, GL2PSrgba rgba2){
   int i;	
-  float res = 0;
+  GLfloat res = 0;
   for(i = 0; i < 3; ++i){
     res += (rgba1[i] - rgba2[i]) * (rgba1[i] - rgba2[i]);
   }
@@ -1557,7 +1557,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
 				GLenum format, GLenum type, GLfloat *pixels){
   int nbhex, nbyte2, nbyte4, nbyte8;
   GLsizei row, col, col_max;
-  float dr, dg, db;
+  GLfloat dr, dg, db;
   unsigned char red, green, blue, b, grey;
 
   /* FIXME: define an option for these? */
@@ -2238,7 +2238,7 @@ int gl2psPrintPDFFillColor(GL2PSrgba rgba){
   return offs;
 }
 
-int gl2psPrintPDFLineWidth(float lw){
+int gl2psPrintPDFLineWidth(GLfloat lw){
   if(GL2PS_ZERO(lw))
     return gl2psPrintf("%.0f w\n", 0.);
   else if(lw < 1e-4 || lw > 1e6) /* avoid %e formatting */
