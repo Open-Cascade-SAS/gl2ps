@@ -25,3 +25,6 @@ html:
 	echo "<p>Back to <a href=\"/\">geuz.org</a>" >> gl2ps.html
 	echo "</body>" >> gl2ps.html
 	echo "</html>" >> gl2ps.html
+
+clean:
+	rm -f *~ *.dvi *.ps *.pdf *.aux *.toc *.log *.html *.out
