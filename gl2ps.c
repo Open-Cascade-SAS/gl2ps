@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to Postscript Printing Library, version 0.32
  * Copyright (C) 1999-2000  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.2 2001-05-23 14:12:09 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.3 2001-05-23 14:59:01 geuzaine Exp $
  *
  * E-mail: Christophe.Geuzaine@AdValvas.be
  * URL: http://www.geuz.org/gl2ps/
@@ -537,7 +537,7 @@ GLvoid gl2psBuildBspTree(GL2PSbsptree *tree, GL2PSlist *primitives){
     tree->front = (GL2PSbsptree*)gl2psMalloc(sizeof(GL2PSbsptree));
     gl2psBuildBspTree(tree->front, frontlist);
   }
-   else
+  else
     gl2psListDelete(frontlist);
 
   if(gl2psListNbr(backlist)){
