@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to Postscript Printing Library
  * Copyright (C) 1999-2001  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.23 2001-10-31 10:55:37 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.24 2001-10-31 11:11:20 geuzaine Exp $
  *
  * E-mail: Christophe.Geuzaine@AdValvas.be
  * URL: http://www.geuz.org/gl2ps/
@@ -1101,13 +1101,43 @@ GLvoid gl2psPrintPostscriptHeader(GLvoid){
 	  "/S  { FC moveto show } BD\n"
 	  "/P  { newpath 0.0 360.0 arc closepath fill } BD\n"
 	  "/L  { newpath moveto lineto stroke } BD\n"
+#if NEWSHADING
 	  "/SL { C moveto C lineto stroke } BD\n"
+#else
+          "/SL { /b1 exch def /g1 exch def /r1 exch def /y1 exch def\n"
+          "      /x1 exch def /b2 exch def /g2 exch def /r2 exch def /y2 exch def\n"
+          "      /x2 exch def b2 b1 sub abs 0.01 gt g2 g1 sub abs 0.005 gt r2 r1 sub\n"
+          "      abs 0.008 gt or or { /bm b1 b2 add 0.5 mul def /gm g1 g2 add 0.5 mul def\n"
+          "      /rm r1 r2 add 0.5 mul def /ym y1 y2 add 0.5 mul def /xm x1 x2 add\n"
+          "      0.5 mul def x1 y1 r1 g1 b1 xm ym rm gm bm SL xm ym rm gm bm x2 y2 r2\n"
+          "      g2 b2 SL } { x1 y1 x2 y2 r1 g1 b1 C L } ifelse } BD\n"
+#endif
 	  "/T  { newpath moveto lineto lineto closepath fill } BD\n"
+#if NEWSHADING
 	  "/ST { /b1 exch def /g1 exch def /r1 exch def /y1 exch def /x1 exch def\n"
           "      /b2 exch def /g2 exch def /r2 exch def /y2 exch def /x2 exch def\n"
           "      /b3 exch def /g3 exch def /r3 exch def /y3 exch def /x3 exch def\n"
           "      gsave << /ShadingType 4 /ColorSpace [/DeviceRGB] /DataSource [\n"
           "      0 x1 y1 r1 g1 b1 0 x2 y2 r2 g2 b2 0 x3 y3 r3 g3 b3 ] >> shfill grestore } BD\n"
+#else
+          "/ST { /b1 exch def /g1 exch def /r1 exch def /y1 exch def /x1 exch def\n"
+          "      /b2 exch def /g2 exch def /r2 exch def /y2 exch def /x2 exch def\n"
+          "      /b3 exch def /g3 exch def /r3 exch def /y3 exch def /x3 exch def\n"
+          "      b2 b1 sub abs 0.05 gt g2 g1 sub abs 0.017 gt r2 r1 sub abs 0.032 gt\n"
+          "      b3 b1 sub abs 0.05 gt g3 g1 sub abs 0.017 gt r3 r1 sub abs 0.032 gt\n"
+          "      b2 b3 sub abs 0.05 gt g2 g3 sub abs 0.017 gt r2 r3 sub abs 0.032 gt\n"
+          "      or or or or or or or or { /b12 b1 b2 add 0.5 mul def /g12 g1 g2 add\n"
+          "      0.5 mul def /r12 r1 r2 add 0.5 mul def /y12 y1 y2 add 0.5 mul def\n"
+          "      /x12 x1 x2 add 0.5 mul def /b13 b1 b3 add 0.5 mul def /g13 g1 g3\n"
+          "      add 0.5 mul def /r13 r1 r3 add 0.5 mul def /y13 y1 y3 add 0.5 mul\n"
+          "      def /x13 x1 x3 add 0.5 mul def /b32 b3 b2 add 0.5 mul def\n"
+          "      /g32 g3 g2 add 0.5 mul def /r32 r3 r2 add 0.5 mul def /y32 y3 y2\n"
+          "      add 0.5 mul def /x32 x3 x2 add 0.5 mul def x1 y1 r1 g1 b1 x12 y12\n"
+          "      r12 g12 b12 x13 y13 r13 g13 b13 x2 y2 r2 g2 b2 x12 y12 r12 g12 b12\n"
+          "      x32 y32 r32 g32 b32 x3 y3 r3 g3 b3 x32 y32 r32 g32 b32 x13 y13 r13\n"
+          "      g13 b13 x32 y32 r32 g32 b32 x12 y12 r12 g12 b12 x13 y13 r13 g13 b13\n"
+          "      ST ST ST ST } { x1 y1 x2 y2 x3 y3 r1 g1 b1 C T } ifelse } BD\n"
+#endif
 	  "end\n"
 	  "%%%%EndProlog\n"
 	  "%%%%BeginSetup\n"
