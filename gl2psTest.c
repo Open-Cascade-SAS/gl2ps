@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.60 2004-08-31 21:17:14 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.61 2004-08-31 21:22:52 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -347,8 +347,8 @@ void image(float x, float y, GLboolean opaque){
 
   glRasterPos2f(x, y);
 
-  /* call gl2psDrawPixels first since glDrawPixels changes the raster
-     position... */
+  /* call gl2psDrawPixels first since glDrawPixels can change the
+     raster position */
   if(opaque){
     gl2psDrawPixels((GLsizei)w, (GLsizei)h, 0, 0, GL_RGB, GL_FLOAT, pixels);
     glDrawPixels((GLsizei)w, (GLsizei)h, GL_RGB, GL_FLOAT, pixels);
