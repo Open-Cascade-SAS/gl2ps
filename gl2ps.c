@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.122 2003-10-24 21:06:58 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.123 2003-10-24 21:13:51 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -2716,7 +2716,7 @@ int gl2psPrintPDFShader(int obj, GL2PSlist* triangles, int idx, int cnt ){
 		      "stream\n",
 		      (int)gl2ps->zstream->destLen);
       offs += gl2ps->zstream->destLen * fwrite(gl2ps->zstream->dest, gl2ps->zstream->destLen, 
-					     1, gl2ps->stream);
+					       1, gl2ps->stream);
     }
     else{ /* too long after compression or compress2 error -> write non-compressed entry */
       offs += fprintf(gl2ps->stream,
@@ -2820,7 +2820,7 @@ int gl2psPrintPDFPixmap(int obj, GL2PSimage* im){
 		      "stream\n",
 		      (int)gl2ps->zstream->destLen);
       offs += gl2ps->zstream->destLen * fwrite(gl2ps->zstream->dest, gl2ps->zstream->destLen,
-					     1, gl2ps->stream);
+					       1, gl2ps->stream);
     }
     else{ /* too long after compression or compress2 error -> write non-compressed entry */
       offs += fprintf(gl2ps->stream,
