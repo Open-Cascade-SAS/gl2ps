@@ -1,6 +1,6 @@
 
 		           GL2PS LICENSE
-                      Version 1, October 2003
+                      Version 2, November 2003
 
               Copyright (C) 2003, Christophe Geuzaine
 
@@ -10,9 +10,22 @@ provided that the copyright notice appear in all copies and that both
 that copyright notice and this permission notice appear in supporting
 documentation.
 
-Permission to modify the software is granted, but not the right to
-distribute the modified code.  Modifications are to be distributed as
-patches to released version.
+Permission to modify this software and then distribute the modified
+software is granted, provided that
+
+1) the modifications are licensed under the terms of this License;
+
+2) a copy of this License is included with every copy of the
+modifications you distribute;
+
+3) you do not remove, alter, cover or obliterate any copyright notice
+placed the author of the software;
+
+4) you make available the source code of any modifications that you
+distribute, either on the same media as you distribute any executable
+or other form of this software, or via a mechanism generally accepted
+in the software development community for the electronic transfer of
+data.
  
 This software is provided "as is" without express or implied warranty.
 
