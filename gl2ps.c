@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.102 2003-06-10 22:12:20 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.103 2003-06-10 22:24:28 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1900,7 +1900,7 @@ GLint gl2psPrintPrimitives(void){
   }
 
   /* This test is mostly redundant, but it would for example catch the
-     case when unknown tokens are present in the feedback buffer */
+     case where unknown tokens are present in the feedback buffer */
   if(!gl2psListNbr(gl2ps->primitives)){
     return GL2PS_NO_FEEDBACK;
   }
