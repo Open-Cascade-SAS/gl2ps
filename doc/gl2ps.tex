@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.96 2003-06-02 18:19:28 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.97 2003-06-10 19:14:12 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -29,6 +29,7 @@
 \sloppypar
 
 \usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{graphicx}
 
 \ifx\pdfoutput\undefined\else
   \pdfinfo{
@@ -48,15 +49,15 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.9.0, 2 June 2003}
+\date{Version 0.9.1, 10 June 2003}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.9.0.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.9.1.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.9.0.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.9.1.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
@@ -475,6 +476,11 @@ edit the output file a posteriori (just set \dd{/tryPS3shading} to
 
 A complete example (\dd{gl2psTest.c}) is included in the distribution.
 
+%\begin{figure}
+%\scalebox{0.85}{\input{outLatex.tex}}
+%\caption{Sample output of the test program}
+%\end{figure}
+
 \section{Limitations}
 \label{sec:limitations}
 
@@ -531,23 +537,43 @@ GL2PS does not support textures, fog effects, etc.
 \label{sec:contrib}
 
 \email{Michael Sweet}{mike@easysw.com} for the original implementation of
-the feedback buffer parser; \email{Bruce Naylor}{naylor@comp-graphics.com}
-for BSP tree and occlusion culling hints; \email{Marc
-Um{\'e}}{marc.ume@digitalgraphics.be} for the original list code;
+the feedback buffer parser; 
+%
+\email{Bruce Naylor}{naylor@comp-graphics.com} for BSP tree and occlusion
+culling hints;
+%
+\email{Marc Um{\'e}}{marc.ume@digitalgraphics.be} for the original list
+code;
+%
 \email{Jean-Fran\c{c}ois Remacle}{remacle@scorec.rpi.edu} for plane equation
-fixes; \email{Bart Kaptein}{B.L.Kaptein@lumc.nl} for memory leak fixes;
+fixes; 
+%
+\email{Bart Kaptein}{B.L.Kaptein@lumc.nl} for memory leak fixes;
+%
 \email{Quy Nguyen-Dai}{quy@vnilux.com} for output file size optimization;
+%
 \email{Sam Buss}{sbuss@ucsd.edu} for the \dd{shfill}-based smooth shaded
-triangle code; \email{Shane Hill}{Shane.Hill@dsto.defence.gov.au} for the
-landscape option implementation; \email{Romain Boman}{r_boman@yahoo.fr} for
-the Windows dll generation; \email{Rouben Rostamian}{rostamian@umbc.edu} for
-various bug fixes; \email{Diego Santa Cruz}{Diego.SantaCruz@epfl.ch} for the
-new optimized shaded triangle code and the \dd{shfill} management;
+triangle code;
+%
+\email{Shane Hill}{Shane.Hill@dsto.defence.gov.au} for the landscape option
+implementation;
+%
+\email{Romain Boman}{r_boman@yahoo.fr} for the Windows dll generation;
+%
+\email{Rouben Rostamian}{rostamian@umbc.edu} for various bug fixes;
+%
+\email{Diego Santa Cruz}{Diego.SantaCruz@epfl.ch} for the new optimized
+shaded triangle code and the \dd{shfill} management;
+%
 \email{Shahzad Muzaffar}{Shahzad.Muzaffar@cern.ch} and \email{Lassi
 Tuura}{lassi.tuura@cern.ch} for the new occlusion culling code and the
-improvement of \dd{GL2PS_BEST_ROOT}; \email{Guy
-Barrand}{barrand@lal.in2p3.fr} for his work on \dd{gl2psDrawPixels} and the
-new viewport management.
+improvement of \dd{GL2PS_BEST_ROOT};
+%
+\email{Guy Barrand}{barrand@lal.in2p3.fr} for his work on
+\dd{gl2psDrawPixels} and the new viewport management;
+%
+\email{Prabhu Ramachandran}{prabhu@aero.iitm.ernet.in} for various bug
+reports.
 
 \section{Links}
 \label{sec:links}
@@ -623,6 +649,9 @@ small bug in occlusion culling code; better error handling.
 \item[0.9.0] (Jun 2, 2003) Fixed smooth shading detection for mixed
 smooth/flat shaded scenes; new library numbering scheme
 (``major.minor.patch'').
+\item[0.9.1] (Jun 10, 2003) Fixed a couple of bugs for \LaTeX\ output
+(\dd{glRenderMode} not reset to \dd{GL_RENDER}; crash when printing an empty
+scene); set default pixmap bit depth to 8.
 \end{description}
 
 \end{document}

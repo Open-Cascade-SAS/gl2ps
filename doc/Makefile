@@ -27,4 +27,4 @@ html:
 	echo "</html>" >> gl2ps.html
 
 clean:
-	rm -f *~ *.dvi *.ps *.pdf *.aux *.toc *.log *.html *.out
+	rm -f *~ gl2ps.dvi gl2ps.ps gl2ps.pdf *.aux *.toc *.log *.html *.out

@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.100 2003-06-04 06:02:57 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.101 2003-06-10 19:14:12 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1170,25 +1170,13 @@ GLint gl2psGetVertex(GL2PSvertex *v, GLfloat *p){
   }
 }
 
-GLint gl2psParseFeedbackBuffer(void){
+void gl2psParseFeedbackBuffer(GLint used){
   char flag, dash = 0;
   GLshort boundary;
-  GLint i, used, count, v, vtot, offset = 0;
+  GLint i, count, v, vtot, offset = 0;
   GLfloat lwidth = 1., psize = 1.;
   GLfloat *current;
   GL2PSvertex vertices[3];
-
-  used = glRenderMode(GL_RENDER);
-
-  if(used < 0){
-    gl2psMsg(GL2PS_INFO, "OpenGL feedback buffer overflow");
-    return GL2PS_OVERFLOW;
-  }
-
-  if(used == 0){
-    /* gl2psMsg(GL2PS_INFO, "Empty feedback buffer"); */
-    return GL2PS_NO_FEEDBACK;
-  }
 
   current = gl2ps->feedback;
   boundary = gl2ps->boundary = 0;
@@ -1284,8 +1272,6 @@ GLint gl2psParseFeedbackBuffer(void){
       break;
     }
   }
-  
-  return GL2PS_SUCCESS;
 }
 
 GLboolean gl2psSameColor(GL2PSrgba rgba1, GL2PSrgba rgba2){
@@ -1895,15 +1881,22 @@ GLint gl2psPrintTeXEndViewport(void){
 GLint gl2psPrintPrimitives(void){
   GL2PSbsptree *root;
   GL2PSxyz eye = {0., 0., 100000.};
-  GLint res = GL2PS_SUCCESS;
+  GLint used, res = GL2PS_SUCCESS;
   void (*pprim)(void *a, void *b) = 0;
 
-  if(gl2ps->format == GL2PS_PS || gl2ps->format == GL2PS_EPS){
-    res = gl2psParseFeedbackBuffer();
+  used = glRenderMode(GL_RENDER);
+
+  if(used < 0){
+    gl2psMsg(GL2PS_INFO, "OpenGL feedback buffer overflow");
+    return GL2PS_OVERFLOW;
   }
 
-  if(res != GL2PS_SUCCESS){
-    return res;
+  if(used == 0){
+    return GL2PS_NO_FEEDBACK; /* Empty feedback buffer */
+  }
+
+  if(gl2ps->format == GL2PS_PS || gl2ps->format == GL2PS_EPS){
+    gl2psParseFeedbackBuffer(used);
   }
 
   switch(gl2ps->format){

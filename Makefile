@@ -1,4 +1,4 @@
-RELEASE = 0.9.0
+RELEASE = 0.9.1
 
 default:
 	rm -rf gl2ps-${RELEASE}/ gl2ps-${RELEASE}.tar* gl2ps-${RELEASE}.zip*
@@ -17,5 +17,5 @@ test:
             -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
 
 clean:
-	rm -f *.ps *.eps gl2psTest *~
+	rm -f *.tex *.ps *.eps gl2psTest *~
 
