@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.30 2002-01-19 00:05:48 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.31 2002-01-22 16:54:03 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1450,15 +1450,20 @@ GLint gl2psEndPage(GLvoid){
 GLvoid gl2psText(char *str, char *fontname, GLint fontsize){
   GLfloat         pos[4];
   GL2PSprimitive  *prim;
+  GLboolean       valid;
 
   if(gl2ps.options & GL2PS_NO_TEXT) return;
+
+  glGetBooleanv(GL_CURRENT_RASTER_POSITION_VALID, &valid);
+  if(!valid) return; /* the primitive is culled */
+
+  glGetFloatv(GL_CURRENT_RASTER_POSITION, pos);
 
   prim = (GL2PSprimitive *)gl2psMalloc(sizeof(GL2PSprimitive));
   prim->type = GL2PS_TEXT;
   prim->boundary = 0;
   prim->numverts = 1;
   prim->verts = (GL2PSvertex *)gl2psMalloc(sizeof(GL2PSvertex));
-  glGetFloatv(GL_CURRENT_RASTER_POSITION, pos);
   prim->verts[0].xyz[0] = pos[0];
   prim->verts[0].xyz[1] = pos[1];
   prim->verts[0].xyz[2] = pos[2];

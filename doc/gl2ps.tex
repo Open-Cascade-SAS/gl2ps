@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.28 2002-01-19 00:07:08 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.29 2002-01-22 16:54:03 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -49,15 +49,15 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.5, 19 November 2001}
+\date{Version 0.51, 22 January 2002}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.5.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.51.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.5.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.51.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
@@ -380,6 +380,8 @@ header cleaning. Better line width computation.
 \dd{gl2psBeginPage}. Better PostScript handling of smooth shaded
 primitives. Fix handling of zero-length strings. New options for \LaTeX\
 output. Changed (again) the line width computation.
+\item[0.51] (Jan 22, 2002) Fixed erroneous drawing of text primitives lying
+outside the viewport.
 \end{description}
 
 % Occlusion culling... In version 9.99? :-(
