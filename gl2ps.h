@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.86 2004-03-17 17:02:39 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.87 2004-05-09 18:06:01 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -123,6 +123,7 @@
 #define GL2PS_NO_PIXMAP            (1<<8)
 #define GL2PS_USE_CURRENT_VIEWPORT (1<<9)
 #define GL2PS_COMPRESS             (1<<10)
+#define GL2PS_NO_BLENDING          (1<<11)
 
 /* Arguments for gl2psEnable/gl2psDisable */
 

@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.169 2004-05-09 08:19:33 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.170 2004-05-09 18:06:01 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -229,6 +229,9 @@ determine the way primitives are handled:
   the plotting of smooth shaded primitives but can lead to problems when
   converting PostScript files into PDF files. See also options \dd{nr},
   \dd{ng}, \dd{nb} below.
+\item[\dd{GL2PS_NO_BLENDING}] Blending (transparency) is disabled
+  alltogether (regardless of the current \dd{GL_BLEND} or \dd{GL2PS_BLEND}
+  status).
 \item[\dd{GL2PS_OCCLUSION_CULL}] All the hidden polygons are removed from
   the output, thus substantially reducing the size of the output file.
 \item[\dd{GL2PS_USE_CURRENT_VIEWPORT}] The current OpenGL viewport is used
@@ -540,8 +543,8 @@ glGetIntegerv(GL_VIEWPORT, viewport);
 while( state == GL2PS_OVERFLOW ){ 
   buffsize += 1024*1024;
   gl2psBeginPage ( "MyTitle", "MySoftware", viewport,
-                   GL2PS_EPS, GL2PS_BSP_SORT,
-                   GL2PS_SIMPLE_LINE_OFFSET | GL2PS_SILENT |
+                   GL2PS_EPS, GL2PS_BSP_SORT, GL2PS_SILENT |
+                   GL2PS_SIMPLE_LINE_OFFSET | GL2PS_NO_BLENDING |
                    GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT,
                    GL_RGBA, 0, NULL, 0, 0, 0, buffsize,
                    fp, NULL );

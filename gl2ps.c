@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.172 2004-05-09 16:35:27 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.173 2004-05-09 18:06:01 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -687,7 +687,7 @@ static void gl2psAdaptVertexForBlending(GL2PSvertex *v)
   if(!v || !gl2ps)
     return;
   
-  if(GL_FALSE == gl2ps->blending){
+  if(gl2ps->options & GL2PS_NO_BLENDING || !gl2ps->blending){
     v->rgba[3] = 1.0F;
     return;
   }
@@ -4399,12 +4399,7 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
 
   switch(format){
   case GL_RGBA:
-    if(GL_TRUE == glIsEnabled(GL_BLEND)){
-      size = height * width * 4;
-      prim->data.image->pixels = (GLfloat*)gl2psMalloc(size * sizeof(GLfloat));
-      memcpy(prim->data.image->pixels, pixels, size * sizeof(GLfloat));
-    }
-    else{
+    if(gl2ps->options & GL2PS_NO_BLENDING || !gl2ps->blending){
       /* special case: blending turned off */
       prim->data.image->format = GL_RGB;
       size = height * width * 3;
@@ -4415,6 +4410,11 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
         if(!((i+1)%3))
           ++piv;
       }   
+    }
+    else{
+      size = height * width * 4;
+      prim->data.image->pixels = (GLfloat*)gl2psMalloc(size * sizeof(GLfloat));
+      memcpy(prim->data.image->pixels, pixels, size * sizeof(GLfloat));
     }
     break;
   case GL_RGB:

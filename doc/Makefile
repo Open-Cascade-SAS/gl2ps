@@ -1,16 +1,20 @@
 
-default:
+default: gl2ps.ps gl2ps.html gl2ps.pdf
+
+gl2ps.ps: gl2ps.tex
+	rm -f gl2ps.toc gl2ps.out gl2ps.aux
 	latex gl2ps
 	latex gl2ps
 	latex gl2ps
 	dvips gl2ps -o
-	make html
+
+gl2ps.pdf: gl2ps.tex
 	rm -f gl2ps.toc gl2ps.out gl2ps.aux
 	pdflatex gl2ps
 	pdflatex gl2ps
 	pdflatex gl2ps
 
-html:
+gl2ps.html: gl2ps.tex gl2ps.ps
 	rm -f gl2ps.html
 	echo "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\">" >> gl2ps.html
 	echo "<html>" >> gl2ps.html

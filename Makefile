@@ -20,6 +20,10 @@ clean:
 	rm -f *.tex *.ps *.eps *.eps.gz *.pdf *.o gl2psTest a.out *~
 	cd doc && ${MAKE} clean
 
+purge:
+	rm -f `find . -name "*~" -o -name "*~~" -o -name "\#*"\
+               -o -name ".\#*" -o -name "gmon.out"`
+
 mac:
 	gcc -Wall -g -o gl2psTest gl2psTest.c gl2ps.c\
             -framework OpenGL -framework GLUT -framework Cocoa
