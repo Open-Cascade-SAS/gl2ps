@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine
  *
- * $Id: gl2ps.h,v 1.54 2003-07-03 16:03:00 geuzaine Exp $
+ * $Id: gl2ps.h,v 1.55 2003-07-03 17:05:58 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -77,16 +77,17 @@
 
 /* Options for gl2psBeginPage */
 
-#define GL2PS_NONE               0
-#define GL2PS_DRAW_BACKGROUND    (1<<0)
-#define GL2PS_SIMPLE_LINE_OFFSET (1<<1)
-#define GL2PS_SILENT             (1<<2)
-#define GL2PS_BEST_ROOT          (1<<3)
-#define GL2PS_OCCLUSION_CULL     (1<<4)
-#define GL2PS_NO_TEXT            (1<<5)
-#define GL2PS_LANDSCAPE          (1<<6)
-#define GL2PS_NO_PS3_SHADING     (1<<7)
-#define GL2PS_NO_PIXMAP          (1<<8)
+#define GL2PS_NONE                 0
+#define GL2PS_DRAW_BACKGROUND      (1<<0)
+#define GL2PS_SIMPLE_LINE_OFFSET   (1<<1)
+#define GL2PS_SILENT               (1<<2)
+#define GL2PS_BEST_ROOT            (1<<3)
+#define GL2PS_OCCLUSION_CULL       (1<<4)
+#define GL2PS_NO_TEXT              (1<<5)
+#define GL2PS_LANDSCAPE            (1<<6)
+#define GL2PS_NO_PS3_SHADING       (1<<7)
+#define GL2PS_NO_PIXMAP            (1<<8)
+#define GL2PS_USE_CURRENT_VIEWPORT (1<<9)
 
 /* Arguments for gl2psEnable/gl2psDisable */
 

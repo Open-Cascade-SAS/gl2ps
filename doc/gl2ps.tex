@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.105 2003-07-03 15:44:48 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.106 2003-07-03 17:05:58 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -117,12 +117,18 @@ and output to \dd{stream}. The arguments given to \dd{gl2psBeginPage}
 determine the way primitives are handled:
 
 \begin{description}
-\item[\dd{title}] Specifies the plot title. For PostScript output, this
+\item[\dd{title}]
+Specifies the plot title. For PostScript output, this
 string is placed in the \texttt{\%\%Title} field.
+
 \item[\dd{producer}] Specifies the plot producer. For PostScript output,
 this string is placed in the \texttt{\%\%For} field.
+
 \item[\dd{viewport}] Specifies the plot viewport. The viewport can for
-example be obtained with a call to \dd{glGetIntegerv(GL_VIEWPORT, viewport)}.
+example be obtained with a call to \dd{glGetIntegerv(GL_VIEWPORT,
+viewport)}. This argument is ignored if the \dd{GL2PS_USE_CURRENT_VIEWPORT}
+option is set.
+
 \item[\dd{format}] Specifies the output format, chosen among:
 
 \begin{description}
@@ -189,6 +195,8 @@ PostScript files to PDF files; see also options \dd{nr}, \dd{ng}, \dd{nb}
 below).
 \item[\dd{GL2PS_OCCLUSION_CULL}] All the hidden polygons are removed from
 the output, thus substantially reducing the size of the output file.
+\item[\dd{GL2PS_USE_CURRENT_VIEWPORT}] The current OpenGL viewport is used
+instead of \dd{viewport}.
 \end{description}
 
 \item[\dd{colormode}] Specifies the color mode: \dd{GL_RGBA} or
@@ -663,7 +671,8 @@ smooth/flat shaded scenes; new library numbering scheme
 (\dd{glRenderMode} not reset to \dd{GL_RENDER} + crash when printing empty
 scenes); changed default pixmap depth to 8 bits per color component; changed
 default line cap to ``Butt cap'' and default line join to ``Miter join''.
-\item[0.9.2] (Jul 3, 2003) Improved occlusion culling.
+\item[0.9.2] (Jul 3, 2003) Improved occlusion culling; new
+\dd{GL2PS_USE_CURRENT_VIEWPORT} option.
 \end{description}
 
 \end{document}
