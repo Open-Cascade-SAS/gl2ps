@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.180 2004-11-15 17:39:43 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.181 2004-11-15 17:42:11 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -3940,7 +3940,7 @@ static int gl2psPrintPDFShaderSimpleExtGS(int obj, GLfloat alpha)
   return offs;
 }
 
-/* Similar groups of  functions for pixmaps and text */
+/* Similar groups of functions for pixmaps and text */
 
 static int gl2psPrintPDFPixmapStreamData(GL2PSimage* im,
                                          size_t (*action)(unsigned long data, 
