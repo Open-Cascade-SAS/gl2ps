@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.139 2003-11-03 19:26:28 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.140 2003-11-04 16:21:41 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -2684,8 +2684,8 @@ int gl2psPrintPDFShaderStreamData(GL2PStriangle triangle,
   for(i = 0; i < 3; ++i){
     offs += (*action)(edgeflag, 1);
 
-    /* The Shader stream in PDF requires to be in a
-       'big-endian' order */
+    /* The Shader stream in PDF requires to be in a 'big-endian'
+       order */
     
     if(fabs(dx*dy) < FLT_MIN){
       offs += (*action)(0, 4);
