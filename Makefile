@@ -46,7 +46,7 @@ distrib:
 distrib-nightly:
 	rm -rf gl2ps-nightly*
 	mkdir gl2ps-${DATE}
-	cd doc && ${MAKE}
+	cd doc && ${MAKE} gl2ps.pdf
 	cp TODO COPYING.GL2PS COPYING.LGPL gl2ps.c gl2ps.h gl2psTest.c\
            doc/gl2ps.pdf gl2ps-${DATE}
 	tar zcvf gl2ps-nightly.tgz gl2ps-${DATE}
