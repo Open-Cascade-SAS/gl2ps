@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.93 2003-03-08 01:11:57 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.94 2003-03-08 01:23:21 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -30,7 +30,7 @@
 #include "gl2ps.h"
 
 /* The gl2ps context. gl2ps is not thread safe (we should create a
-   local GL2PScontext during gl2psBeginPage). */
+   local GL2PScontext during gl2psBeginPage) */
 
 GL2PScontext *gl2ps = NULL;
 
@@ -838,17 +838,17 @@ void gl2psSplitPrimitive2D(GL2PSprimitive *prim,
 			   GL2PSprimitive **front, 
 			   GL2PSprimitive **back){
 
-  /* cur will hold the position of current vertex
-     prev will holds the position of previous vertex
-     prev0 will holds the position of vertex number 0
-     v1 and v2 represent the current and previous vertexs respectively
-     flag will represents that should the current be checked against the plane */
+  /* cur will hold the position of the current vertex
+     prev will hold the position of the previous vertex
+     prev0 will hold the position of the vertex number 0
+     v1 and v2 represent the current and previous vertices, respectively
+     flag is set if the current vertex should be checked against the plane */
   GLint cur = -1, prev = -1, i, v1 = 0, v2 = 0, flag = 1, prev0 = -1;
   
-  /* list of vertexs which will go in front and back Primitive */
+  /* list of vertices that will go in front and back primitive */
   GL2PSvertex *front_list = NULL, *back_list = NULL;
   
-  /* number of vertex in front and back list */
+  /* number of vertices in front and back list */
   GLint front_count = 0, back_count = 0;
 
   for(i = 0; i <= prim->numverts; i++){
@@ -928,10 +928,9 @@ GLint gl2psAddInBspImageTree(GL2PSprimitive *prim, GL2PSbsptree2d **tree){
     return 1;
   }
 
-  /* FIXME: we might also want to disable culling of zero-surface
-     primitives, i.e. GL2PS_LINE. At the moment, if the two
-     extremities are hidden, the line is culled (which is
-     incorrect) */
+  /* FIXME: culling of lines needs some more work: if the two
+     extremities are hidden, the line is sometimes culled (even if
+     the entire line is not hidden) */
 
   if(*tree == NULL){
     gl2psAddPlanesInBspTreeImage(prim, tree);
@@ -2213,7 +2212,7 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
   prim->image->height = height;
   prim->image->format = format;
   prim->image->type = type;
-  size = height*width*3*sizeof(GLfloat); /* FIXME: generalize to other types/formats */
+  size = height*width*3*sizeof(GLfloat); /* FIXME: handle other types/formats */
   prim->image->pixels = (GLfloat*)gl2psMalloc(size);
   memcpy(prim->image->pixels, pixels, size);
 
