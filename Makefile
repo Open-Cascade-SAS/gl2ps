@@ -33,5 +33,10 @@ linuxz:
 	gcc -DHAVE_ZLIB -Wall -g -O3 -I/usr/X11R6/include -o gl2psTest gl2psTest.c gl2ps.c\
             -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm -lz
 
+
+# -Wbad-function-cast
 test:
-	gcc -g -O3 -Wall -pedantic -c gl2ps.c
+	gcc -g -O3 -W -Wall\
+           -Wredundant-decls -Wcast-align -Wmissing-prototypes\
+           -Wsign-compare -Wpointer-arith -Wundef -pedantic\
+           -c gl2ps.c
