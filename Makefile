@@ -1,17 +1,14 @@
-RELEASE = 1.2.1
+RELEASE = 1.2.2
 UNAME = `uname -s`
 
 default:
-	rm -rf gl2ps-${RELEASE}/ gl2ps-${RELEASE}.tar* gl2ps-${RELEASE}.zip*
+	rm -rf gl2ps-${RELEASE}/ gl2ps-${RELEASE}.t*
 	mkdir gl2ps-${RELEASE}
 	cd doc && ${MAKE}
 	cp TODO COPYING.GL2PS COPYING.LGPL gl2ps.c gl2ps.h gl2psTest.c\
-           doc/gl2ps.ps doc/gl2ps.pdf gl2ps-${RELEASE}
+           doc/gl2ps.pdf gl2ps-${RELEASE}
 	chmod 644 gl2ps-${RELEASE}/*
-	tar cvf gl2ps-${RELEASE}.tar gl2ps-${RELEASE}
-	gzip gl2ps-${RELEASE}.tar
-	cd gl2ps-${RELEASE} && zip -r gl2ps-${RELEASE}.zip *
-	mv gl2ps-${RELEASE}/gl2ps-${RELEASE}.zip .
+	tar zcvf gl2ps-${RELEASE}.tgz gl2ps-${RELEASE}
 	@echo "********************************************************************"
 	@echo "Did you remember to untabify both gl2ps.c and gl2ps.h?"
 	@echo "********************************************************************"
