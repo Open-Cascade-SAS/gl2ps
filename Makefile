@@ -12,6 +12,9 @@ default:
 	gzip gl2ps-${RELEASE}.tar
 	cd gl2ps-${RELEASE} && zip -r gl2ps-${RELEASE}.zip *
 	mv gl2ps-${RELEASE}/gl2ps-${RELEASE}.zip .
+	@echo "********************************************************************"
+	@echo "Did you remember to untabify both gl2ps.c and gl2ps.h?"
+	@echo "********************************************************************"
 
 clean:
 	rm -f *.tex *.ps *.eps *.eps.gz *.pdf *.o gl2psTest a.out *~
