@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.53 2002-12-11 18:37:28 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.54 2002-12-13 04:53:11 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -55,14 +55,15 @@
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.7.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.7.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/gl2ps-0.7.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-0.7.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.pdf}{PDF}
-%%tth: version of the documentation.
+%%tth: version of the documentation. Older versions are still
+%%tth: available \href{http://www.geuz.org/gl2ps/src/}{here}.
 
 \tableofcontents
 
@@ -85,8 +86,6 @@ GL2PS begin with \dd{GL2PS}.
 
 
 \section{Usage}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{\texttt{gl2psBeginPage} and \texttt{gl2psEndPage}}
 
@@ -221,8 +220,6 @@ printed.
 
 \end{description}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \subsection{\texttt{gl2psText}}
 \label{sec:gl2psText}
 
@@ -251,10 +248,6 @@ influence for \LaTeX\ output.
 \item[\dd{fontsize}] Specifies the size of the font. This parameter has no
 influence for \LaTeX\ output.
 \end{description}
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{\texttt{gl2psEnable} and \texttt{gl2psDisable}}
 \label{sec:gl2psEnable}
@@ -286,8 +279,6 @@ the current value of the corresponding OpenGL offset (set with
 functionality.
 \end{description}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \subsection{\texttt{gl2psPointSize} and \texttt{gl2psLineWidth}}
 \label{sec:gl2psPointSize}
 
@@ -307,8 +298,6 @@ void gl2psLineWidth( GLfloat value )
 \dd{glPointSize} and the \dd{glLineWidth} functions. They are necessary
 since the point sizes and line widths are not saved in the OpenGL feedback
 buffer.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{\texttt{gl2psNumShadeColors}}
 \label{sec:gl2psNumShadeColors}
@@ -331,8 +320,6 @@ difference between two of its vertices is smaller that $1/\mathtt{nr}$ for
 the red component, $1/\mathtt{ng}$ for the green component and
 $1/\mathtt{nb}$ for the blue component. The last call before
 \dd{gl2psEndPage} is the one taken into account.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Example}
 
@@ -372,10 +359,15 @@ disable the use of the Level 3 PostScript \dd{shfill} operator, i.e.\ add
 edit the output file a posteriori (just set \dd{/tryPS3shading} to
 \dd{false} in the PostScript file header).
 
-%\section{Implementation Notes}
+% \section{Implementation Notes}
 %
-%OpenGL feedback buffer, BSP trees
-
+% OpenGL feedback buffer
+% Simple depth sort
+% 3D BSP tree
+% 2D BSP image tree for occlusion culling
+% float vs. double
+% polygon offsets
+% PostScript shading
 
 \section{Contributors}
 \label{sec:contrib}
