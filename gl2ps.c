@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.160 2004-03-06 03:45:39 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.161 2004-03-06 04:05:12 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -464,10 +464,10 @@ GLboolean gl2psVertsSameColor(const GL2PSprimitive *prim){
 
   for(i = 1; i < prim->numverts; i++){
     if(!gl2psSameColor(prim->verts[0].rgba, prim->verts[i].rgba)){
-      return 0;
+      return GL_FALSE;
     }
   }
-  return 1;
+  return GL_TRUE;
 }
 
 void gl2psSetLastColor(GL2PSrgba rgba){
@@ -496,13 +496,13 @@ void gl2psAdaptVertexForBlending(GL2PSvertex *v){
     return;
   
   if(GL_FALSE == gl2ps->blending){
-    v->rgba[3] = 1.0;
+    v->rgba[3] = 1.0F;
     return;
   }
   
   switch(gl2ps->blendfunc[0]){
   case GL_ONE:
-    v->rgba[3] = 1.0;
+    v->rgba[3] = 1.0F;
     break;
   default:
     break;
@@ -1677,9 +1677,9 @@ GLfloat gl2psGetRGB(GL2PSimage* im, GLuint x, GLuint y,
     pimag = pixels + 3 * (width * (height - 1 - y) + x);
     break;
   }
-  *red   = *pimag; pimag++;
+  *red = *pimag; pimag++;
   *green = *pimag; pimag++;
-  *blue  = *pimag; pimag++;
+  *blue = *pimag; pimag++;
 
   return (im->format == GL_RGBA) ? *pimag : 1.0F;
 }
@@ -1973,7 +1973,7 @@ void gl2psPrintPostScriptHeader(void){
               "      4 index 10 index add 0.5 mul\n" /* b12 = (b1+b2)/2 */
               "      5 copy 5 copy 40 5 roll 25 5 roll 15 5 roll 25 5 roll\n");
   
-  /* stack  = (V3) (V13) (V23) (V13) (V12) (V23) (V13) (V1) (V12) (V23) (V12) (V2) */
+  /* stack = (V3) (V13) (V23) (V13) (V12) (V23) (V13) (V1) (V12) (V23) (V12) (V2) */
 
   gl2psPrintf("      STnoshfill STnoshfill STnoshfill STnoshfill } BD\n");
   
@@ -2416,12 +2416,9 @@ void gl2psPDFgroupObjectInit(GL2PSpdfgroup* gro){
     return;
   
   gro->ptrlist = NULL;
-  gro->fontno = gro->gsno
-    = gro->imno = gro->maskshno
-    = gro->shno = gro->trgroupno 
-    = gro->fontobjno = gro->imobjno 
-    = gro->shobjno = gro->maskshobjno 
-    = gro->gsobjno = gro->trgroupobjno = -1;
+  gro->fontno = gro->gsno = gro->imno = gro->maskshno = gro->shno 
+    = gro->trgroupno = gro->fontobjno = gro->imobjno = gro->shobjno 
+    = gro->maskshobjno = gro->gsobjno = gro->trgroupobjno = -1;
 }
 
 /* Build up group objects and assign name and object numbers */
@@ -2450,7 +2447,7 @@ void gl2psPDFgroupListInit(void){
     switch(p->type){
     case GL2PS_PIXMAP:
       gl2psPDFgroupObjectInit(&gro);
-      gro.ptrlist =  gl2psListCreate(1, 2, sizeof(GL2PSprimitive*));
+      gro.ptrlist = gl2psListCreate(1, 2, sizeof(GL2PSprimitive*));
       gro.imno = gl2ps->im_stack++;
       gl2psListAdd(gro.ptrlist, &p);
       gl2psListAdd(gl2ps->pdfgrouplist, &gro);
@@ -2466,7 +2463,7 @@ void gl2psPDFgroupListInit(void){
       if(lasttype != p->type || lastwidth != p->width || lastdash != p->dash ||
          !gl2psSameColor(p->verts[0].rgba, lastrgba)){
         gl2psPDFgroupObjectInit(&gro);
-        gro.ptrlist =  gl2psListCreate(1, 2, sizeof(GL2PSprimitive*));
+        gro.ptrlist = gl2psListCreate(1, 2, sizeof(GL2PSprimitive*));
         gl2psListAdd(gro.ptrlist, &p);
         gl2psListAdd(gl2ps->pdfgrouplist, &gro);
       }
@@ -2483,7 +2480,7 @@ void gl2psPDFgroupListInit(void){
       if(lasttype != p->type || lastwidth != p->width || 
          !gl2psSameColor(p->verts[0].rgba, lastrgba)){
         gl2psPDFgroupObjectInit(&gro);
-        gro.ptrlist =  gl2psListCreate(1,2,sizeof(GL2PSprimitive*));
+        gro.ptrlist = gl2psListCreate(1,2,sizeof(GL2PSprimitive*));
         gl2psListAdd(gro.ptrlist, &p);
         gl2psListAdd(gl2ps->pdfgrouplist, &gro);
       }
@@ -3570,7 +3567,7 @@ int gl2psPDFgroupListWriteObjects(int entryoffs)
       if(!size)
         break;
       triangles = (GL2PStriangle*)gl2psMalloc(sizeof(GL2PStriangle) * size);
-      for(j = 0; j <size ; ++j){  
+      for(j = 0; j < size ; ++j){  
         p = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
         if(!p)
           continue;
