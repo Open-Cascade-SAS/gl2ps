@@ -21,7 +21,6 @@ gl2ps.html: gl2ps.tex gl2ps.ps
 	echo "<head>" >> gl2ps.html
 	echo "<title>GL2PS: an OpenGL to PostScript printing library</title>" >> gl2ps.html
 	echo "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">" >> gl2ps.html
-	echo "<meta name=\"Autor-Handle\" content=\"geuz@geuz.org\">" >> gl2ps.html
 	echo "<link href=\"/general.css\" rel=\"stylesheet\" type=\"text/css\">" >> gl2ps.html
 	echo "</head>" >> gl2ps.html
 	echo "<body>" >> gl2ps.html
