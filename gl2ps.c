@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.152 2003-11-15 17:44:40 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.153 2003-12-09 04:09:34 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -115,7 +115,7 @@ void gl2psFree(void *ptr){
 
 #ifdef GL2PS_HAVE_ZLIB
 
-void gl2psSetupCompress(){
+void gl2psSetupCompress(void){
   gl2ps->compress = (GL2PScompress*)gl2psMalloc(sizeof(GL2PScompress));
   gl2ps->compress->src = NULL;
   gl2ps->compress->start = NULL;
@@ -124,7 +124,7 @@ void gl2psSetupCompress(){
   gl2ps->compress->destLen = 0;
 }
 
-void gl2psFreeCompress(){
+void gl2psFreeCompress(void){
   if(!gl2ps->compress)
     return;
   gl2psFree(gl2ps->compress->start);
@@ -177,7 +177,7 @@ size_t gl2psWriteBigEndianCompress(unsigned long data, size_t bytes){
   return bytes;
 }
 
-int gl2psDeflate(){
+int gl2psDeflate(void){
   /* For compatibility with older zlib versions, we use compress(...)
      instead of compress2(..., Z_BEST_COMPRESSION) */
   return compress(gl2ps->compress->dest, &gl2ps->compress->destLen, 
@@ -191,16 +191,15 @@ int gl2psPrintf(const char* fmt, ...){
   va_list args;
 
 #ifdef GL2PS_HAVE_ZLIB
-  unsigned int bufsize = 0;
   unsigned int oldsize = 0;
   static char buf[1000];
   if(gl2ps->options & GL2PS_COMPRESS){
     va_start(args, fmt);
-    bufsize = vsprintf(buf, fmt, args);
+    ret = vsprintf(buf, fmt, args);
     va_end(args);
     oldsize = gl2ps->compress->srcLen;
-    gl2ps->compress->start = (Bytef*)gl2psReallocCompress(oldsize + bufsize);
-    memcpy(gl2ps->compress->start+oldsize, buf, bufsize);
+    gl2ps->compress->start = (Bytef*)gl2psReallocCompress(oldsize + ret);
+    memcpy(gl2ps->compress->start+oldsize, buf, ret);
   }
   else{
 #endif
@@ -284,7 +283,6 @@ void *gl2psListPointer(GL2PSlist *list, GLint index){
 void gl2psListRead(GL2PSlist *list, GLint index, void *data){
   if((index < 0) || (index >= list->n)){
     gl2psMsg(GL2PS_ERROR, "Wrong list index in gl2psListRead");
-    data = 0;
   }
   else{
     memcpy(data, &list->array[index * list->size], list->size);
@@ -2189,7 +2187,7 @@ void gl2psPrintTeXFooter(void){
  *
  *********************************************************************/
 
-int gl2psPrintPDFCompressorType(){
+int gl2psPrintPDFCompressorType(void){
 #ifdef GL2PS_HAVE_ZLIB
   if(gl2ps->options & GL2PS_COMPRESS){
     return fprintf(gl2ps->stream, "/Filter [/FlateDecode]\n");
@@ -2242,7 +2240,7 @@ int gl2psPrintPDFLineWidth(GLfloat lw){
 
 /* Print 1st PDF object - file info */
 
-int gl2psPrintPDFInfo(){
+int gl2psPrintPDFInfo(void){
   int offs;
   time_t now;
   struct tm *newtime;
@@ -2281,7 +2279,7 @@ int gl2psPrintPDFInfo(){
 
 /* Create catalog and page structure - 2nd and 3th PDF object */
 
-int gl2psPrintPDFCatalog(){
+int gl2psPrintPDFCatalog(void){
   return fprintf(gl2ps->stream, 
                  "2 0 obj\n"
                  "<<\n"
@@ -2291,7 +2289,7 @@ int gl2psPrintPDFCatalog(){
                  "endobj\n");
 }
 
-int gl2psPrintPDFPages(){
+int gl2psPrintPDFPages(void){
   return fprintf(gl2ps->stream, 
                  "3 0 obj\n"
                  "<<\n" 
@@ -2304,7 +2302,7 @@ int gl2psPrintPDFPages(){
 
 /* Open stream for data - graphical objects, fonts etc. PDF object 4*/
 
-int gl2psOpenPDFDataStream(){
+int gl2psOpenPDFDataStream(void){
   int offs = 0;
   
   offs += fprintf(gl2ps->stream, 
@@ -2320,7 +2318,7 @@ int gl2psOpenPDFDataStream(){
 
 /* Stream setup - Graphics state, fill background if allowed */
 
-int gl2psOpenPDFDataStreamWritePreface(){
+int gl2psOpenPDFDataStreamWritePreface(void){
   int offs;
   GLint index;
   GLfloat rgba[4];
@@ -2349,7 +2347,7 @@ int gl2psOpenPDFDataStreamWritePreface(){
 
 /* Use the functions above to create the first part of the PDF*/
 
-void gl2psPrintPDFHeader(){
+void gl2psPrintPDFHeader(void){
   int offs;
 
 #ifdef GL2PS_HAVE_ZLIB
@@ -2386,7 +2384,7 @@ void gl2psPrintPDFHeader(){
   gl2ps->streamlength = gl2psOpenPDFDataStreamWritePreface();
 }
 
-int gl2psFlushPDFTriangles(){
+int gl2psFlushPDFTriangles(void){
   int offs = 0;
 
   if(gl2ps->lasttype == GL2PS_TRIANGLE && !gl2ps->last_triangle_finished){
@@ -2399,7 +2397,7 @@ int gl2psFlushPDFTriangles(){
   return offs;
 }
 
-int gl2psFlushPDFLines(){
+int gl2psFlushPDFLines(void){
   int offs = 0;
 
   if(gl2ps->lasttype == GL2PS_LINE && !gl2ps->last_line_finished){
@@ -2512,7 +2510,7 @@ void gl2psPrintPDFPrimitive(void *data){
 
 /* close stream and ... */
 
-int gl2psClosePDFDataStream(){
+int gl2psClosePDFDataStream(void){
   int offs = 0;
  
   offs += gl2psFlushPDFTriangles();
@@ -2596,7 +2594,7 @@ int gl2psPrintPDFTextResources(int firstObject, int size){
 
 /* Put the info created before in PDF objects */
 
-int gl2psPrintPDFSinglePage(){
+int gl2psPrintPDFSinglePage(void){
   int offs;
         
   offs = fprintf(gl2ps->stream, 
@@ -2639,7 +2637,7 @@ int gl2psPrintPDFSinglePage(){
 
 /* Extended graphics state for shading */
 
-int gl2psPrintPDFExtGState(){
+int gl2psPrintPDFExtGState(void){
   return fprintf(gl2ps->stream,
                  "7 0 obj\n"
                  "<<\n"
@@ -2808,9 +2806,9 @@ int gl2psPrintPDFPixmapStreamData(GL2PSimage* im,
   for(y = 0; y < im->height; ++y)
     for(x = 0; x < im->width; ++x){
       gl2psGetRGB(im->pixels, im->width, im->height, x, y, &r, &g, &b);
-                        (*action)((unsigned long)(r*255) << 24,1);
-                        (*action)((unsigned long)(g*255) << 24,1);
-                        (*action)((unsigned long)(b*255) << 24,1);
+      (*action)((unsigned long)(r*255) << 24,1);
+      (*action)((unsigned long)(g*255) << 24,1);
+      (*action)((unsigned long)(b*255) << 24,1);
     }
   return 3 * im->width * im->height;
 }
@@ -2925,7 +2923,7 @@ int* gl2psPrintPDFTextObjects(int firstObjnumber, int firstOffs){
    functioninality has been gathered: Writes file footer with cross
    reference table and trailer */
 
-void gl2psPrintPDFFooter(){
+void gl2psPrintPDFFooter(void){
   int offs;
   int i;
   int *shader_offs, *image_offs, *text_offs;
@@ -3051,7 +3049,7 @@ void gl2psPrintPDFBeginViewport(GLint viewport[4]){
   gl2ps->streamlength += offs;
 }
 
-GLint gl2psPrintPDFEndViewport(){
+GLint gl2psPrintPDFEndViewport(void){
   GLint res;
   
   res = gl2psPrintPrimitives();
@@ -3170,9 +3168,6 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
   gl2ps = (GL2PScontext*)gl2psMalloc(sizeof(GL2PScontext));
   gl2ps->maxbestroot = 10;
   gl2ps->format = format;
-  gl2ps->title = title;
-  gl2ps->producer = producer;
-  gl2ps->filename = filename;
   gl2ps->sort = sort;
   gl2ps->options = options;
   gl2ps->compress = NULL;
@@ -3234,6 +3229,13 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
     rewind(gl2ps->stream);
   }
 
+  gl2ps->title = (char*)gl2psMalloc((strlen(title)+1)*sizeof(char));
+  strcpy(gl2ps->title, title); 
+  gl2ps->producer = (char*)gl2psMalloc((strlen(producer)+1)*sizeof(char));
+  strcpy(gl2ps->producer, producer); 
+  gl2ps->filename = (char*)gl2psMalloc((strlen(filename)+1)*sizeof(char));
+  strcpy(gl2ps->filename, filename); 
+
   /* only used for PDF output... */
   gl2ps->lasttype = -1;
   gl2ps->consec_cnt = 0;
@@ -3256,6 +3258,10 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
     break;
   default :
     gl2psMsg(GL2PS_ERROR, "Unknown output format: %d", gl2ps->format);
+    gl2psFree(gl2ps->colormap);
+    gl2psFree(gl2ps->title);
+    gl2psFree(gl2ps->producer);
+    gl2psFree(gl2ps->filename);
     gl2psFree(gl2ps);
     gl2ps = NULL;
     return GL2PS_ERROR;
@@ -3295,6 +3301,9 @@ GL2PSDLL_API GLint gl2psEndPage(void){
 
   gl2psListDelete(gl2ps->primitives);
   gl2psFree(gl2ps->colormap);
+  gl2psFree(gl2ps->title);
+  gl2psFree(gl2ps->producer);
+  gl2psFree(gl2ps->filename);
   gl2psFree(gl2ps->feedback);
   gl2psFree(gl2ps);
   gl2ps = NULL;
