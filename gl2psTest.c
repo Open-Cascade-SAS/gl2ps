@@ -1,8 +1,8 @@
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
- * Copyright (C) 1999-2003  Christophe Geuzaine 
+ * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.18 2003-03-08 01:08:19 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.19 2003-03-22 16:15:42 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -21,11 +21,11 @@
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+ * Contributor(s):
+ *   Rouben Rostamian <rostamian@umbc.edu>
  */
 
 /*
-  Original author: Rouben Rostamian <rostamian@umbc.edu>
-
   To compile on a Linux system, type:
 
   gcc -O3 gl2psTest.c gl2ps.c -lglut -lGL -L/usr/X11R6/lib -lX11 -lm
@@ -275,7 +275,6 @@ void draw_multi(void){
   gl2psEndViewport();
 
   /* Second viewport with cube and image */
-
   glViewport(window_w * 0.05, window_h * 0.025 , 
 	     (GLsizei) (window_w * 0.9), (GLsizei) (window_h * 0.45));
   glScissor(window_w * 0.05, window_h * 0.025 , 

@@ -1,8 +1,8 @@
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
- * Copyright (C) 1999-2003  Christophe Geuzaine 
+ * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.95 2003-03-09 16:32:26 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.96 2003-03-22 16:15:42 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -21,6 +21,20 @@
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+ * Contributor(s):
+ *   Michael Sweet <mike@easysw.com>
+ *   Marc Ume <marc.ume@digitalgraphics.be>
+ *   Jean-Francois Remacle <remacle@scorec.rpi.edu>
+ *   Bart Kaptein <B.L.Kaptein@lumc.nl>
+ *   Quy Nguyen-Dai<quy@vnilux.com>
+ *   Sam Buss <sbuss@ucsd.edu>
+ *   Shane Hill <Shane.Hill@dsto.defence.gov.au>
+ *   Romain Boman <r_boman@yahoo.fr>
+ *   Rouben Rostamian <rostamian@umbc.edu>
+ *   Diego Santa Cruz <Diego.SantaCruz@epfl.ch>
+ *   Shahzad Muzaffar <Shahzad.Muzaffar@cern.ch>
+ *   Lassi Tuura <lassi.tuura@cern.ch>
+ *   Guy Barrand <barrand@lal.in2p3.fr>
  */
 
 #include <string.h>
@@ -1467,7 +1481,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
   }
 
   if(status == 0){
-    gl2psMsg(GL2PS_ERROR, "Problem to retreive some pixel rgb");
+    gl2psMsg(GL2PS_ERROR, "Problem to retrieve some pixel rgb");
   }
   fprintf(stream, "grestore\n");
 }

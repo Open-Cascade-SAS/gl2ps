@@ -1,8 +1,8 @@
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
- * Copyright (C) 1999-2003  Christophe Geuzaine
+ * Copyright (C) 1999-2003 Christophe Geuzaine
  *
- * $Id: gl2ps.h,v 1.47 2003-03-07 18:37:15 geuzaine Exp $
+ * $Id: gl2ps.h,v 1.48 2003-03-22 16:15:42 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -30,8 +30,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-/* To generate a Windows dll, you have to define GL2PSDLL at compile
-   time */
+/* To generate a Windows dll, define GL2PSDLL at compile time */
 
 #ifdef WIN32
 #  include <windows.h>
@@ -55,7 +54,7 @@
 #endif
 
 
-#define GL2PS_VERSION                    0.8
+#define GL2PS_VERSION                    0.81
 #define GL2PS_NONE                       0
 
 /* Output file format */
@@ -95,7 +94,6 @@
 #define GL2PS_SIMPLE_OFFSET              0.05
 #define GL2PS_SIMPLE_OFFSET_LARGE        1.0
 #define GL2PS_ZERO(arg)                  (fabs(arg)<1.e-20)
-/*#define GL2PS_ZERO(arg)                ((arg)==0.0)*/
 
 /* Message levels and error codes */
 
