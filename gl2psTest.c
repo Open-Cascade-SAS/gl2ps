@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.48 2003-11-08 02:21:46 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.49 2003-12-22 16:31:24 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -136,6 +136,10 @@ void init(void){
   glShadeModel(GL_SMOOTH);
   glEnable(GL_LIGHT0);
   glEnable(GL_SCISSOR_TEST);
+
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_BLEND);
+  glEnable(GL_ALPHA);
 }
 
 void triangles(void){
@@ -280,32 +284,32 @@ void text(){
 
 void cube(void) {
   glLineWidth(4.0);
-  glColor3d (1.0,0.0,0.);   
+  glColor3f(1.0, 0.0, 0.0);
   glBegin(GL_POLYGON);
-  glVertex3d( 0.5,-0.5,0.5);
-  glVertex3d( 0.5, 0.5,0.5);
-  glVertex3d(-0.5, 0.5,0.5);
-  glVertex3d(-0.5,-0.5,0.5);
+  glVertex3f( 0.5,-0.5, 0.5);
+  glVertex3f( 0.5, 0.5, 0.5);
+  glVertex3f(-0.5, 0.5, 0.5);
+  glVertex3f(-0.5,-0.5, 0.5);
   glEnd();
 
-  glColor3d (0.0,1.0,0.);   
+  glColor3f(0.0, 1.0, 0.0);
   glBegin(GL_POLYGON);
-  glVertex3d( 0.5,-0.5,-0.5);
-  glVertex3d( 0.5, 0.5,-0.5);
-  glVertex3d(-0.5, 0.5,-0.5);
-  glVertex3d(-0.5,-0.5,-0.5);
+  glVertex3f( 0.5,-0.5,-0.5);
+  glVertex3f( 0.5, 0.5,-0.5);
+  glVertex3f(-0.5, 0.5,-0.5);
+  glVertex3f(-0.5,-0.5,-0.5);
   glEnd();
 
-  glColor3d (1.0,1.0,0.);   
+  glColor3f(1.0, 1.0, 0.0);
   glBegin(GL_LINES);
-  glVertex3d( 0.5,-0.5, 0.5);
-  glVertex3d( 0.5,-0.5,-0.5);
-  glVertex3d( 0.5, 0.5, 0.5);
-  glVertex3d( 0.5, 0.5,-0.5);
-  glVertex3d(-0.5, 0.5, 0.5);
-  glVertex3d(-0.5, 0.5,-0.5);
-  glVertex3d(-0.5,-0.5, 0.5);
-  glVertex3d(-0.5,-0.5,-0.5);
+  glVertex3f( 0.5,-0.5, 0.5);
+  glVertex3f( 0.5,-0.5,-0.5);
+  glVertex3f( 0.5, 0.5, 0.5);
+  glVertex3f( 0.5, 0.5,-0.5);
+  glVertex3f(-0.5, 0.5, 0.5);
+  glVertex3f(-0.5, 0.5,-0.5);
+  glVertex3f(-0.5,-0.5, 0.5);
+  glVertex3f(-0.5,-0.5,-0.5);
   glEnd();
 }
 
@@ -461,7 +465,7 @@ void writefile(int format, int sort, int options, int nbcol,
 
   while(state == GL2PS_OVERFLOW){
     buffsize += 1024*1024;
-    gl2psBeginPage(file, "test", viewport, format, sort, options,
+    gl2psBeginPage(file, "test", viewport, format, sort, options|GL2PS_TRANSPARENCY,
                    GL_RGBA, 0, NULL, nbcol, nbcol, nbcol, 
                    buffsize, fp, file);
     display();

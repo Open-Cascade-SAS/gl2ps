@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.153 2003-12-09 04:11:40 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.154 2003-12-22 16:31:24 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -58,15 +58,15 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 1.1.3, xx December 2003}
+\date{Version 1.2.0, xx January 2004}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is available either as a
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.1.3.tar.gz}{tar.gz}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.2.0.tar.gz}{tar.gz}
 %%tth: or as a 
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.1.3.zip}{zip}
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.2.0.zip}{zip}
 %%tth: archive. These archives contain both a
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.ps}{PostScript}
 %%tth: and a
@@ -391,12 +391,13 @@ GLint gl2psDisable( GLint mode )
 \dd{mode} is applied. These modes are:
 
 \begin{description}
-\item[\dd{GL2PS_POLYGON_OFFSET_FILL}] Tries to emulate the
+\item[\dd{GL2PS_BLEND}] Emulates the \dd{GL_BLEND} functionality.
+\item[\dd{GL2PS_POLYGON_OFFSET_FILL}] Emulates the
   \dd{GL_POLYGON_OFFSET_FILL} functionality. The value of the offset is
   taken as the current value of the corresponding OpenGL offset (set with
   \dd{glPolygonOffset}). Not fully functional yet.
 \item[\dd{GL2PS_POLYGON_BOUNDARY}] Not implemented yet.
-\item[\dd{GL2PS_LINE_STIPPLE}] Tries to emulate the \dd{GL_LINE_STIPPLE}
+\item[\dd{GL2PS_LINE_STIPPLE}] Emulates the \dd{GL_LINE_STIPPLE}
   functionality.
 \end{description}
 
@@ -437,6 +438,29 @@ buffer.
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
+\item[\dd{GL2PS_SUCCESS}] otherwise.
+\end{description}
+
+% -------------------------------------------------------------------------
+
+\subsection{\texttt{gl2psBlendFunc}}
+\label{sec:gl2psBlendFunc}
+
+\subsubsection{Specification}
+
+\begin{verbatim}
+GLint gl2psBlendFunc( GLenum sfactor, GLenum dfactor )
+\end{verbatim}
+
+\subsubsection{Description and arguments}
+
+\dd{gl2psBlendFunc} XXX
+
+\subsubsection{Return value}
+
+\dd{gl2psBlendFunc} returns:
+\begin{description}
+\item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
 
@@ -727,8 +751,8 @@ does not seem to be available anymore).
   (binary files, fonts).
 \item[1.1.2] (Nov 16, 2003) Fixed various compiler warnings (mostly for
   Windows Visual C++).
-\item[1.1.3] (Dec xx, 2003) Fixed more compiler warnings (for Windows
-  Borland C++).
+\item[1.2.0] (Jan xx, 2004) New transparency support for PDF output; fixed
+ more compiler warnings (for Windows Borland C++).
 \end{description}
 
 \end{document}

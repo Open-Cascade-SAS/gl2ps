@@ -1,4 +1,4 @@
-RELEASE = 1.1.3
+RELEASE = 1.2.0
 
 default:
 	rm -rf gl2ps-${RELEASE}/ gl2ps-${RELEASE}.tar* gl2ps-${RELEASE}.zip*
