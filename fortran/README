@@ -1,0 +1,2 @@
+gcc gl2ps_f77.c -c
+g77 main.f gl2ps_f77.o
