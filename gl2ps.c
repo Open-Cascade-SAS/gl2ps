@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.58 2002-12-11 22:12:24 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.59 2002-12-11 22:39:57 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -408,7 +408,6 @@ void gl2psDivideQuad(GL2PSprimitive *quad,
   (*t1)->type = (*t2)->type = GL2PS_TRIANGLE;
   (*t1)->numverts = (*t2)->numverts = 3;
   (*t1)->depth = (*t2)->depth = quad->depth;
-  (*t1)->culled = (*t2)->culled = quad->culled;
   (*t1)->dash = (*t2)->dash = quad->dash;
   (*t1)->width = (*t2)->width = quad->width;
   (*t1)->verts = (GL2PSvertex *)gl2psMalloc(3 * sizeof(GL2PSvertex));
@@ -904,8 +903,8 @@ GLint gl2psAddInImageTree(GL2PSprimitive *prim, GL2PSbsptree2d **tree){
 void gl2psAddInImage(void *a, void *b){
   GL2PSprimitive *prim;
   prim = *(GL2PSprimitive **)a;
-  if(!gl2psAddInImageTree(prim, &gl2ps->image)){
-    prim->culled = 1;
+  if(gl2psAddInImageTree(prim, &gl2ps->image)){
+    prim->depth = -1.;
   }
 }
 
@@ -1060,7 +1059,6 @@ void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
   }
 
   prim->depth = 0.;
-  prim->culled = 0;
   prim->dash = dash;
   prim->width = width;  /* we should maybe use floats */
 
@@ -1466,7 +1464,7 @@ void gl2psPrintPostScriptPrimitive(void *a, void *b){
 
   prim = *(GL2PSprimitive**)a;
 
-  if(gl2ps->options & GL2PS_OCCLUSION_CULL && prim->culled) return;
+  if(gl2ps->options & GL2PS_OCCLUSION_CULL && prim->depth >= 0.) return;
 
   switch(prim->type){
   case GL2PS_TEXT :
@@ -1764,7 +1762,6 @@ GL2PSDLL_API void gl2psText(const char *str, const char *fontname, GLint fontsiz
   prim->verts[0].xyz[1] = pos[1];
   prim->verts[0].xyz[2] = GL2PS_DEPTH_FACT * pos[2];
   prim->depth = pos[2];
-  prim->culled = 0;
   prim->dash = 0;
   prim->width = 1;
   glGetFloatv(GL_CURRENT_RASTER_COLOR, prim->verts[0].rgba);
