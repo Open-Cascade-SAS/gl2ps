@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.37 2002-06-06 15:42:20 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.38 2002-06-11 15:45:55 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -49,7 +49,7 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 0.61, 6 June 2002}
+\date{Version 0.61, 12 June 2002}
 
 \maketitle
 
@@ -394,8 +394,9 @@ generation of a Windows dll.
 \item[0.6] (Jun 4, 2002) Fixed some incoherences in string allocation; fixed
 sorting of text objects; removed (non functional) occlusion culling code;
 fixed handling of color and line width attributes when gl2ps was called
-multiple times inside the same program;
-\item[0.61] (Jun 6, 2002) Fix the fix for sorting of text objects...
+multiple times inside the same program.
+\item[0.61] (Jun 12, 2002) Fixed the fix for sorting of text objects;
+introduced tolerance for floating point comparison.
 \end{description}
 
 % Occlusion culling... In version 9.99? :-(
