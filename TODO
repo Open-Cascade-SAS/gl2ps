@@ -1,4 +1,9 @@
-$Id: TODO,v 1.4 2002-12-11 19:30:13 geuzaine Exp $
+$Id: TODO,v 1.5 2003-03-09 16:32:26 geuzaine Exp $
+
+* FIXME: some lines seem to not show up in the BSP sorted
+output. Check with 45 deg. cube rot. in sample test.
+
+------------------------------------------------------------------------
 
 * Enhance the polygon/line/point offset
 

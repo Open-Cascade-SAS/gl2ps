@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.94 2003-03-08 01:23:21 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.95 2003-03-09 16:32:26 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -928,10 +928,6 @@ GLint gl2psAddInBspImageTree(GL2PSprimitive *prim, GL2PSbsptree2d **tree){
     return 1;
   }
 
-  /* FIXME: culling of lines needs some more work: if the two
-     extremities are hidden, the line is sometimes culled (even if
-     the entire line is not hidden) */
-
   if(*tree == NULL){
     gl2psAddPlanesInBspTreeImage(prim, tree);
     return 1;
@@ -1294,8 +1290,6 @@ GLboolean gl2psVertsSameColor(const GL2PSprimitive *prim){
   }
   return 1;
 }
-
-GLint gl2psPrintPrimitives(void);
 
 /* The PostScript routines. Other (vector) image formats should be
    easy to generate by creating the three corresponding routines
@@ -1839,6 +1833,7 @@ void gl2psPrintPostScriptBeginViewport(GLint viewport[4]){
 
 GLint gl2psPrintPostScriptEndViewport(void){
   GLint res;
+  GLint gl2psPrintPrimitives(void);
 
   res = gl2psPrintPrimitives();
   fprintf(gl2ps->stream, "grestore\n");
