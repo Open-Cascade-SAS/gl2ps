@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.171 2004-05-09 08:19:33 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.172 2004-05-09 16:35:27 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -2800,7 +2800,6 @@ static void gl2psSortOutTrianglePDFgroup(GL2PSpdfgroup *gro)
     gro->trgroupobjno = gl2ps->objects_stack++;
     gro->maskshno = gl2ps->mshader_stack++;
     gro->maskshobjno = gl2ps->objects_stack++;
-    
   }
   else if(t.prop & T_VAR_COLOR && t.prop & T_ALPHA_1){          
     gro->shno = gl2ps->shader_stack++;
