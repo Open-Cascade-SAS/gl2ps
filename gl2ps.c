@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.50 2002-11-11 23:37:05 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.51 2002-11-12 18:00:55 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -994,6 +994,10 @@ void gl2psPrintPostScriptHeader(void){
 	  "%%%%BeginProlog\n"
 	  "/gl2psdict 64 dict def gl2psdict begin\n"
 	  "1 setlinecap 1 setlinejoin\n"
+	  "%% RGB subdivision thresholds\n"
+	  "/RTh  %g def\n"
+	  "/GTh  %g def\n"
+	  "/BTh  %g def\n"
 	  "/BD { bind def } bind def\n"
 	  "/C  { setrgbcolor } BD\n"
 	  "/G  { 0.082 mul exch 0.6094 mul add exch 0.3086 mul add neg 1.0 add\n"
@@ -1004,7 +1008,8 @@ void gl2psPrintPostScriptHeader(void){
 	  "/P  { newpath 0.0 360.0 arc closepath fill } BD\n"
 	  "/L  { newpath moveto lineto stroke } BD\n"
 	  "/SL { C moveto C lineto stroke } BD\n"
-	  "/T  { newpath moveto lineto lineto closepath fill } BD\n");
+	  "/T  { newpath moveto lineto lineto closepath fill } BD\n",
+          gl2ps->threshold[0], gl2ps->threshold[1], gl2ps->threshold[2]);
 
   /* Smooth-shaded triangle with PostScript level 3 shfill operator:
         x3 y3 r3 g3 b3 x2 y2 r2 g2 b2 x1 y1 r1 g1 b1 STshfill */
@@ -1067,15 +1072,15 @@ void gl2psPrintPostScriptHeader(void){
 
   fprintf(gl2ps->stream,
           "/STnoshfill {\n"
-	  "      2 index 8 index sub abs %g gt { STsplit }\n" /* |r1-r2|>rth */
-          "      { 1 index 7 index sub abs %g gt { STsplit }\n" /* |g1-g2|>gth */
-          "        { dup 6 index sub abs %g gt { STsplit }\n" /* |b1-b2|>bth */
-          "          { 2 index 13 index sub abs %g gt { STsplit }\n" /* |r1-r3|>rht */
-          "            { 1 index 12 index sub abs %g gt { STsplit }\n" /* |g1-g3|>gth */
-          "              { dup 11 index sub abs %g gt { STsplit }\n" /* |b1-b3|>bth */
-          "                { 7 index 13 index sub abs %g gt { STsplit }\n" /* |r2-r3|>rht */
-          "                  { 6 index 12 index sub abs %g gt { STsplit }\n" /* |g2-g3|>gth */
-          "                    { 5 index 11 index sub abs %g gt { STsplit }\n" /* |b2-b3|>bth */
+	  "      2 index 8 index sub abs RTh gt { STsplit }\n" /* |r1-r2|>rth */
+          "      { 1 index 7 index sub abs GTh gt { STsplit }\n" /* |g1-g2|>gth */
+          "        { dup 6 index sub abs BTh gt { STsplit }\n" /* |b1-b2|>bth */
+          "          { 2 index 13 index sub abs RTh gt { STsplit }\n" /* |r1-r3|>rht */
+          "            { 1 index 12 index sub abs GTh gt { STsplit }\n" /* |g1-g3|>gth */
+          "              { dup 11 index sub abs BTh gt { STsplit }\n" /* |b1-b3|>bth */
+          "                { 7 index 13 index sub abs RTh gt { STsplit }\n" /* |r2-r3|>rht */
+          "                  { 6 index 12 index sub abs GTh gt { STsplit }\n" /* |g2-g3|>gth */
+          "                    { 5 index 11 index sub abs BTh gt { STsplit }\n" /* |b2-b3|>bth */
           "                      { Tm\n" /* all colors sufficiently similar */
           "                      } ifelse\n"
           "                    } ifelse\n"
@@ -1085,10 +1090,7 @@ void gl2psPrintPostScriptHeader(void){
           "            } ifelse\n"
           "          } ifelse\n"
           "        } ifelse\n"
-          "      } ifelse } BD\n",
-          gl2ps->threshold[0], gl2ps->threshold[1], gl2ps->threshold[2],
-          gl2ps->threshold[0], gl2ps->threshold[1], gl2ps->threshold[2],
-          gl2ps->threshold[0], gl2ps->threshold[1], gl2ps->threshold[2]);
+          "      } ifelse } BD\n");
 
   fprintf(gl2ps->stream,
 	  (gl2ps->options & GL2PS_NO_PS3_SHADING) ? "/ST { STnoshfill } BD\n" :

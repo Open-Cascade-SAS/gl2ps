@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2002  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.46 2002-11-11 23:40:03 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.47 2002-11-12 18:00:56 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -326,13 +326,13 @@ void gl2psNumShadeColors( GLint nr, GLint ng, GLint nb )
 \dd{gl2psNumShadeColors} controls the number flat-shaded (sub-)triangles
 used to approximate a smooth-shaded triangle when the \dd{shfill} operator
 is not supported by the system, or when the \dd{GL2PS_NO_PS3_SHADING} option
-is set. The arguments \dd{nr}, \dd{ng} and \dd{nb} represent the number of
+is set. The arguments \dd{nr}, \dd{ng} and \dd{nb} specify the number of
 values used for interpolating the full range of red, green and blue color
-components. A triangle is thus recursively subdivided until the color
-difference between to vertices is smaller that $1/\mathtt{nr}$ for the red
-component, $1/\mathtt{ng}$ for the green component and $1/\mathtt{nb}$ for
-the blue component. The last call before \dd{gl2psEndPage} is the one taken
-into account.
+components; that is, a triangle is recursively subdivided until the color
+difference between two of its vertices is smaller that $1/\mathtt{nr}$ for
+the red component, $1/\mathtt{ng}$ for the green component and
+$1/\mathtt{nb}$ for the blue component. The last call before
+\dd{gl2psEndPage} is the one taken into account.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -435,7 +435,8 @@ PostScript files; optimized drawing of shaded primitives; new
 \dd{GL2PS_NO_PS3_SHADING} option and \dd{gl2psNumShadeColors} function to
 control the use of the PostScript level 3 \dd{shfill} operator (usually not
 well handled when converting to PDF).
-\item[0.63] (Dec ??, 2002) Changed GLvoid to void; revised documentation.
+\item[0.63] (Dec ??, 2002) Changed GLvoid to void to accomodate some SUN
+compilers; revised documentation.
 \end{description}
 
 % Occlusion culling... In version 9.99? :-(
