@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.147 2003-11-08 08:39:00 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.148 2003-11-15 05:12:09 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -296,21 +296,19 @@ void gl2psListSort(GL2PSlist *list,
   qsort(list->array, list->n, list->size, fcmp);
 }
 
-void gl2psListAction(GL2PSlist *list, 
-                     void (*action)(void *data, void *dummy)){
-  GLint i, dummy;
+void gl2psListAction(GL2PSlist *list, void (*action)(void *data)){
+  GLint i;
 
   for(i = 0; i < gl2psListNbr(list); i++){
-    (*action)(gl2psListPointer(list, i), &dummy);
+    (*action)(gl2psListPointer(list, i));
   }
 }
 
-void gl2psListActionInverse(GL2PSlist *list, 
-                            void (*action)(void *data, void *dummy)){
-  GLint i, dummy;
+void gl2psListActionInverse(GL2PSlist *list, void (*action)(void *data)){
+  GLint i;
 
   for(i = gl2psListNbr(list); i > 0; i--){
-    (*action)(gl2psListPointer(list, i-1), &dummy);
+    (*action)(gl2psListPointer(list, i-1));
   }
 }
 
@@ -753,10 +751,10 @@ GLint gl2psFindRoot(GL2PSlist *primitives, GL2PSprimitive **root){
   }
 }
 
-void gl2psFreePrimitive(void *a, void *b){
+void gl2psFreePrimitive(void *data){
   GL2PSprimitive *q;
   
-  q = *(GL2PSprimitive**)a;
+  q = *(GL2PSprimitive**)data;
   gl2psFree(q->verts);
   if(q->type == GL2PS_TEXT){
     gl2psFree(q->data.text->str);
@@ -780,7 +778,7 @@ void gl2psAddPrimitiveInList(GL2PSprimitive *prim, GL2PSlist *list){
     gl2psDivideQuad(prim, &t1, &t2);
     gl2psListAdd(list, &t1);
     gl2psListAdd(list, &t2);
-    gl2psFreePrimitive(&prim, NULL);
+    gl2psFreePrimitive(&prim);
   }
   
 }
@@ -839,7 +837,7 @@ void gl2psBuildBspTree(GL2PSbsptree *tree, GL2PSlist *primitives){
       case GL2PS_SPANNING:
         gl2psAddPrimitiveInList(backprim, backlist);
         gl2psAddPrimitiveInList(frontprim, frontlist);
-        gl2psFreePrimitive(&prim, NULL);
+        gl2psFreePrimitive(&prim);
         break;
       }
     }
@@ -872,7 +870,7 @@ void gl2psBuildBspTree(GL2PSbsptree *tree, GL2PSlist *primitives){
 
 void gl2psTraverseBspTree(GL2PSbsptree *tree, GL2PSxyz eye, GLfloat epsilon,
                           GLboolean (*compare)(GLfloat f1, GLfloat f2),
-                          void (*action)(void *data, void *dummy), int inverse){
+                          void (*action)(void *data), int inverse){
   GLfloat result;
 
   if(!tree) return;
@@ -1228,8 +1226,8 @@ GLint gl2psAddInBspImageTree(GL2PSprimitive *prim, GL2PSbsptree2d **tree){
   return 0;
 }
 
-void gl2psAddInImageTree(void *a, void *b){
-  GL2PSprimitive *prim = *(GL2PSprimitive **)a;
+void gl2psAddInImageTree(void *data){
+  GL2PSprimitive *prim = *(GL2PSprimitive **)data;
   gl2ps->primitivetoadd = prim;
   if(!gl2psAddInBspImageTree(prim, &gl2ps->imagetree)){
     prim->culled = 1;
@@ -1925,10 +1923,10 @@ void gl2psResetPostScriptColor(void){
   gl2ps->lastrgba[0] = gl2ps->lastrgba[1] = gl2ps->lastrgba[2] = -1.;
 }
 
-void gl2psPrintPostScriptPrimitive(void *a, void *b){
+void gl2psPrintPostScriptPrimitive(void *data){
   GL2PSprimitive *prim;
 
-  prim = *(GL2PSprimitive**)a;
+  prim = *(GL2PSprimitive**)data;
 
   if((gl2ps->options & GL2PS_OCCLUSION_CULL) && prim->culled) return;
 
@@ -2132,10 +2130,10 @@ void gl2psPrintTeXHeader(void){
           (int)gl2ps->viewport[2], (int)gl2ps->viewport[3]);
 }
 
-void gl2psPrintTeXPrimitive(void *a, void *b){
+void gl2psPrintTeXPrimitive(void *data){
   GL2PSprimitive *prim;
 
-  prim = *(GL2PSprimitive**)a;
+  prim = *(GL2PSprimitive**)data;
 
   switch(prim->type){
   case GL2PS_TEXT :
@@ -2421,13 +2419,13 @@ int gl2psFlushPDFLines(){
 
 /* The central primitive drawing */
 
-void gl2psPrintPDFPrimitive(void *a, void *b){
+void gl2psPrintPDFPrimitive(void *data){
   GL2PSprimitive *prim;
   GL2PStriangle t;
   GL2PSimage* image;
   GL2PSstring* str;
 
-  prim = *(GL2PSprimitive**)a;
+  prim = *(GL2PSprimitive**)data;
   
   if((gl2ps->options & GL2PS_OCCLUSION_CULL) && prim->culled) return;
   
@@ -3083,7 +3081,7 @@ GLint gl2psPrintPrimitives(void){
   GL2PSbsptree *root;
   GL2PSxyz eye = {0.0F, 0.0F, 100000.0F};
   GLint used;
-  void (*pprim)(void *a, void *b) = 0;
+  void (*pprim)(void *data) = 0;
 
   used = glRenderMode(GL_RENDER);
 
