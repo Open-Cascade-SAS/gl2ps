@@ -14,7 +14,7 @@ default:
 	mv gl2ps-${RELEASE}/gl2ps-${RELEASE}.zip .
 
 clean:
-	rm -f *.tex *.ps *.eps *.pdf gl2psTest a.out *~
+	rm -f *.tex *.ps *.eps *.eps.gz *.pdf gl2psTest a.out *~
 	cd doc && ${MAKE} clean
 
 mac:
