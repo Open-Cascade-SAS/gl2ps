@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.60 2003-09-19 17:30:31 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.61 2003-09-22 17:06:38 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -255,8 +255,6 @@ GL2PSDLL_API GLint gl2psEndPage(void);
 GL2PSDLL_API GLint gl2psBeginViewport(GLint viewport[4]);
 GL2PSDLL_API GLint gl2psEndViewport(void);
 GL2PSDLL_API GLint gl2psText(const char *str, const char *fontname, GLshort fontsize);
-GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname, GLshort fontsize,
-				GLint align, GL2PSrgba color);
 GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
 				   GLint xorig, GLint yorig,
 				   GLenum format, GLenum type, const void *pixels);
@@ -264,6 +262,10 @@ GL2PSDLL_API GLint gl2psEnable(GLint mode);
 GL2PSDLL_API GLint gl2psDisable(GLint mode);
 GL2PSDLL_API GLint gl2psPointSize(GLfloat value);
 GL2PSDLL_API GLint gl2psLineWidth(GLfloat value);
+
+/* Undocumented */
+GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname, GLshort fontsize,
+				GLint align, GL2PSrgba color);
 
 #ifdef __cplusplus
 };
