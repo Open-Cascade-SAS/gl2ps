@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.5 2002-12-14 04:18:18 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.6 2003-01-13 01:12:01 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -109,7 +109,7 @@ void writeps(int format, int sort, int options, int nbcol, char *file){
   while(state == GL2PS_OVERFLOW){
     gl2psBeginPage(file, "test", format, sort, options, GL_RGBA, 0, NULL,
 		   bufsize, fp, file);
-    gl2psNumShadeColors(nbcol,nbcol,nbcol);
+    if(nbcol) gl2psNumShadeColors(nbcol,nbcol,nbcol);
     display();
     state = gl2psEndPage();
   }
@@ -130,10 +130,10 @@ void keyboard(unsigned char key, int x, int y){
     break;
   case 'w':
     opt = 0;
-    writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 1, "outSimple.eps");
+    writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 0, "outSimple.eps");
 
     opt = GL2PS_OCCLUSION_CULL;
-    writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 1, "outSimpleCulled.eps");
+    writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 0, "outSimpleCulled.eps");
 
     opt = GL2PS_NO_PS3_SHADING;
     writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 2, "outSimpleShading2.eps");
@@ -141,10 +141,10 @@ void keyboard(unsigned char key, int x, int y){
     writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 16, "outSimpleShading16.eps");
 
     opt = GL2PS_BEST_ROOT | GL2PS_SILENT;
-    writeps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 1, "outBsp.eps");
+    writeps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 0, "outBsp.eps");
 
     opt = GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT | GL2PS_SILENT;
-    writeps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 1, "outBspCulled.eps");
+    writeps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 0, "outBspCulled.eps");
 
     printf("Done with all images\n");
     break;
