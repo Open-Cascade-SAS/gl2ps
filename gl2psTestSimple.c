@@ -27,15 +27,30 @@ void init(void){
 }
 
 void display(void){
+  glClearColor(0.3, 0.5, 0.8, 0.);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glPushMatrix();
   glEnable(GL_LIGHTING);
   glRotatef(rotation, 2., 0., 1.);
 
-  /* shading does not seem to work with the torus: */
-  glutSolidTorus(0.3, 0.6, 30, 30); 
+  /* a very simple test (2 triangles) that does not work */
+  /*
+  glBegin(GL_TRIANGLES);
+  glNormal3f(0,0,1);
+  glVertex3f(0,0,0);
+  glVertex3f(0.5,0,0);
+  glVertex3f(0.5,0.5,0);
+  glNormal3f(0,1,0);
+  glVertex3f(0,0,0);
+  glVertex3f(0.5,0,0);
+  glVertex3f(0.5,0,0.5);
+  glEnd();
+  */
 
-  /* but seems to work with the teapot... WTF?? */
+  /* same problem with the torus: */
+  glutSolidTorus(0.3, 0.6, 30, 30);
+
+  /* but everything seems to work just fine with the teapot... WTF??? */
   /* glutSolidTeapot(0.7); */
 
   glDisable(GL_LIGHTING);
