@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.149 2003-11-15 05:18:28 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.150 2003-11-15 08:35:30 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -1694,10 +1694,12 @@ void gl2psPrintPostScriptHeader(void){
   time_t now;
 
 #ifdef GL2PS_HAVE_ZLIB
-  char tmp[10] = {(char)0x1f,(char)0x8b /* magic numbers */,
-                  8 /* compression method */, 0 /* flags */, 
-                  0,0,0,0 /* time */, 2 /* xflags: max compression */,
-                  (char)0x03 /* FIXME: OS code */};
+  char tmp[10] = {0x1f, 0x8b, /* magic numbers */
+                  8, /* compression method = Z_DEFLATED */
+		  0, /* flags */
+                  0, 0, 0, 0, /* time */
+		  0, /* xflags */
+                  0x03}; /* OS code */
 
   if(gl2ps->options & GL2PS_COMPRESS){
     gl2psSetupCompress();
@@ -2088,7 +2090,6 @@ void gl2psPrintPostScriptBeginViewport(GLint viewport[4]){
 
 GLint gl2psPrintPostScriptEndViewport(void){
   GLint res;
-  GLint gl2psPrintPrimitives(void);
 
   res = gl2psPrintPrimitives();
   gl2psPrintf("grestore\n");
@@ -3052,7 +3053,6 @@ void gl2psPrintPDFBeginViewport(GLint viewport[4]){
 
 GLint gl2psPrintPDFEndViewport(){
   GLint res;
-  GLint gl2psPrintPrimitives(void);
   
   res = gl2psPrintPrimitives();
   res += gl2psFlushPDFTriangles();

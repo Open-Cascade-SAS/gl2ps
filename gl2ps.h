@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.76 2003-11-15 05:20:18 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.77 2003-11-15 08:35:30 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -270,6 +270,10 @@ typedef struct {
   int lasttype, consec_cnt, consec_inner_cnt;
   int line_width_diff, line_rgb_diff, last_line_finished, last_triangle_finished;
 } GL2PScontext;
+
+/* private prototypes */
+
+GLint gl2psPrintPrimitives(void);
 
 /* public functions */
 
