@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.26 2003-06-10 19:14:12 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.27 2003-06-11 17:39:10 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -139,6 +139,73 @@ void triangles(void){
   glEnd();
 }
 
+void extras(void){
+  glColor3f(1., 0., 0.);
+
+  glPointSize(1.);
+  gl2psPointSize(1.);
+  glBegin(GL_POINTS);
+  glVertex3f(-1., 1.1, 0.);
+  glEnd();
+
+  glPointSize(3.);
+  gl2psPointSize(3.);
+  glBegin(GL_POINTS);
+  glVertex3f(-0.8, 1.1, 0.);
+  glEnd();
+
+  glPointSize(5.);
+  gl2psPointSize(5.);
+  glBegin(GL_POINTS);
+  glVertex3f(-0.6, 1.1, 0.);
+  glEnd();
+
+  glPointSize(7.);
+  gl2psPointSize(7.);
+  glBegin(GL_POINTS);
+  glVertex3f(-0.4, 1.1, 0.);
+  glEnd();
+
+  glLineWidth(1.);
+  gl2psLineWidth(1.);
+  glBegin(GL_LINES);
+  glVertex3f(-0.2, 1.05, 0.);
+  glVertex3f(0.2, 1.05, 0.);
+  glEnd();
+
+  glEnable(GL_LINE_STIPPLE);
+  gl2psEnable(GL2PS_LINE_STIPPLE);
+  glLineStipple(1, 0x0F0F);
+  glBegin(GL_LINES);
+  glVertex3f(-0.2, 1.15, 0.);
+  glVertex3f(0.2, 1.15, 0.);
+  glEnd();
+  glDisable(GL_LINE_STIPPLE);
+  gl2psDisable(GL2PS_LINE_STIPPLE);
+
+  glLineWidth(3.);
+  gl2psLineWidth(3.);
+  glBegin(GL_LINES);
+  glVertex3f(0.4, 1.05, 0.);
+  glVertex3f(0.8, 1.05, 0.);
+  glEnd();
+
+  glEnable(GL_LINE_STIPPLE);
+  gl2psEnable(GL2PS_LINE_STIPPLE);
+  glLineStipple(1, 0x0F0F);
+  glBegin(GL_LINES);
+  glVertex3f(0.4, 1.15, 0.);
+  glVertex3f(0.8, 1.15, 0.);
+  glEnd();
+  glDisable(GL_LINE_STIPPLE);
+  gl2psDisable(GL2PS_LINE_STIPPLE);
+
+  glPointSize(1);
+  gl2psPointSize(1);
+  glLineWidth(1);
+  gl2psLineWidth(1);
+}
+
 void objects(void){
   glEnable(GL_LIGHTING);
   glPushMatrix();
@@ -249,6 +316,7 @@ void image(){
 void draw_single(void){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   triangles();
+  extras();
   objects();
   text();
   glFlush();
@@ -278,6 +346,7 @@ void draw_multi(void){
   glMatrixMode(GL_MODELVIEW);
   
   triangles();
+  extras();
   objects();
   text();
 

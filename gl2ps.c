@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.105 2003-06-11 15:55:15 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.106 2003-06-11 17:39:10 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1507,7 +1507,7 @@ void gl2psPrintPostScriptHeader(void){
   fprintf(gl2ps->stream,
 	  "%%%%BeginProlog\n"
 	  "/gl2psdict 64 dict def gl2psdict begin\n"
-	  "1 setlinecap 1 setlinejoin\n"
+	  "0 setlinecap 0 setlinejoin\n"
 	  "/tryPS3shading %s def %% set to false to force subdivision\n"
 	  "/rThreshold %g def %% red component subdivision threshold\n"
 	  "/gThreshold %g def %% green component subdivision threshold\n"
