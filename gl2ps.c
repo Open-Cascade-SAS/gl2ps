@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.193 2004-12-17 02:52:04 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.194 2004-12-17 05:49:57 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -2590,7 +2590,7 @@ static int gl2psPrintDash(GLushort pattern, GLint factor, char *str)
     for(i = 0; i < 5; i++){
       while(n < 16 && !tmp[n]){ off[i]++; n++; }
       while(n < 16 && tmp[n]){ on[i]++; n++; }
-      if(n > 15) break;
+      if(n >= 15) break;
     }
     /* print the on/off array from right to left, starting with off
        pixels (the longest possible array is: [on4 off4 on3 off3 on2
