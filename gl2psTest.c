@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.38 2003-09-24 17:35:38 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.39 2003-10-24 21:06:58 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -497,6 +497,9 @@ void keyboard(unsigned char key, int x, int y){
   case 's':
     opt = GL2PS_DRAW_BACKGROUND;
     writefile(format, GL2PS_SIMPLE_SORT, opt, 0, "outSimple", ext);
+
+    opt = GL2PS_DRAW_BACKGROUND | GL2PS_COMPRESS;
+    writefile(format, GL2PS_SIMPLE_SORT, opt, 0, "outSimpleCompressed", ext);
 
     opt = GL2PS_OCCLUSION_CULL | GL2PS_DRAW_BACKGROUND;
     writefile(format, GL2PS_SIMPLE_SORT, opt, 0, "outSimpleCulled", ext);

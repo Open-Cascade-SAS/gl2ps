@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.61 2003-09-22 17:06:38 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.62 2003-10-24 21:06:58 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -50,6 +50,13 @@
 #  include <GL/gl.h>
 #endif
 
+/* Support for compressed PDF */
+
+#ifdef HAVE_ZLIB
+#  include <zlib.h>
+#  define GL2PS_HAVE_ZLIB
+#endif
+
 /* Version number */
 
 #define GL2PS_MAJOR_VERSION 1
@@ -62,10 +69,10 @@
 
 /* Output file format */
 
-#define GL2PS_PS               1
-#define GL2PS_EPS              2
-#define GL2PS_TEX              3
-#define GL2PS_PDF              4
+#define GL2PS_PS  1
+#define GL2PS_EPS 2
+#define GL2PS_TEX 3
+#define GL2PS_PDF 4
 
 /* Sorting algorithms */
 
@@ -86,7 +93,7 @@
 #define GL2PS_NO_PS3_SHADING       (1<<7)
 #define GL2PS_NO_PIXMAP            (1<<8)
 #define GL2PS_USE_CURRENT_VIEWPORT (1<<9)
-#define GL2PS_DEFLATE              (1<<10)
+#define GL2PS_COMPRESS             (1<<10)
 
 /* Arguments for gl2psEnable/gl2psDisable */
 
@@ -211,6 +218,13 @@ typedef struct {
   GL2PSimage *image;
 } GL2PSprimitive;
 
+#ifdef GL2PS_HAVE_ZLIB
+typedef struct {
+  Bytef* dest, *src, *start;
+  uLongf destLen, srcLen;
+} GL2PSzstream;
+#endif
+
 typedef struct {
   /* general */
   GLint format, sort, options, colorsize, colormode, buffersize;
@@ -237,6 +251,13 @@ typedef struct {
   GL2PSlist *tlist, *tidxlist, *ilist, *slist; 
   int lasttype, consec_cnt, consec_inner_cnt;
   int line_width_diff, line_rgb_diff, last_line_finished, last_triangle_finished;
+
+  /* zlib compression structure */
+#ifdef GL2PS_HAVE_ZLIB
+  GL2PSzstream *zstream;
+  char zbuf[1000];
+#endif
+  
 } GL2PScontext;
 
 /* public functions */
