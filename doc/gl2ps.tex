@@ -1,0 +1,297 @@
+%
+%  GL2PS, an OpenGL to Postscript Printing Library, version 0.32
+%  Copyright (C) 1999-2000  Christophe Geuzaine 
+%
+%  Last Mod by Christophe on Mon Aug 14 23:50:19 2000
+% 
+%  E-mail: Christophe.Geuzaine@advalvas.be
+%  URL: http://www.geuz.org/gl2ps/
+% 
+%  This library is free software; you can redistribute it and/or
+%  modify it under the terms of the GNU Library General Public
+%  License as published by the Free Software Foundation; either
+%  version 2 of the License, or (at your option) any later version.
+% 
+%  This library is distributed in the hope that it will be useful,
+%  but WITHOUT ANY WARRANTY; without even the implied warranty of
+%  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+%  Library General Public License for more details.
+% 
+%  You should have received a copy of the GNU Library General Public
+%  License along with this library; if not, write to the Free
+%  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+% 
+
+\documentclass[10pt]{article}
+
+\pagestyle{headings}
+\setcounter{tocdepth}{2}
+
+\ifx\pdfoutput\undefined
+  \usepackage{url}
+\else
+  \usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+  \pdfinfo {
+    /Title (GL2PS, an OpenGL to Postscript Printing Library)
+    /Author (Christophe Geuzaine)
+  } 
+\fi
+\newcommand\dd{\begingroup\Url}
+\newcommand\email{\dd}
+%%tth:\def\dd#1{\textmd{\texttt{#1}}}
+%%tth:\def\url#1{\href{#1}{#1}}
+%%tth:\def\email#1{\href{mailto:#1}{#1}}
+
+\begin{document}
+
+%%tth:\special{html:<BODY TEXT="#000000" BGCOLOR="#ffffff">}
+
+\title{GL2PS, an OpenGL to Postscript Printing Library}
+\author{Christophe Geuzaine}
+\date{Version 0.32, 13 November 2000}
+
+\maketitle
+
+%%tth:\section*{Download}
+%%tth:The current archive of the package is available
+%%tth:\href{http://www.geuz.org/gl2ps/gl2ps-0.32.tar.gz}{here}.
+
+\tableofcontents
+
+\section{Introduction}
+
+GL2PS is a library for creating postscript output from any OpenGL
+application. Though it was primarily designed for three-dimensional geometry,
+mesh and postprocessing visualization, it may be useful everytime high quality
+vector output is desired. The main difference between GL2PS and other similar
+libraries is the use of sorting algorithms capable of handling intersecting and
+stretched polygons, as well as non manifold objects.
+
+The library, written in C, is released under GNU Library General Public
+License (see \url{http://www.gnu.org/} for more details), and is available
+at \url{http://www.geuz.org/gl2ps/}. Any corrections, questions or
+suggestions should be e-mailed to \email{Christophe.Geuzaine@advalvas.be}.
+
+The interface consists of five functions, all begining with the prefix
+\dd{gl2ps}. All the data structures and the symbolic constants peculiar to
+GL2PS begin with \dd{GL2PS}.
+
+
+\section{Usage}
+
+\subsection{\texttt{gl2psBeginPage} and \texttt{gl2psEndPage}}
+
+\subsubsection{Specification}
+
+\begin{verbatim}
+void gl2psBeginPage( char *title, char *producer, GLint sort,
+                     GLint options, GLint colormode,
+                     GLint colorsize, GL2PSrgba *colortable, 
+                     GLint buffersize, FILE *stream )
+\end{verbatim}
+
+\begin{verbatim}
+void gl2psEndPage( void )
+\end{verbatim}
+
+\subsubsection{Parameters}
+
+\begin{description}
+\item[\dd{title}] Specifies the plot title. For Postscript output, this string
+is placed in the \texttt{\%\%Title} field.
+
+\item[\dd{producer}] Specifies the plot producer. For Postscript output, this
+string is placed in the \texttt{\%\%For} field.
+
+\item[\dd{sort}] Specifies the sorting algorithm, chosen among:
+\dd{GL2PS_NO_SORT}, \dd{GL2PS_SIMPLE_SORT}, \dd{GL2PS_BSP_SORT}.
+
+\item[\dd{options}] Sets global plot options, chosen among:
+\dd{GL2PS_NONE}, \dd{GL2PS_DRAW_BACKGROUND}, \dd{GL2PS_SIMPLE_LINE_OFFSET},
+\dd{GL2PS_SILENT}, \dd{GL2PS_BEST_ROOT}. Multiple options are combined with the
+bitwise inclusive OR symbol,~\dd{|}.
+
+\item[\dd{colormode}] Specifies the color mode: \dd{GL_RGBA} or
+\dd{GL_COLOR_INDEX}.
+
+\item[\dd{colorsize}] Specifies the size of the colormap if \dd{colormode} is
+\dd{GL_COLOR_INDEX}.
+
+\item[\dd{colortable}] Contains the colormap if \dd{colormode} is
+\dd{GL_COLOR_INDEX}. This colormap must contain \dd{colorsize} elements of type
+\dd{GL2PSrgba}.
+
+\item[\dd{buffersize}] Specifies the size of the feedback buffer.
+
+\item[\dd{stream}] Specifies the stream to which data is printed.
+\end{description}
+
+\subsubsection{Description}
+
+\dd{gl2psBeginPage} and \dd{gl2psEndPage} delimit the OpenGL commands that will
+be caught in the feedback buffer and output to \dd{stream}. The parameters
+given to \dd{gl2psBeginPage} determine the way primitives are handled:
+
+\begin{description}
+\item[\dd{GL2PS_NO_SORT}] The primitives are not sorted, and are output in
+\dd{stream} in the order they appear in the feedback buffer.
+
+\item[\dd{GL2PS_SIMPLE_SORT}] The primitives are sorted according to their
+barycenter. This can be sufficient for simple scenes.
+
+\item[\dd{GL2PS_BSP_SORT}] The primitives are inserted in a BSP tree. The tree
+is traversed back to front in a painter-like algorithm.
+
+\item[\dd{GL2PS_DRAW_BACKGROUND}] The background frame is drawn.
+
+\item[\dd{GL2PS_SIMPLE_LINE_OFFSET}] Adds a small offset in the z-buffer to all
+lines. This is a simplified version of the \dd{GL2PS_POLYGON_OFFSET_FILL}
+functionality (cf. section~\ref{sec:gl2psEnable}), putting all lines of the
+rendered image slightly in front of their actual position. This thus performs a
+simple anti-aliasing solution, e.g. for finite element like meshes.
+
+\item[\dd{GL2PS_SILENT}] Suppresses all messages written by GL2PS on the error
+stream.
+
+\item[\dd{GL2PS_BEST_ROOT}] Try to optimize the BSP tree by choosing as root
+primitives those leading to the minimum number of splits. This is (really) not
+efficient yet.
+
+%\item[\dd{GL2PS_OCCLUSION_CULL}] Removes (well, tries to remove) all hidden
+%polygons from the output, thus substancially reducing the size of the output
+%file. This is not functionnal yet.
+\end{description}
+
+
+\subsection{\texttt{gl2psText}}
+
+\subsubsection{Specification}
+
+\begin{verbatim}
+void gl2psText( char *string, char *fontname, GLint fontsize )
+\end{verbatim}
+
+\subsubsection{Parameters}
+
+\begin{description}
+\item[\dd{string}] Specifies the text string to print.
+
+\item[\dd{fontname}] Specifies the name of a valid postscript font (for example
+\dd{"Times"} or \dd{"HelveticaBoldItalic"}).
+
+\item[\dd{fontsize}] Specifies the size of the font.
+\end{description}
+
+\subsubsection{Description}
+
+\dd{gl2psText} permits to include text in the postscript output in a very
+simple way. The text is inserted at the current raster position (set by one
+of the \dd{glRasterPos} OpenGL commands). Beware that text will be sorted
+according to the position of the leftmost element of the string only.
+
+\subsection{\texttt{gl2psEnable} and \texttt{gl2psDisable}}
+\label{sec:gl2psEnable}
+
+\subsubsection{Specification}
+
+\begin{verbatim}
+void gl2psEnable( GLint mode )
+\end{verbatim}
+
+\begin{verbatim}
+void gl2psDisable( GLint mode )
+\end{verbatim}
+
+\subsubsection{Parameters}
+
+\begin{description}
+\item[\dd{mode}] Specifies the mode to enable, chosen between
+\dd{GL2PS_POLYGON_OFFSET_FILL}, \dd{GL2PS_POLYGON_BOUNDARY},
+\dd{GL2PS_LINE_STIPPLE}.
+\end{description}
+
+\subsubsection{Description}
+
+\dd{gl2psEnable} and \dd{gl2psDisable} delimit OpenGL commands to which a local
+mode is applied. These modes are:
+
+
+\begin{description}
+\item[\dd{GL2PS_POLYGON_OFFSET_FILL}] Tries to mimmic the
+\dd{GL_POLYGON_OFFSET_FILL} functionnality. The value of the offset is taken as
+the current value of the corresponding OpenGL offset (set with
+\dd{glPolygonOffset}). Not fully functionnal yet.
+
+\item[\dd{GL2PS_POLYGON_BOUNDARY}] Not implemented yet.
+
+\item[\dd{GL2PS_LINE_STIPPLE}] Tries to mimmic the
+\dd{GL_LINE_STIPPLE} functionnality.
+\end{description}
+
+
+\section{Example}
+
+Here is a typical calling sequence to produce BSP sorted postscript output in
+the file \dd{"MyFile"}, with all lines slightly shifted front in the
+z-buffer. The \dd{draw()} function contains all OpenGL instructions.
+
+\begin{verbatim}
+fp = fopen("MyFile", "w");
+buffsize = 0;
+state = GL2PS_OVERFLOW;
+
+while( state == GL2PS_OVERFLOW ){ 
+  buffsize += 1024*1024;
+  gl2psBeginPage ( "MyTitle", "MySoftware", GL2PS_BSP_SORT,
+                   GL2PS_SIMPLE_LINE_OFFSET | GL2PS_SILENT, 
+                   GL_RGBA, 0, NULL, buffsize, fp );
+  draw(); 
+  state = gl2psEndPage();
+}
+
+fclose(fp);
+\end{verbatim}
+
+\noindent To output the text \dd{"MyText"} at the current raster position, the
+\dd{draw()} function should contain something like:
+
+\begin{verbatim}
+gl2psText("MyText", "Courier", 12);
+\end{verbatim}
+
+%\section{Implementation Notes}
+%
+%OpenGL feedback buffer, BSP trees
+
+
+\section{Contributors}
+
+Michael Sweet (\email{mike@easysw.com}) for the original implementation of the
+feedback buffer parser; Marc Um{\'e} (\email{marc.ume@digitalgraphics.be}) for
+the original list code;
+%Bruce Naylor (\email{naylor@comp-graphics.com}) for some BSP tree and occlusion
+%culling hints;
+Jean-Fran\c{c}ois Remacle (\email{remacle@scorec.rpi.edu}) for plane equation
+fixes.
+
+Projects similar to \dd{GL2PS} include: Michael Sweet's GLP library
+(\url{http://dns.easysw.com/~mike/opengl/index.html}); Mark J. Kilgard's
+rendereps (\url{http://reality.sgi.com/opengl/tips/Feedback.html}); the
+GLpr library from CEI international (\url{http://www.ceintl.com/}).
+
+\section{Versions}
+
+\begin{description}
+\item[0.1] First distributed version.
+\item[0.2] Added \dd{GL2PS_POLYGON_BOUNDARY} and \dd{GL2PS_BEST_ROOT}. Changed
+arguments of \dd{gl2psBeginPage} and \dd{gl2psText}. Corrected some memory
+allocation stuff. First version of this user's guide.
+\item[0.21] Initialization fixes.
+\item[0.3] Code cleaning. Added \dd{GL2PS_LINE_STIPPLE}.
+\item[0.31] Better handling of erroneous primitives.
+\item[0.32] ...
+% Occlusion culling.
+\end{description}
+
+\end{document}
+

@@ -1,0 +1,10 @@
+
+Testing + documenting
+
+Culling of occluded primitives. Anyone having experience with this,
+please send me an e-mail!
+
+Enhance the polygon/line/point offset stuff, set line/point sizes,
+enhance shading treatment, fix memory leaks, choose BSP root in a
+deterministic way, handle transparency(?), etc.
+
