@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.87 2003-03-08 00:28:44 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.88 2003-03-21 17:56:02 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -111,9 +111,9 @@ GLint gl2psEndPage( void )
 \subsubsection{Description and arguments}
 
 \dd{gl2psBeginPage} and \dd{gl2psEndPage} delimit the OpenGL commands that
-will be caught in the feedback buffer and output to \dd{stream}. The
-arguments given to \dd{gl2psBeginPage} determine the way primitives are
-handled:
+will be caught in the feedback buffer (see section~\ref{sec:limitations})
+and output to \dd{stream}. The arguments given to \dd{gl2psBeginPage}
+determine the way primitives are handled:
 
 \begin{description}
 \item[\dd{title}] Specifies the plot title. For PostScript output, this
@@ -144,7 +144,7 @@ format and specifying \dd{file.tex} as the \dd{filename} argument to
 You can of course combine the \LaTeX\ output with other graphic formats than
 PostScript. For example, you may transform \dd{file.ps} into \dd{file.pdf}
 and use pdf\LaTeX\ with the same \dd{file.tex} as for PostScript. You may
-also use a bitmap image (e.g.\ Jpeg or png) and still combine it with
+also use a bitmap image (e.g.\ JPEG or PNG) and still combine it with
 \dd{file.tex}.}
 \end{description}
 
@@ -183,7 +183,8 @@ output. This is useful to produce the image part of a \LaTeX\ output.
 \item[\dd{GL2PS_LANDSCAPE}] Landscape orientation instead of portrait.
 \item[\dd{GL2PS_NO_PS3_SHADING}] No use is made of the \dd{shfill}
 PostScript level 3 operator (which can lead to problems when converting
-PostScript files to PDF files; see below).
+PostScript files to PDF files; see also options \dd{nr}, \dd{ng}, \dd{nb}
+below).
 \item[\dd{GL2PS_OCCLUSION_CULL}] All the hidden polygons are removed from
 the output, thus substantially reducing the size of the output file.
 \end{description}
@@ -421,7 +422,7 @@ call to \dd{glGetIntegerv(GL_VIEWPORT, viewport)}).
 \item[\dd{GL2PS_NO_FEEDBACK}] if the feedback buffer is empty;
 \item[\dd{GL2PS_OVERFLOW}] if the size of the feedback buffer given to
 \dd{gl2psBeginPage} is not large enough;
-\item[\dd{GL2PS_UNINITIALIZED}] if \dd{gl2psEndPage} is called when the
+\item[\dd{GL2PS_UNINITIALIZED}] if \dd{gl2psEndViewport} is called when the
 library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
@@ -481,9 +482,9 @@ buffer\footnote{See the description of \dd{glFeedbackBuffer} and
 \dd{glRenderMode(GL_FEEDBACK)} in the OpenGL documentation.}. As such, all
 the OpenGL operations applied in the pipeline after the creation of the
 feedback buffer will be ignored or have to be duplicated by GL2PS (e.g.\
-font rendering, polygon offset or line stippling---see
-sections~\ref{sec:gl2psText}, \ref{sec:gl2psEnable} and
-\ref{sec:gl2psPointSize}).
+font/image rendering, polygon offset or line stippling---see
+sections~\ref{sec:gl2psText}, \ref{sec:gl2psDrawPixels},
+\ref{sec:gl2psEnable} and \ref{sec:gl2psPointSize}).
 
 Other limitations include:
 \begin{itemize}
