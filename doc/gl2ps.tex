@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.83 2003-03-06 03:08:11 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.84 2003-03-06 03:19:46 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -83,7 +83,6 @@ questions or suggestions should be e-mailed to
 The interface consists of ten functions, all beginning with the prefix
 \dd{gl2ps}. All the data structures and the symbolic constants peculiar to
 GL2PS begin with \dd{GL2PS}.
-
 
 \section{Usage}
 
@@ -216,7 +215,7 @@ printed.
 
 \dd{gl2psBeginPage} returns:
 \begin{description}
-\item[\dd{GL2PS_ERROR}] if an error occured;
+\item[\dd{GL2PS_ERROR}] if an error occurred;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
 \dd{gl2psEndPage} returns:
@@ -401,7 +400,7 @@ GLint gl2psEndViewport ( void )
 \dd{gl2psBeginViewport} and \dd{gl2psEndViewport} permit to output different
 viewports\footnote{See the description of \dd{glViewport} and \dd{glScissor}
 in the OpenGL documentation.} in the output stream. Each viewport is sorted
-separately and has its own backgound frame. The argument given to
+separately and has its own background frame. The argument given to
 \dd{gl2psBeginViewport} specifies the viewport (obtained for example with a
 call to \dd{glGetIntegerv(GL_VIEWPORT, viewport)}).
 
@@ -543,7 +542,7 @@ new optimized shaded triangle code and the \dd{shfill} management;
 Tuura}{lassi.tuura@cern.ch} for the new occlusion culling code and the
 improvement of \dd{GL2PS_BEST_ROOT}; \email{Guy
 Barrand}{barrand@lal.in2p3.fr} for his work on \dd{gl2psDrawPixels} and the
-new viewport managment.
+new viewport management.
 
 \section{Links}
 \label{sec:links}
@@ -596,7 +595,7 @@ PostScript files; optimized drawing of shaded primitives; new
 \dd{GL2PS_NO_PS3_SHADING} option and \dd{gl2psNumShadeColors} function to
 control the use of the PostScript level 3 \dd{shfill} operator (usually not
 well handled when converting to PDF).
-\item[0.63] (Nov 12, 2002) Changed \dd{GLvoid} to \dd{void} to accomodate
+\item[0.63] (Nov 12, 2002) Changed \dd{GLvoid} to \dd{void} to accommodate
 some SUN compilers; made subdivision parameters modifiable a posteriori in
 the output file; revised documentation.
 \item[0.7] (Dec 11, 2002) Occlusion culling (\dd{GL2PS_OCCLUSION_CULL}) is
