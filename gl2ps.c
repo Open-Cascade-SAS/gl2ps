@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.129 2003-10-25 15:32:25 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.130 2003-10-25 15:40:54 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -131,9 +131,9 @@ int gl2psAllocCompress(unsigned int srcsize){
   
   gl2ps->compress->srcLen = srcsize;
   gl2ps->compress->destLen = (int)ceil(1.001 * gl2ps->compress->srcLen + 12);
-  gl2ps->compress->src = gl2psMalloc(gl2ps->compress->srcLen);
+  gl2ps->compress->src = (Bytef*)gl2psMalloc(gl2ps->compress->srcLen);
   gl2ps->compress->start = gl2ps->compress->src;
-  gl2ps->compress->dest = gl2psMalloc(gl2ps->compress->destLen);
+  gl2ps->compress->dest = (Bytef*)gl2psMalloc(gl2ps->compress->destLen);
   
   return GL2PS_SUCCESS;
 }
@@ -147,9 +147,9 @@ void* gl2psReallocCompress(unsigned int srcsize){
   
   gl2ps->compress->srcLen = srcsize;
   gl2ps->compress->destLen = (int)ceil(1.001 * gl2ps->compress->srcLen + 12);
-  gl2ps->compress->src = gl2psRealloc(gl2ps->compress->src, gl2ps->compress->srcLen);
+  gl2ps->compress->src = (Bytef*)gl2psRealloc(gl2ps->compress->src, gl2ps->compress->srcLen);
   gl2ps->compress->start = gl2ps->compress->src;
-  gl2ps->compress->dest = gl2psRealloc(gl2ps->compress->dest, gl2ps->compress->destLen);
+  gl2ps->compress->dest = (Bytef*)gl2psRealloc(gl2ps->compress->dest, gl2ps->compress->destLen);
   
   return gl2ps->compress->start;
 }
@@ -184,7 +184,7 @@ int gl2psPrintf(const char* fmt, ...){
     bufsize = vsprintf(buf, fmt, args);
     va_end(args);
     oldsize = gl2ps->compress->srcLen;
-    gl2ps->compress->start = gl2psReallocCompress(oldsize + bufsize);
+    gl2ps->compress->start = (Bytef*)gl2psReallocCompress(oldsize + bufsize);
     memcpy(gl2ps->compress->start+oldsize, buf, bufsize);
   }
   else{
