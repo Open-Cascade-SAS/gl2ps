@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.85 2003-03-06 03:08:11 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.86 2003-03-06 04:09:29 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -348,7 +348,7 @@ GLint gl2psTestSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane){
     d[i] = gl2psComparePointPlane(prim->verts[i].xyz, plane);
   }
 
-  if(prim->type == GL2PS_POINT){
+  if(prim->numverts < 2){
     return 0;
   }
   else{
