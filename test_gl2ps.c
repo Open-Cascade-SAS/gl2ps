@@ -87,6 +87,9 @@ void keyboard(unsigned char key, int x, int y){
     write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 2, "test_bsp_div2.eps");
     write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 7, "test_bsp_div7.eps");
     write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 20, "test_bsp_div20.eps");
+
+    opt = GL2PS_OCCLUSION_CULL;
+    write_with_gl2ps(GL2PS_EPS, GL2PS_BSP_SORT, opt, 1, "test_bsp_culled.eps");
     break;
   }
 }
