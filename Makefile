@@ -29,9 +29,9 @@ linuxz:
 test:
 	gcc -g -O3 -W -Wall\
            -Wredundant-decls -Wcast-align -Wmissing-prototypes\
-           -Wsign-compare -Wpointer-arith -Wundef -pedantic\
+           -Wsign-compare -Wpointer-arith -Wundef -ansi -pedantic\
            -c gl2ps.c
-	g++ -O3 -Wall -pedantic -c gl2ps.c
+	g++ -O3 -Wall -ansi -pedantic -c gl2ps.c
 
 distrib:
 	rm -rf gl2ps-${RELEASE}/ gl2ps-${RELEASE}.tgz
