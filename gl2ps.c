@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.128 2003-10-25 08:41:51 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.129 2003-10-25 15:32:25 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -98,17 +98,17 @@ void gl2psFree(void *ptr){
   free(ptr);
 }
 
-/* zlib helper */
+/* zlib compression helper routines */
 
 #ifdef GL2PS_HAVE_ZLIB
 
 void gl2psSetupCompress(){
   gl2ps->compress = (GL2PScompress*)gl2psMalloc(sizeof(GL2PScompress));
-  gl2ps->compress->dest = NULL;
   gl2ps->compress->src = NULL;
   gl2ps->compress->start = NULL;
-  gl2ps->compress->destLen = 0;
+  gl2ps->compress->dest = NULL;
   gl2ps->compress->srcLen = 0;
+  gl2ps->compress->destLen = 0;
 }
 
 void gl2psFreeCompress(){
@@ -1688,6 +1688,8 @@ void gl2psPrintPostScriptHeader(void){
 
   if(gl2ps->options & GL2PS_COMPRESS){
     gl2psSetupCompress();
+
+    /* add the gzip file header */
     fwrite(tmp, 10, 1, gl2ps->stream);
   }
 #endif  
@@ -2007,30 +2009,30 @@ void gl2psPrintPostScriptFooter(void){
   
 #ifdef GL2PS_HAVE_ZLIB
   if(gl2ps->options & GL2PS_COMPRESS){
-    if (Z_OK != gl2psDeflate())
+    if (Z_OK != gl2psDeflate()){
       gl2psMsg(GL2PS_ERROR, "Zlib deflate error");
-    else
+    }
+    else{
+      /* remove the 2 header and 4 footer bytes from the zlib stream */
       fwrite(gl2ps->compress->dest+2, gl2ps->compress->destLen-6, 1, gl2ps->stream);
-    /* FIXME: I don't understand the +2 and -6 above */
-
-    crc = crc32(0L, gl2ps->compress->start, gl2ps->compress->srcLen);
-    for(n = 0; n < 4; ++n) {
-      tmp[n] = crc & 0xff;
-      crc >>= 8;
+      /* add the gzip file footer */
+      crc = crc32(0L, gl2ps->compress->start, gl2ps->compress->srcLen);
+      for(n = 0; n < 4; ++n) {
+	tmp[n] = crc & 0xff;
+	crc >>= 8;
+      }
+      len = gl2ps->compress->srcLen;
+      for(n = 4; n < 8; ++n) {
+	tmp[n] = len & 0xff;
+	len >>= 8;
+      }
+      fwrite(tmp, 8, 1, gl2ps->stream);
     }
-    len = gl2ps->compress->srcLen;
-    for(n = 4; n < 8; ++n) {
-      tmp[n] = len & 0xff;
-      len >>= 8;
-    }
-    fwrite(tmp, 8, 1, gl2ps->stream);
-
     gl2psFreeCompress();
     gl2psFree(gl2ps->compress);
     gl2ps->compress = NULL;
   }
 #endif 
-
 }
 
 void gl2psPrintPostScriptBeginViewport(GLint viewport[4]){
@@ -3167,6 +3169,7 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
   gl2ps->filename = filename;
   gl2ps->sort = sort;
   gl2ps->options = options;
+  gl2ps->compress = NULL;
 
   if(gl2ps->options & GL2PS_USE_CURRENT_VIEWPORT){
     glGetIntegerv(GL_VIEWPORT, gl2ps->viewport);
@@ -3233,7 +3236,6 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
   gl2ps->line_rgb_diff = 1;
   gl2ps->last_line_finished = 0;
   gl2ps->last_triangle_finished = 0;
-  gl2ps->compress = NULL;
 
   switch(gl2ps->format){
   case GL2PS_TEX :
