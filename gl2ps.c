@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to Postscript Printing Library
  * Copyright (C) 1999-2001  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.18 2001-08-14 13:25:36 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.19 2001-08-15 15:47:31 geuzaine Exp $
  *
  * E-mail: Christophe.Geuzaine@AdValvas.be
  * URL: http://www.geuz.org/gl2ps/
@@ -130,7 +130,7 @@ GLvoid *gl2psListPointer(GL2PSlist *list, GLint index){
 }
 
 GLvoid gl2psListSort(GL2PSlist *list,
-		     GLint (*fcmp)(const GLvoid *a, const GLvoid *b)){
+		     int (*fcmp)(const void *a, const void *b)){
   qsort(list->array, list->n, list->size, fcmp);
 }
 
