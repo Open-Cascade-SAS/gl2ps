@@ -2,7 +2,7 @@
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine 
 %
-%  $Id: gl2ps.tex,v 1.74 2003-03-05 18:29:33 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.75 2003-03-05 23:55:46 geuzaine Exp $
 % 
 %  E-mail: geuz@geuz.org
 %  URL: http://www.geuz.org/gl2ps/
@@ -95,13 +95,14 @@ GL2PS begin with \dd{GL2PS}.
 \subsubsection{Specification}
 
 \begin{verbatim}
-GLboolean gl2psBeginPage( const char *title, const char *producer,
-                          GLint format, GLint sort, GLint options, 
-                          GLint colormode, GLint colorsize, 
-                          GL2PSrgba *colortable, 
-                          GLint nr, GLint ng, GLint nb, 
-                          GLint buffersize, FILE *stream,
-                          const char *filename )
+GLint gl2psBeginPage( const char *title, const char *producer,
+                      GLint viewport[4],
+                      GLint format, GLint sort, GLint options, 
+                      GLint colormode, GLint colorsize, 
+                      GL2PSrgba *colortable, 
+                      GLint nr, GLint ng, GLint nb, 
+                      GLint buffersize, FILE *stream,
+                      const char *filename )
 \end{verbatim}
 
 \begin{verbatim}
@@ -116,22 +117,18 @@ arguments given to \dd{gl2psBeginPage} determine the way primitives are
 handled:
 
 \begin{description}
-
 \item[\dd{title}] Specifies the plot title. For PostScript output, this
 string is placed in the \texttt{\%\%Title} field.
-
 \item[\dd{producer}] Specifies the plot producer. For PostScript output,
 this string is placed in the \texttt{\%\%For} field.
-
+\item[\dd{viewport}] Specifies the plot viewport. The viewport can for
+example be obtained with a call to \dd{glGetIntegerv(GL_VIEWPORT, viewport)}.
 \item[\dd{format}] Specifies the output format, chosen among:
 
 \begin{description}
-
 \item[\dd{GL2PS_PS}] The output stream will be a PostScript file. 
-
 \item[\dd{GL2PS_EPS}] The output stream will be an Encapsulated PostScript
 file.
-
 \item[\dd{GL2PS_TEX}] The output stream will be a \LaTeX\ file, containing
 only the text strings of the plot (cf.\ section~\ref{sec:gl2psText}), as
 well as an \verb+\includegraphics+ command permitting to include a graphic
@@ -150,74 +147,55 @@ PostScript. For example, you may transform \dd{file.ps} into \dd{file.pdf}
 and use pdf\LaTeX\ with the same \dd{file.tex} as for PostScript. You may
 also use a bitmap image (e.g.\ Jpeg or png) and still combine it with
 \dd{file.tex}.}
-
 \end{description}
 
 \item[\dd{sort}] Specifies the sorting algorithm, chosen among:
 
 \begin{description}
-
 \item[\dd{GL2PS_NO_SORT}] The primitives are not sorted, and are output in
 \dd{stream} in the order they appear in the feedback buffer.
-
 \item[\dd{GL2PS_SIMPLE_SORT}] The primitives are sorted according to their
 barycenter. This can be sufficient for simple scenes.
-
 \item[\dd{GL2PS_BSP_SORT}] The primitives are inserted in a BSP tree. The
 tree is then traversed back to front in a painter-like algorithm. This
 should be used for complex three-dimensional scenes, but keep in mind that
 the BSP tree algorithm is quite memory hungry...
-
 \end{description}
 
 \item[\dd{options}] Sets global plot options, chosen among (multiple options
 can be combined with the bitwise inclusive OR symbol \dd{|}):
 
 \begin{description}
-
 \item[\dd{GL2PS_NONE}] No option.
-
 \item[\dd{GL2PS_DRAW_BACKGROUND}] The background frame is drawn.
-
 \item[\dd{GL2PS_SIMPLE_LINE_OFFSET}] A small offset is added in the z-buffer
 to all the lines in the plot. This is a simplified version of the
 \dd{GL2PS_POLYGON_OFFSET_FILL} functionality
 (cf. section~\ref{sec:gl2psEnable}), putting all the lines of the rendered
 image slightly in front of their actual position. This thus performs a
 simple anti-aliasing solution, e.g. for finite element like meshes.
-
 \item[\dd{GL2PS_SILENT}] All the messages written by GL2PS on the error
 stream are suppressed.
-
 \item[\dd{GL2PS_BEST_ROOT}] The construction of the BSP tree is optimized by
 choosing the root primitives leading to the minimum number of splits.
-
 \item[\dd{GL2PS_NO_TEXT}] All the text strings are suppressed from
 output. This is useful to produce the image part of a \LaTeX\ output.
-
 \item[\dd{GL2PS_NO_PIXMAP}] All the pixmaps are suppressed from output.
-
 \item[\dd{GL2PS_LANDSCAPE}] Landscape orientation instead of portrait.
-
 \item[\dd{GL2PS_NO_PS3_SHADING}] No use is made of the \dd{shfill}
 PostScript level 3 operator (which can lead to problems when converting
 PostScript files to PDF files; see below).
-
 \item[\dd{GL2PS_OCCLUSION_CULL}] All the hidden polygons are removed from
 the output, thus substantially reducing the size of the output file.
-
 \end{description}
 
 \item[\dd{colormode}] Specifies the color mode: \dd{GL_RGBA} or
 \dd{GL_COLOR_INDEX}.
-
 \item[\dd{colorsize}] Specifies the size of the colormap if \dd{colormode} is
 \dd{GL_COLOR_INDEX}.
-
 \item[\dd{colortable}] Contains the colormap if \dd{colormode} is
 \dd{GL_COLOR_INDEX}. This colormap must contain \dd{colorsize} elements of type
 \dd{GL2PSrgba}.
-
 \item[\dd{nr}, \dd{ng}, \dd{nb}] Controls the number flat-shaded
 (sub-)triangles used to approximate a smooth-shaded triangle when the
 \dd{shfill} operator is not supported by the system, or when the
@@ -228,19 +206,31 @@ subdivided until the color difference between two of its vertices is smaller
 that $1/\mathtt{nr}$ for the red component, $1/\mathtt{ng}$ for the green
 component and $1/\mathtt{nb}$ for the blue component. If the arguments are
 set to zero, default values are used.
-
 \item[\dd{buffersize}] Specifies the size of the feedback buffer.
-
 \item[\dd{stream}] Specifies the stream to which data is printed.
-
 \item[\dd{filename}] Specifies a name for the stream to which data is
 printed.
-
 \end{description}
 
 \subsubsection{Return value}
 
-TODO
+\dd{gl2psBeginPage} returns:
+\begin{description}
+\item[\dd{GL2PS_ERROR}] if an error occured;
+\item[\dd{GL2PS_SUCCESS}] otherwise.
+\end{description}
+
+\dd{gl2psEndPage} returns:
+\begin{description}
+\item[\dd{GL2PS_NO_FEEDBACK}] if the feedback buffer is empty;
+\item[\dd{GL2PS_OVERFLOW}] if the size of the feedback buffer given to
+\dd{gl2psBeginPage} is not large enough;
+\item[\dd{GL2PS_UNINITIALIZED}] if \dd{gl2psEndPage} is called when the
+library is not unitialized (e.g.\ if \dd{gl2psEndPage} is called before
+\dd{gl2psBeginPage});
+\item[\dd{GL2PS_ERROR}] if an error occurred;
+\item[\dd{GL2PS_SUCCESS}] otherwise.
+\end{description}
 
 % -------------------------------------------------------------------------
 
@@ -250,8 +240,8 @@ TODO
 \subsubsection{Specification}
 
 \begin{verbatim}
-GLboolean gl2psText( const char *string, const char *fontname,
-                     GLint fontsize )
+GLint gl2psText( const char *string, const char *fontname,
+                 GLint fontsize )
 \end{verbatim}
 
 \subsubsection{Description and arguments}
@@ -264,55 +254,62 @@ only. The arguments are:
 
 \begin{description}
 \item[\dd{string}] Specifies the text string to print.
-
 \item[\dd{fontname}] Specifies the name of a valid PostScript font (for
 example \dd{"Times"} or \dd{"HelveticaBoldItalic"}). This has no influence
 for \LaTeX\ output.
-
 \item[\dd{fontsize}] Specifies the size of the font. This has no influence
 for \LaTeX\ output.
 \end{description}
 
 \subsubsection{Return value}
 
-TODO
+\dd{gl2psText} returns:
+\begin{description}
+\item[\dd{GL2PS_UNINITIALIZED}] if \dd{string} is \dd{NULL} or if the
+library is not unitialized;
+\item[\dd{GL2PS_ERROR}] if an error occurred;
+\item[\dd{GL2PS_SUCCESS}] if no error occurred.
+\end{description}
 
 % -------------------------------------------------------------------------
 
-\subsection{\texttt{gl2psPixmap}}
-\label{sec:gl2psPixmap}
+\subsection{\texttt{gl2psDrawPixels}}
+\label{sec:gl2psDrawPixels}
 
 \subsubsection{Specification}
 
 \begin{verbatim}
-GLboolean gl2psPixmap( GLfloat x, GLfloat y, GLsizei w, GLsizei h,
-                       GLfloat* image, GLboolean free )
+GLint gl2psDrawPixels( GLsizei w, GLsizei h, GLenum format, GLenum type,
+                       void *pixels )
 \end{verbatim}
 
 \subsubsection{Description and arguments}
 
-\dd{gl2psPixmap} permits to include bitmap images in the PostScript
-output. The image is inserted at the current raster position (set by one of
-the \dd{glRasterPos} OpenGL commands). Beware that the image will be sorted
-according to the position of the TODO only. The arguments are:
+\dd{gl2psDrawPixels} emulates the \dd{glDrawPixels} function, i.e.\ permits
+to include bitmap images in the PostScript output. The image is inserted at
+the current raster position (set by one of the \dd{glRasterPos} OpenGL
+commands). Beware that the image will be sorted according to the position of
+the current raster position only. The arguments are:
 
 \begin{description}
-\item[\dd{x}] Specifies ... TODO
-
-\item[\dd{y}] Specifies ...
-
-\item[\dd{w}] Specifies ...
-
-\item[\dd{h}] Specifies ...
-
-\item[\dd{image}] Specifies ...
-
-\item[\dd{free}] Specifies ...
+\item[\dd{w}] Specifies the width of the image;
+\item[\dd{h}] Specifies the height of the image;
+\item[\dd{format}] Specifies the format of the pixel data. The symbolic
+constant \dd{GL_RGB} is the only one accepted at the moment.
+\item[\dd{type}] Specifies the data type for pixels. The symbolic constant
+\dd{GL_FLOAT} is the only one accepted at the moment.
+\item[\dd{pixels}] Specifies a pointer to the pixel data.
 \end{description}
 
 \subsubsection{Return value}
 
-TODO
+\dd{gl2psDrawPixels} returns:
+\begin{description}
+\item[\dd{GL2PS_UNINITIALIZED}] if \dd{pixels} is \dd{NULL} or if the
+library is not unitialized;
+\item[\dd{GL2PS_ERROR}] if an error occurred;
+\item[\dd{GL2PS_SUCCESS}] otherwise;
+\end{description}
 
 % -------------------------------------------------------------------------
 
@@ -322,11 +319,11 @@ TODO
 \subsubsection{Specification}
 
 \begin{verbatim}
-GLboolean gl2psEnable( GLint mode )
+GLint gl2psEnable( GLint mode )
 \end{verbatim}
 
 \begin{verbatim}
-GLboolean gl2psDisable( GLint mode )
+GLint gl2psDisable( GLint mode )
 \end{verbatim}
 
 \subsubsection{Description and arguments}
@@ -339,16 +336,20 @@ GLboolean gl2psDisable( GLint mode )
 \dd{GL_POLYGON_OFFSET_FILL} functionality. The value of the offset is taken as
 the current value of the corresponding OpenGL offset (set with
 \dd{glPolygonOffset}). Not fully functional yet.
-
 \item[\dd{GL2PS_POLYGON_BOUNDARY}] Not implemented yet.
-
 \item[\dd{GL2PS_LINE_STIPPLE}] Tries to emulate the \dd{GL_LINE_STIPPLE}
 functionality.
 \end{description}
 
 \subsubsection{Return value}
 
-TODO
+\dd{gl2psEnable} and \dd{gl2psDisable} return:
+\begin{description}
+\item[\dd{GL2PS_UNINITIALIZED}] if \dd{pixels} is \dd{NULL} or if the
+library is not unitialized;
+\item[\dd{GL2PS_ERROR}] if an error occurred;
+\item[\dd{GL2PS_SUCCESS}] otherwise;
+\end{description}
 
 % -------------------------------------------------------------------------
 
@@ -358,11 +359,11 @@ TODO
 \subsubsection{Specification}
 
 \begin{verbatim}
-GLboolean gl2psPointSize( GLfloat value )
+GLint gl2psPointSize( GLfloat value )
 \end{verbatim}
 
 \begin{verbatim}
-GLboolean gl2psLineWidth( GLfloat value )
+GLint gl2psLineWidth( GLfloat value )
 \end{verbatim}
 
 \subsubsection{Description and arguments}
@@ -374,7 +375,13 @@ buffer.
 
 \subsubsection{Return value}
 
-TODO
+\dd{gl2psPointSize} and \dd{gl2psLineWidth} return:
+\begin{description}
+\item[\dd{GL2PS_UNINITIALIZED}] if \dd{pixels} is \dd{NULL} or if the
+library is not unitialized;
+\item[\dd{GL2PS_ERROR}] if an error occurred;
+\item[\dd{GL2PS_SUCCESS}] otherwise;
+\end{description}
 
 % -------------------------------------------------------------------------
 
@@ -384,7 +391,7 @@ TODO
 \subsubsection{Specification}
 
 \begin{verbatim}
-GLboolean gl2psBeginViewport ( void )
+GLint gl2psBeginViewport ( GLint viewport[4] )
 \end{verbatim}
 
 \begin{verbatim}
@@ -393,11 +400,32 @@ GLint gl2psEndViewport ( void )
 
 \subsubsection{Description and arguments}
 
-\dd{gl2psBeginViewport} and \dd{gl2psEndViewport} TODO ...
+\dd{gl2psBeginViewport} and \dd{gl2psEndViewport} permit to output different
+viewports (see the OpenGL \dd{glViewport} and \dd{glScissor} functions).
+The argument given to \dd{gl2psBeginViewport} specifies the viewport
+(obtained for example with a call to \dd{glGetIntegerv(GL_VIEWPORT,
+viewport)}).
 
 \subsubsection{Return value}
 
-TODO
+\dd{gl2psBeginViewport} returns:
+\begin{description}
+\item[\dd{GL2PS_UNINITIALIZED}] if the library is not unitialized;
+\item[\dd{GL2PS_ERROR}] if an error occurred;
+\item[\dd{GL2PS_SUCCESS}] otherwise;
+\end{description}
+
+\dd{gl2psEndViewport} returns:
+\begin{description}
+\item[\dd{GL2PS_NO_FEEDBACK}] if the feedback buffer is empty;
+\item[\dd{GL2PS_OVERFLOW}] if the size of the feedback buffer given to
+\dd{gl2psBeginPage} is not large enough;
+\item[\dd{GL2PS_UNINITIALIZED}] if \dd{gl2psEndPage} is called when the
+library is not unitialized (e.g.\ if \dd{gl2psEndPage} is called before
+\dd{gl2psBeginPage});
+\item[\dd{GL2PS_ERROR}] if an error occurred;
+\item[\dd{GL2PS_SUCCESS}] otherwise.
+\end{description}
 
 % -------------------------------------------------------------------------
 
@@ -410,11 +438,14 @@ output file. The \dd{draw()} function contains all the OpenGL commands.
 
 \begin{verbatim}
 FILE *fp = fopen("MyFile", "w");
-int buffsize = 0, state = GL2PS_OVERFLOW;
+GLint buffsize = 0, state = GL2PS_OVERFLOW;
+GLint viewport[4];
+
+glGetIntegerv(GL_VIEWPORT, viewport);
 
 while( state == GL2PS_OVERFLOW ){ 
   buffsize += 1024*1024;
-  gl2psBeginPage ( "MyTitle", "MySoftware", 
+  gl2psBeginPage ( "MyTitle", "MySoftware", viewport,
                    GL2PS_EPS, GL2PS_BSP_SORT,
                    GL2PS_SIMPLE_LINE_OFFSET | GL2PS_SILENT |
                    GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT,
@@ -513,8 +544,8 @@ new optimized shaded triangle code and the \dd{shfill} management;
 \email{Shahzad Muzaffar}{Shahzad.Muzaffar@cern.ch} and \email{Lassi
 Tuura}{lassi.tuura@cern.ch} for the new occlusion culling code and the
 improvement of \dd{GL2PS_BEST_ROOT}; \email{Guy
-Barrand}{barrand@lal.in2p3.fr} for \dd{gl2psPixmap} and the new viewport
-managment.
+Barrand}{barrand@lal.in2p3.fr} for his work on \dd{gl2psDrawPixels} and the
+new viewport managment.
 
 \section{Links}
 \label{sec:links}
@@ -581,8 +612,9 @@ documentation.
 \item[0.8] (Mar ??, 2003) API change: \dd{gl2psNumShadeColors} has been
 removed and the color subdivision parameters \dd{nr}, \dd{ng} and \dd{nb}
 are now given as arguments to \dd{gl2psBeginPage} (see
-section~\ref{sec:gl2psBeginPage}); new \dd{gl2psPixmap} interface to produce
-mixed mode PostScript/Bitmap output; new \dd{gl2psBeginViewport} and
+section~\ref{sec:gl2psBeginPage}); \dd{gl2psBeginPage} now takes the print
+viewport as argument; new \dd{gl2psDrawPixels} interface to produce mixed
+mode PostScript/Bitmap output; new \dd{gl2psBeginViewport} and
 \dd{gl2psEndViewport} interface to handle multiple OpenGL viewports; fixed
 small bug in occlusion culling code.
 \end{description}

@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine
  *
- * $Id: gl2ps.h,v 1.44 2003-03-05 18:29:33 geuzaine Exp $
+ * $Id: gl2ps.h,v 1.45 2003-03-05 23:55:46 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -103,8 +103,9 @@
 #define GL2PS_INFO                       1
 #define GL2PS_WARNING                    2
 #define GL2PS_ERROR                      3
-#define GL2PS_NO_FEEDBACK               -1
-#define GL2PS_OVERFLOW                  -2
+#define GL2PS_NO_FEEDBACK                4
+#define GL2PS_OVERFLOW                   5
+#define GL2PS_UNINITIALIZED              6
 
 /* Primitive types */
 
@@ -174,10 +175,9 @@ typedef struct {
 } GL2PSstring;
 
 typedef struct {
-  GLfloat x, y;
   GLsizei width, height;
-  GLfloat *image;
-  GLboolean free;
+  GLenum format, type;
+  GLfloat *pixels;
 } GL2PSimage;
 
 typedef struct {
@@ -194,6 +194,7 @@ typedef struct {
   const char *title, *producer, *filename;
   GLboolean shade, boundary;
   GLfloat *feedback, offset[2];
+  GLint viewport[4];
   GL2PSrgba *colormap, lastrgba, threshold;
   float lastlinewidth;
   GL2PSlist *primitives;
@@ -207,21 +208,22 @@ typedef struct {
 extern "C" {
 #endif
 
-GL2PSDLL_API GLboolean gl2psBeginPage(const char *title, const char *producer, 
-				      GLint format, GLint sort, GLint options, 
-				      GLint colormode, GLint colorsize, GL2PSrgba *colormap, 
-				      GLint nr, GLint ng, GLint nb, GLint buffersize,
-				      FILE *stream, const char *filename);
-GL2PSDLL_API GLboolean gl2psBeginViewport(void);
-GL2PSDLL_API GLint     gl2psEndPage(void);
-GL2PSDLL_API GLint     gl2psEndViewport(void);
-GL2PSDLL_API GLboolean gl2psText(const char *str, const char *fontname, GLshort fontsize);
-GL2PSDLL_API GLboolean gl2psPixmap(GLfloat x, GLfloat y, GLsizei w, GLsizei h,
-				   GLfloat* image, GLboolean free);
-GL2PSDLL_API GLboolean gl2psEnable(GLint mode);
-GL2PSDLL_API GLboolean gl2psDisable(GLint mode);
-GL2PSDLL_API GLboolean gl2psPointSize(GLfloat value);
-GL2PSDLL_API GLboolean gl2psLineWidth(GLfloat value);
+GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer, 
+				  GLint viewport[4], GLint format, GLint sort,
+				  GLint options, GLint colormode,
+				  GLint colorsize, GL2PSrgba *colormap, 
+				  GLint nr, GLint ng, GLint nb, GLint buffersize,
+				  FILE *stream, const char *filename);
+GL2PSDLL_API GLint gl2psEndPage(void);
+GL2PSDLL_API GLint gl2psBeginViewport(GLint viewport[4]);
+GL2PSDLL_API GLint gl2psEndViewport(void);
+GL2PSDLL_API GLint gl2psText(const char *str, const char *fontname, GLshort fontsize);
+GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height, 
+				   GLenum format, GLenum type, void *pixels);
+GL2PSDLL_API GLint gl2psEnable(GLint mode);
+GL2PSDLL_API GLint gl2psDisable(GLint mode);
+GL2PSDLL_API GLint gl2psPointSize(GLfloat value);
+GL2PSDLL_API GLint gl2psLineWidth(GLfloat value);
 
 #ifdef __cplusplus
 };
