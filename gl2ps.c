@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to Postscript Printing Library
  * Copyright (C) 1999-2001  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.9 2001-06-11 12:00:10 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.10 2001-06-11 12:01:53 geuzaine Exp $
  *
  * E-mail: Christophe.Geuzaine@AdValvas.be
  * URL: http://www.geuz.org/gl2ps/
@@ -33,7 +33,7 @@
 #include "gl2ps.h"
 
 /* The static gl2ps structure. gl2ps is not thread safe (we should
-   allocate this structure when doing gl2psBeginPage). */
+   create a local GL2PScontext when doing gl2psBeginPage). */
 
 static GL2PScontext gl2ps;
 
