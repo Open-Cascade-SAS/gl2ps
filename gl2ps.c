@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.198 2004-12-18 00:24:57 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.199 2004-12-21 03:43:17 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -4481,9 +4481,10 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
     }
   }
 
-  if(!viewport[2] || !viewport[3]){
+  if(!gl2ps->viewport[2] || !gl2ps->viewport[3]){
     gl2psMsg(GL2PS_ERROR, "Incorrect viewport (x=%d, y=%d, width=%d, height=%d)",
-             viewport[0], viewport[1], viewport[2], viewport[3]);
+             gl2ps->viewport[0], gl2ps->viewport[1], 
+	     gl2ps->viewport[2], gl2ps->viewport[3]);
     gl2psFree(gl2ps);
     gl2ps = NULL;
     return GL2PS_ERROR;
