@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.157 2003-12-22 18:24:00 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.158 2004-03-05 23:44:25 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -3541,18 +3541,17 @@ GLint gl2psPrintPrimitives(void){
     return GL2PS_OVERFLOW;
   }
 
-  if(used == 0){
-    return GL2PS_NO_FEEDBACK; /* Empty feedback buffer */
-  }
-
-  if(gl2ps->format == GL2PS_PS || 
-     gl2ps->format == GL2PS_EPS ||
-     gl2ps->format == GL2PS_PDF){
-    gl2psParseFeedbackBuffer(used);
+  if(used > 0){
+    if(gl2ps->format == GL2PS_PS || 
+       gl2ps->format == GL2PS_EPS ||
+       gl2ps->format == GL2PS_PDF){
+      gl2psParseFeedbackBuffer(used);
+    }
   }
 
   if(!gl2psListNbr(gl2ps->primitives)){
-    return GL2PS_SUCCESS; /* Nothing to print */
+    /* Empty feedback buffer and/or nothing else to print */
+    return GL2PS_NO_FEEDBACK;
   }
 
   switch(gl2ps->format){
