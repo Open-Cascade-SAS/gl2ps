@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.84 2004-03-16 22:28:00 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.85 2004-03-16 23:20:46 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -133,15 +133,15 @@
 
 /* Text alignment */
 
-#define GL2PS_TEXT_C     1
-#define GL2PS_TEXT_CL    2
-#define GL2PS_TEXT_CR    3
-#define GL2PS_TEXT_B     4
-#define GL2PS_TEXT_BL    5
-#define GL2PS_TEXT_BR    6
-#define GL2PS_TEXT_T     7
-#define GL2PS_TEXT_TL    8
-#define GL2PS_TEXT_TR    9
+#define GL2PS_TEXT_C  1
+#define GL2PS_TEXT_CL 2
+#define GL2PS_TEXT_CR 3
+#define GL2PS_TEXT_B  4
+#define GL2PS_TEXT_BL 5
+#define GL2PS_TEXT_BR 6
+#define GL2PS_TEXT_T  7
+#define GL2PS_TEXT_TL 8
+#define GL2PS_TEXT_TR 9
 
 /* Pass through options */
 
