@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.176 2004-07-12 17:49:56 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.177 2004-07-13 15:59:49 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -4372,19 +4372,32 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
     rewind(gl2ps->stream);
   }
 
-  if(!title)
-    title = "";
-  if(!producer)
-    producer = "";
-  if(!filename)
-    filename = "";
-
-  gl2ps->title = (char*)gl2psMalloc((strlen(title)+1)*sizeof(char));
-  strcpy(gl2ps->title, title);
-  gl2ps->producer = (char*)gl2psMalloc((strlen(producer)+1)*sizeof(char));
-  strcpy(gl2ps->producer, producer);
-  gl2ps->filename = (char*)gl2psMalloc((strlen(filename)+1)*sizeof(char));
-  strcpy(gl2ps->filename, filename);
+  if(!title){
+    gl2ps->title = (char*)gl2psMalloc(sizeof(char));
+    gl2ps->title[0] = '\0';
+  }
+  else{
+    gl2ps->title = (char*)gl2psMalloc((strlen(title)+1)*sizeof(char));
+    strcpy(gl2ps->title, title);
+  }
+    
+  if(!producer){
+    gl2ps->producer = (char*)gl2psMalloc(sizeof(char));
+    gl2ps->producer[0] = '\0';
+  }
+  else{
+    gl2ps->producer = (char*)gl2psMalloc((strlen(producer)+1)*sizeof(char));
+    strcpy(gl2ps->producer, producer);
+  }
+  
+  if(!filename){
+    gl2ps->filename = (char*)gl2psMalloc(sizeof(char));
+    gl2ps->filename[0] = '\0';
+  }
+  else{
+    gl2ps->filename = (char*)gl2psMalloc((strlen(filename)+1)*sizeof(char));
+    strcpy(gl2ps->filename, filename);
+  }
 
   switch(gl2ps->format){
   case GL2PS_TEX :
