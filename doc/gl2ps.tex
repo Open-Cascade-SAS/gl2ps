@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.161 2004-03-15 18:53:41 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.162 2004-03-15 19:19:07 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -236,10 +236,10 @@ determine the way primitives are handled:
   with the zlib library (\url{http://www.gzip.org/zlib/}).
 
   A word of caution: PostScript files generated with this option turned on
-  are simply compressed ``as a whole'', i.e., they are identical to regular
-  files compressed with \dd{gzip}--and may thus not be readable by standard
-  PostScript interpreters. This is not the case for compressed PDF files,
-  for which the compression is part of the official specification.
+ are simply compressed ``as a whole'', i.e., they are identical to regular
+ files compressed with \dd{gzip}--and may thus not be readable by all
+ interpreters. This is not the case for compressed PDF files, for which the
+ compression is part of the official specification.
 \end{description}
 
 \item[\dd{colormode}] Specifies the color mode: \dd{GL_RGBA} or
@@ -670,14 +670,15 @@ Ramachandran}{prabhu@aero.iitm.ernet.in} for various bug reports and fixes;
 \section{Links}
 \label{sec:links}
 
-Projects similar to \dd{GL2PS} include: Mark J. Kilgard's rendereps
+Projects similar to \dd{GL2PS} include: Mark Kilgard's original
+``rendereps'' tutorial
 (\url{http://www.opengl.org/developers/code/mjktips/Feedback.html}); Michael
 Sweet's GLP library (\url{http://www.easysw.com/~mike/opengl/}); the GLpr
 library from CEI international (\url{http://www.ceintl.com/}; this product
 does not seem to be available anymore).
 
-\email{Toby White}{tow@sdf.lonestar.org} maintains a Python wrapper for
-\dd{GL2PS}, available at \url{http://tow.freeshell.org/software.html}.
+%\email{Toby White}{tow@sdf.lonestar.org} maintains a Python wrapper for
+%\dd{GL2PS}, available at \url{http://tow.freeshell.org/software.html}.
 
 \section{Versions}
 
