@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.36 2003-09-17 21:23:22 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.37 2003-09-17 21:30:00 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -119,11 +119,9 @@ static char *pixmap[] = {
   "****************************************************************"};
 
 void init(void){
-  float pos[3] = {0.,0.,1000.};
-
   glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
   glShadeModel(GL_SMOOTH);
-  glLightfv(GL_LIGHT0, GL_POSITION, pos);
   glEnable(GL_LIGHT0);
   glEnable(GL_SCISSOR_TEST);
 }
