@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.174 2004-07-11 22:30:25 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.175 2004-07-11 22:56:19 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -2285,18 +2285,17 @@ static void gl2psPrintPostScriptHeader(void)
               "/C  { setrgbcolor } BD\n"
               "/G  { 0.082 mul exch 0.6094 mul add exch 0.3086 mul add neg 1.0 add setgray } BD\n"
               "/W  { setlinewidth } BD\n"
-              "/FC { findfont exch scalefont setfont } BD\n"
-              "/SW { stringwidth pop } BD\n"
-              "/SH { false charpath flattenpath pathbbox exch pop exch sub exch pop } BD\n"
+              "/FC { findfont exch /SH exch def SH scalefont setfont } BD\n"
+              "/SW { dup stringwidth pop } BD\n"
               "/S  { FC moveto show } BD\n"
-              "/SBR{ FC moveto dup SW neg 0 rmoveto show } BD\n"
-              "/SBC{ FC moveto dup SW -2 div 0 rmoveto show } BD\n"
-              "/SCL{ FC moveto dup dup SW neg exch SH -2 div rmoveto show } BD\n"
-              "/SCC{ FC moveto dup dup SW -1.5 mul exch SH -2 div rmoveto show } BD\n"
-              "/SCR{ FC moveto dup dup SW -2 mul exch SH -2 div rmoveto show } BD\n"
-              "/STL{ FC moveto dup dup SW neg exch SH neg rmoveto show } BD\n"
-              "/STC{ FC moveto dup dup SW -1.5 mul exch SH neg rmoveto show } BD\n"
-              "/STR{ FC moveto dup dup SW -2 mul exch SH neg rmoveto show } BD\n"
+              "/SBC{ FC moveto SW -2 div 0 rmoveto show } BD\n"
+              "/SBR{ FC moveto SW neg 0 rmoveto show } BD\n"
+              "/SCL{ FC moveto 0 SH -2 div rmoveto show } BD\n"
+              "/SCC{ FC moveto SW -2 div SH -2 div rmoveto show } BD\n"
+              "/SCR{ FC moveto SW neg SH -2 div rmoveto show } BD\n"
+              "/STL{ FC moveto 0 SH neg rmoveto show } BD\n"
+              "/STC{ FC moveto SW -2 div SH neg rmoveto show } BD\n"
+              "/STR{ FC moveto SW neg SH neg rmoveto show } BD\n"
               "/P  { newpath 0.0 360.0 arc closepath fill } BD\n"
               "/L  { newpath moveto lineto stroke } BD\n"
               "/SL { C moveto C lineto stroke } BD\n"
