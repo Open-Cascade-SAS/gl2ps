@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.17 2003-03-07 18:37:15 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.18 2003-03-08 01:08:19 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -116,6 +116,7 @@ void init(void){
 }
 
 void triangles(void){
+  /* two intersecting triangles */
   glDisable(GL_LIGHTING);
   glBegin(GL_TRIANGLES);
   
@@ -147,8 +148,8 @@ void teapot(void){
 void printstring(char *string){
   int len, i;
 
-  /* call gl2psText before the glut function since
-     glutBitmapCharacter messes up the raster position... */
+  /* call gl2psText before the glut function since glutBitmapCharacter
+     changes the raster position... */
   gl2psText(string, "Helvetica", 12);
 
   len = (int)strlen(string);
@@ -328,8 +329,7 @@ void reshape(int w, int h){
 
 void writeps(int format, int sort, int options, int nbcol, char *file){
   FILE *fp;
-  int state = GL2PS_OVERFLOW;
-  int buffsize = 0;
+  int state = GL2PS_OVERFLOW, buffsize = 0;
   GLint viewport[4];
 
   viewport[0] = 0;
@@ -390,7 +390,7 @@ void keyboard(unsigned char key, int x, int y){
 
     opt = GL2PS_NO_PS3_SHADING | GL2PS_DRAW_BACKGROUND;
     writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 2, "outSimpleShading2.eps");
-    writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 8, "outSimpleShading7.eps");
+    writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 8, "outSimpleShading8.eps");
     writeps(GL2PS_EPS, GL2PS_SIMPLE_SORT, opt, 16, "outSimpleShading16.eps");
 
     opt = GL2PS_BEST_ROOT | GL2PS_DRAW_BACKGROUND;

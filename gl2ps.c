@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.91 2003-03-08 00:24:23 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.92 2003-03-08 01:08:19 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -195,9 +195,9 @@ void gl2psGetNormal(GLfloat *a, GLfloat *b, GLfloat *c){
     c[2] = c[2] / norm;
   }
   else{
-    /* The plane is still wrong, despite our tests in
-       gl2psGetPlane... Let's return a dummy value (this is a hack: we
-       should do more tests in GetPlane): */
+    /* FIXME: the plane is still wrong, despite our tests in
+       gl2psGetPlane... Let's return a dummy value for now (this is a
+       hack: we should do more tests in GetPlane) */
     c[0] = c[1] = 0.;
     c[2] = 1.;
   }
@@ -920,6 +920,15 @@ void gl2psSplitPrimitive2D(GL2PSprimitive *prim,
 GLint gl2psAddInBspImageTree(GL2PSprimitive *prim, GL2PSbsptree2d **tree){
   GLint ret = 0;
   GL2PSprimitive *frontprim = NULL, *backprim = NULL;
+  
+  /* FIXME: until we consider the actual extent of text strings and
+     pixmaps, never cull them */
+  if(prim->type == GL2PS_PIXMAP || prim->type == GL2PS_TEXT){
+    return 1;
+  }
+
+  /* FIXME: we might also want to disable culling of zero-surface
+     primitives, i.e. GL2PS_POINT and GL2PS_LINE... */
 
   if(*tree == NULL){
     gl2psAddPlanesInBspTreeImage(prim, tree);
@@ -980,14 +989,14 @@ void gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list){
       b = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
       b->type = GL2PS_LINE;
       b->dash = prim->dash;
-      b->depth = prim->depth; /* this is wrong */
+      b->depth = prim->depth; /* FIXME: this is wrong */
       b->culled = prim->culled;
       b->width = prim->width;
       b->boundary = 0;
       b->numverts = 2;
       b->verts = (GL2PSvertex *)gl2psMalloc(2 * sizeof(GL2PSvertex));
 
-#if 0 /* need to work on boundary offset... */
+#if 0 /* FIXME: need to work on boundary offset... */
       v[0] = c[0] - prim->verts[i].xyz[0];
       v[1] = c[1] - prim->verts[i].xyz[1];
       v[2] = 0.;
@@ -1078,7 +1087,7 @@ void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
   }
   else if(offset && type == GL2PS_TRIANGLE){
 
-    /* This needs some more work... */
+    /* FIXME: this needs some more work... */
 
     if(gl2ps->sort == GL2PS_SIMPLE_SORT){    
       factor = gl2ps->offset[0];
@@ -1317,7 +1326,7 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
   unsigned int row, col, col_max;
   float dr, dg, db, fgrey;
   Uchar red, green, blue, b, grey;
-  /* Options */
+  /* FIXME: this has to be generalized... */
   int shade = 0;
   int nbit = 4;
 
@@ -1702,7 +1711,7 @@ void gl2psPrintPostScriptPrimitive(void *a, void *b){
 
   prim = *(GL2PSprimitive**)a;
 
-  if(gl2ps->options & GL2PS_OCCLUSION_CULL && prim->culled) return;
+  if((gl2ps->options & GL2PS_OCCLUSION_CULL) && prim->culled) return;
 
   switch(prim->type){
   case GL2PS_PIXMAP :
@@ -1959,6 +1968,8 @@ GLint gl2psPrintPrimitives(void){
     res = GL2PS_ERROR;
     break;
   }
+
+  fflush(gl2ps->stream);
 
   return res;
 }
