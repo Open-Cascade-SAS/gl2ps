@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2002  Christophe Geuzaine
  *
- * $Id: gl2ps.h,v 1.17 2002-06-04 21:38:26 geuzaine Exp $
+ * $Id: gl2ps.h,v 1.18 2002-06-04 21:41:52 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -144,14 +144,6 @@ struct _GL2PSbsptree {
   GL2PSplane plane;
   GL2PSlist *primitives;
   GL2PSbsptree *front, *back;
-};
-
-typedef struct _GL2PSbsptree2d GL2PSbsptree2d;
-
-struct _GL2PSbsptree2d {
-  GLshort flag;
-  GL2PSxy a, b;
-  GL2PSbsptree2d *front, *back;
 };
 
 typedef struct {
