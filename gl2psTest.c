@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.61 2004-08-31 21:22:52 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.62 2004-10-18 22:22:36 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -383,7 +383,7 @@ void draw_multi(void){
              (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
   glScissor((GLint)(window_w * 0.05), (GLint)(window_h * 0.525), 
             (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
-  glClearColor(0.3, 0.3, 0.3, 0.);
+  glClearColor(0.2, 0.2, 0.2, 0.);
   glGetIntegerv(GL_VIEWPORT, viewport);
 
   gl2psBeginViewport(viewport);
@@ -406,7 +406,7 @@ void draw_multi(void){
              (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
   glScissor((GLint)(window_w * 0.05), (GLint)(window_h * 0.025), 
              (GLsizei)(window_w * 0.9), (GLsizei)(window_h * 0.45));
-  glClearColor(0.5, 0.5, 0.5, 0.);
+  glClearColor(0.8, 0.8, 0.8, 0.);
 
   glGetIntegerv(GL_VIEWPORT, viewport);
 
@@ -428,7 +428,7 @@ void draw_multi(void){
 
   gl2psEndViewport();
 
-  glClearColor(0.7, 0.7, 0.7, 0.);
+  glClearColor(0.5, 0.5, 0.5, 0.);
   glFlush();
 }
 
@@ -464,7 +464,7 @@ void reshape(int w, int h){
   glOrtho(-1.3,1.3, -1.3,1.3, -1.3,1.3);
   glMatrixMode(GL_MODELVIEW);
 
-  glClearColor(0.7, 0.7, 0.7, 0.);
+  glClearColor(0.5, 0.5, 0.5, 0.);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
