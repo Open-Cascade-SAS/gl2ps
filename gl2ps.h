@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine
  *
- * $Id: gl2ps.h,v 1.55 2003-07-03 17:05:58 geuzaine Exp $
+ * $Id: gl2ps.h,v 1.56 2003-09-16 19:40:41 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -57,7 +57,7 @@
 
 #define GL2PS_MAJOR_VERSION 0
 #define GL2PS_MINOR_VERSION 9
-#define GL2PS_PATCH_VERSION 2
+#define GL2PS_PATCH_VERSION 3
 
 #define GL2PS_VERSION (GL2PS_MAJOR_VERSION + \
                        0.01 * GL2PS_MINOR_VERSION + \
@@ -65,9 +65,10 @@
 
 /* Output file format */
 
-#define GL2PS_PS  1
-#define GL2PS_EPS 2
-#define GL2PS_TEX 3
+#define GL2PS_PS               1
+#define GL2PS_EPS              2
+#define GL2PS_TEX              3
+#define GL2PS_PDF              4
 
 /* Sorting algorithms */
 
@@ -88,6 +89,7 @@
 #define GL2PS_NO_PS3_SHADING       (1<<7)
 #define GL2PS_NO_PIXMAP            (1<<8)
 #define GL2PS_USE_CURRENT_VIEWPORT (1<<9)
+#define GL2PS_DEFLATE              (1<<10)
 
 /* Arguments for gl2psEnable/gl2psDisable */
 
@@ -115,12 +117,25 @@
 
 /* Primitive types */
 
+#define GL2PS_NOTYPE     -1
 #define GL2PS_TEXT       1
 #define GL2PS_POINT      2
 #define GL2PS_LINE       3
 #define GL2PS_QUADRANGLE 4
 #define GL2PS_TRIANGLE   5
 #define GL2PS_PIXMAP     6
+
+/* Text alignment */
+
+#define GL2PS_TEXT_C     1
+#define GL2PS_TEXT_CL    2
+#define GL2PS_TEXT_CR    3
+#define GL2PS_TEXT_B     4
+#define GL2PS_TEXT_BL    5
+#define GL2PS_TEXT_BR    6
+#define GL2PS_TEXT_T     7
+#define GL2PS_TEXT_TL    8
+#define GL2PS_TEXT_TR    9
 
 /* BSP tree primitive comparison */
 
@@ -175,9 +190,12 @@ typedef struct {
   GL2PSrgba rgba;
 } GL2PSvertex;
 
+typedef GL2PSvertex GL2PStriangle[3];
+
 typedef struct {
   GLshort fontsize;
   char *str, *fontname;
+  GLint alignment;
 } GL2PSstring;
 
 typedef struct {
@@ -225,6 +243,8 @@ GL2PSDLL_API GLint gl2psEndPage(void);
 GL2PSDLL_API GLint gl2psBeginViewport(GLint viewport[4]);
 GL2PSDLL_API GLint gl2psEndViewport(void);
 GL2PSDLL_API GLint gl2psText(const char *str, const char *fontname, GLshort fontsize);
+GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname, GLshort fontsize,
+				GLint align, GL2PSrgba color);
 GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
 				   GLint xorig, GLint yorig,
 				   GLenum format, GLenum type, const void *pixels);

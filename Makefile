@@ -17,5 +17,5 @@ test:
             -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
 
 clean:
-	rm -f *.tex *.ps *.eps gl2psTest *~
+	rm -f *.tex *.ps *.eps *.pdf gl2psTest *~
 	cd doc && ${MAKE} clean
