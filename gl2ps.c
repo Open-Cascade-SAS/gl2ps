@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.69 2003-01-22 18:44:21 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.70 2003-01-30 17:10:16 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1501,7 +1501,7 @@ void gl2psPrintPostScriptColor(GL2PSrgba rgba){
   }
 }
 
-void gl2psResetPostScriptColor(){
+void gl2psResetPostScriptColor(void){
   gl2ps->lastrgba[0] = gl2ps->lastrgba[1] = gl2ps->lastrgba[2] = -1.;
 }
 
