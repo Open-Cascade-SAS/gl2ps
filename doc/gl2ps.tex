@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.143 2003-11-06 23:54:49 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.144 2003-11-07 05:54:21 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>
@@ -517,7 +517,7 @@ edit the output file a posteriori (just set \dd{/tryPS3shading} to
 \dd{false} in the PostScript file header). The best solution is probably to
 output the file directly in PDF, though, by replacing \dd{GL2PS_EPS} with
 \dd{GL2PS_PDF} in the \dd{gl2psBeginPage()} function call
-above\footnote{Note that for PDF and/or compressed output, files should be
+above\footnote{Note that for PDF and compressed output, files should be
 opened in binary mode, i.e., with \dd{fopen(..., "wb")}, instead of
 \dd{fopen(..., "w")}.}.
 
