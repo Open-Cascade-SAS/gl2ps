@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.117 2003-09-17 07:18:50 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.118 2003-09-17 08:28:33 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2003  Christophe Geuzaine <geuz@geuz.org>
@@ -165,12 +165,17 @@ determine the way primitives are handled:
 
 \begin{description}
 \item[\dd{GL2PS_NO_SORT}] The primitives are not sorted, and are output in
-  \dd{stream} in the order they appear in the feedback buffer.
+  \dd{stream} in the order they appear in the feedback buffer. This is
+  sufficient for two-dimensional scenes.
 \item[\dd{GL2PS_SIMPLE_SORT}] The primitives are sorted according to their
-  barycenter. This can be sufficient for simple scenes.
+  barycenter. This can be sufficient for simple three-dimensional scenes
+  and/or when correctness is not crucial.
 \item[\dd{GL2PS_BSP_SORT}] The primitives are inserted in a Binary Space
   Partition (BSP) tree. The tree is then traversed back to front in a
-  painter-like algorithm.
+  painter-like algorithm. This should be used whenever an accurate rendering
+  of a three-dimensional scene is sought. Beware that this algorithm
+  requires a lot more computational time (and memory) than the simple
+  barycentric sort.
 \end{description}
 
 \item[\dd{options}] Sets global plot options, chosen among (multiple options
