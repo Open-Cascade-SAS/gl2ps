@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.98 2003-06-01 00:26:03 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.99 2003-06-02 17:57:32 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1750,7 +1750,7 @@ void gl2psPrintPostScriptPrimitive(void *a, void *b){
     if(prim->dash){
       fprintf(gl2ps->stream, "[%d] 0 setdash\n", prim->dash);
     }
-    if(gl2ps->shade && !gl2psVertsSameColor(prim)){
+    if(!gl2psVertsSameColor(prim)){
       gl2psResetPostScriptColor();
       fprintf(gl2ps->stream, "%g %g %g %g %g %g %g %g %g %g SL\n",
 	      prim->verts[1].xyz[0], prim->verts[1].xyz[1],
@@ -1770,7 +1770,7 @@ void gl2psPrintPostScriptPrimitive(void *a, void *b){
     }
     break;
   case GL2PS_TRIANGLE :
-    if(gl2ps->shade && !gl2psVertsSameColor(prim)){
+    if(!gl2psVertsSameColor(prim)){
       gl2psResetPostScriptColor();
       fprintf(gl2ps->stream, "%g %g %g %g %g %g %g %g %g %g %g %g %g %g %g ST\n",
 	      prim->verts[2].xyz[0], prim->verts[2].xyz[1],
@@ -1917,11 +1917,8 @@ GLint gl2psPrintTeXEndViewport(void){
 GLint gl2psPrintPrimitives(void){
   GL2PSbsptree *root;
   GL2PSxyz eye = {0., 0., 100000.};
-  GLint shademodel, res = GL2PS_SUCCESS;
+  GLint res = GL2PS_SUCCESS;
   void (*pprim)(void *a, void *b) = 0;
-
-  glGetIntegerv(GL_SHADE_MODEL, &shademodel);
-  gl2ps->shade = (shademodel == GL_SMOOTH);
 
   if(gl2ps->format == GL2PS_PS || gl2ps->format == GL2PS_EPS){
     res = gl2psParseFeedbackBuffer();

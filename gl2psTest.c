@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.22 2003-06-02 16:08:54 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.23 2003-06-02 17:57:33 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -36,10 +36,11 @@
 #include <string.h>
 #include "gl2ps.h"
 
-static float rotation = 0.;
+static float rotation = -60.;
+static int teapot = 0;
 static GLsizei window_w = 0; 
 static GLsizei window_h = 0;
-static GLsizei display_multi = 1;
+static GLboolean display_multi = 1;
 static char *pixmap[] = {
   "................................................................",
   "...................++++++++++++++++++++++++++...................",
@@ -138,12 +139,16 @@ void triangles(void){
   glEnd();
 }
 
-void teapot(void){
+void objects(void){
   glEnable(GL_LIGHTING);
   glPushMatrix();
   glRotatef(rotation, 2., 0., 1.);
-  glutSolidTeapot(0.6);
-  //glutSolidTorus(0.3, 0.6, 20, 20);
+  if(teapot){
+    glutSolidTeapot(0.6);
+  }
+  else{
+    glutSolidTorus(0.3, 0.6, 20, 20);
+  }
   glPopMatrix();
 }
 
@@ -170,7 +175,9 @@ void text(){
   glRasterPos2d(x, y); y -= dy;
   printstring("  s: to save the images");
   glRasterPos2d(x, y); y -= dy;
-  printstring("  m: to alternate between single and multiple viewport modes");
+  printstring("  t: to alternate between teapot and torus");
+  glRasterPos2d(x, y); y -= dy;
+  printstring("  v: to alternate between single and multiple viewport modes");
   glRasterPos2d(x, y); y -= dy;
   printstring("  q: to quit");
   glRasterPos2d(x, y); y -= dy;
@@ -242,7 +249,7 @@ void image(){
 void draw_single(void){
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   triangles();
-  teapot();
+  objects();
   text();
   glFlush();
 }
@@ -254,7 +261,7 @@ void draw_multi(void){
   glScissor(0., 0., window_w, window_h);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  /* First viewport with triangles, teapot and text */
+  /* First viewport with triangles, teapot or torus and text */
   glViewport(window_w * 0.05, window_h * 0.525 , 
 	     (GLsizei) (window_w * 0.9), (GLsizei) (window_h * 0.45));
   glScissor(window_w * 0.05, window_h * 0.525 , 
@@ -271,7 +278,7 @@ void draw_multi(void){
   glMatrixMode(GL_MODELVIEW);
   
   triangles();
-  teapot();
+  objects();
   text();
 
   gl2psEndViewport();
@@ -371,7 +378,11 @@ void keyboard(unsigned char key, int x, int y){
   case 'q':
     exit(0);
     break;
-  case 'm':
+  case 't':
+    teapot = !teapot;
+    display();
+    break;
+  case 'v':
     display_multi = !display_multi;
     if(display_multi){
       glEnable(GL_SCISSOR_TEST);
