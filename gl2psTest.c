@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.62 2004-10-18 22:22:36 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.63 2004-12-17 01:49:21 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -187,8 +187,8 @@ void extras(void){
   glEnd();
 
   glEnable(GL_LINE_STIPPLE);
+  glLineStipple(1, 0x060F);
   gl2psEnable(GL2PS_LINE_STIPPLE);
-  glLineStipple(1, 0x0F0F);
   glBegin(GL_LINES);
   glVertex3f(-0.2, 1.15, 0.);
   glVertex3f(0.2, 1.15, 0.);
@@ -204,8 +204,8 @@ void extras(void){
   glEnd();
 
   glEnable(GL_LINE_STIPPLE);
+  glLineStipple(2, 0x0F0F);
   gl2psEnable(GL2PS_LINE_STIPPLE);
-  glLineStipple(1, 0x0F0F);
   glBegin(GL_LINES);
   glVertex3f(0.4, 1.15, 0.);
   glVertex3f(0.8, 1.15, 0.);
