@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003  Christophe Geuzaine 
  *
- * $Id: gl2psTest.c,v 1.3 2002-12-14 02:34:40 geuzaine Exp $
+ * $Id: gl2psTest.c,v 1.4 2002-12-14 02:38:47 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -38,7 +38,7 @@
 void init(void){
   float pos[3] = {0.,0.,1000.};
 
-  glClearColor(0.0, 0.0, 0.0, 0.0);
+  glClearColor(0., 0., 0., 0.);
   glEnable(GL_DEPTH_TEST);
   glShadeModel(GL_SMOOTH);
   glLightfv(GL_LIGHT0, GL_POSITION, pos);
@@ -49,19 +49,19 @@ void triangles(void){
   glDisable(GL_LIGHTING);
   glBegin(GL_TRIANGLES);
   
-  glColor3f(1.0, 0.0, 0.0);
-  glVertex3f(-1.0, 1.0, 0.0);
-  glColor3f(1.0, 1.0, 0.0);
-  glVertex3f(-1.0, 0.0, 0.0);
-  glColor3f(1.0, 0.0, 1.0);
-  glVertex3f(1.0, 0.0, 0.2);
+  glColor3f(1., 0., 0.);
+  glVertex3f(-1., 1., 0.);
+  glColor3f(1., 1., 0.);
+  glVertex3f(-1., 0., 0.);
+  glColor3f(1., 0., 1.);
+  glVertex3f(1., 0., 0.2);
   
-  glColor3f(0.0, 1.0, 0.0);
-  glVertex3f(1.0, 0.0, 0.0);
-  glColor3f(0.0, 1.0, 1.0);
-  glVertex3f(1.0, 0.5, 0.0);
-  glColor3f(0.0, 1.0, 1.0);
-  glVertex3f(-1.0, 0.5, 0.1);
+  glColor3f(0., 1., 0.);
+  glVertex3f(1., 0., 0.);
+  glColor3f(0., 1., 1.);
+  glVertex3f(1., 0.5, 0.);
+  glColor3f(0., 1., 1.);
+  glVertex3f(-1., 0.5, 0.1);
   
   glEnd();
 }
@@ -71,7 +71,7 @@ static float rotation = 0.;
 void teapot(void){
   glEnable(GL_LIGHTING);
   glPushMatrix();
-  glRotatef(rotation,2.,0.,1.0);
+  glRotatef(rotation, 2., 0., 1.);
   glutSolidTeapot(0.6);
   glPopMatrix();
 }
@@ -96,15 +96,17 @@ void writeps(int format, int sort, int options, int nbcol, char *file){
   int state = GL2PS_OVERFLOW;
   int bufsize = 0;
  
-  if ((fp=fopen(file, "w"))==NULL) {
-    fprintf(stderr, "unable to open file %s for writing\n", file);
+  fp = fopen(file, "w");
+
+  if(!fp){
+    printf("Unable to open file %s for writing\n", file);
     exit(1);
   }
 
   printf("Saving image to file %s... ", file);
   fflush(stdout);
 
-  while (state == GL2PS_OVERFLOW) {
+  while(state == GL2PS_OVERFLOW){
     gl2psBeginPage(file, "test", format, sort, options, GL_RGBA, 0, NULL,
 		   bufsize, fp, file);
     gl2psNumShadeColors(nbcol,nbcol,nbcol);
@@ -116,12 +118,12 @@ void writeps(int format, int sort, int options, int nbcol, char *file){
 
   printf("Done!\n");
   fflush(stdout);
-  
 }
 
 void keyboard(unsigned char key, int x, int y){
   int opt;
-  switch (key) {
+
+  switch(key){
   case 27:
   case 'q':
     exit(0);
