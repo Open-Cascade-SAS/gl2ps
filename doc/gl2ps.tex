@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.191 2005-03-22 07:32:29 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.192 2005-03-22 07:45:33 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -107,7 +107,7 @@ under certain conditions) for static linking with closed-source software
 corrections, questions or suggestions should be e-mailed to the GL2PS
 mailing list \email{gl2ps@geuz.org}{gl2ps@geuz.org}.
 
-The interface consists of twelve functions, all beginning with the prefix
+The interface consists of thirteen functions, all beginning with the prefix
 \dd{gl2ps}. All the data structures and the symbolic constants peculiar to
 GL2PS begin with \dd{GL2PS}.
 
@@ -547,6 +547,32 @@ call to \dd{glGetIntegerv(GL_VIEWPORT, viewport)}).
 \item[\dd{GL2PS_UNINITIALIZED}] if \dd{gl2psEndViewport} is called when the
   library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
+\item[\dd{GL2PS_SUCCESS}] otherwise.
+\end{description}
+
+% -------------------------------------------------------------------------
+
+\subsection{\texttt{gl2psSetOptions}}
+\label{sec:gl2psSetOptions}
+
+\subsubsection{Specification}
+
+\begin{verbatim}
+GLint gl2psSetOptions ( GLint options )
+\end{verbatim}
+
+\subsubsection{Description and arguments}
+
+\dd{gl2psSetOptions} permits to change the current options (originally
+passed as an argument to \dd{gl2psBeginPage}). It can for example be
+used to force GL2PS to print the background for some viewports, but
+not others.
+
+\subsubsection{Return value}
+
+\noindent\dd{gl2psSetOptions} returns:
+\begin{description}
+\item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
 

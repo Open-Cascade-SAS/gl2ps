@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.204 2005-03-22 07:32:29 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.205 2005-03-22 07:45:33 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -4927,6 +4927,15 @@ GL2PSDLL_API GLint gl2psBlendFunc(GLenum sfactor, GLenum dfactor)
   glPassThrough((GLfloat)sfactor);
   glPassThrough(GL2PS_DST_BLEND);
   glPassThrough((GLfloat)dfactor);
+
+  return GL2PS_SUCCESS;
+}
+
+GL2PSDLL_API GLint gl2psSetOptions(GLint options)
+{
+  if(!gl2ps) return GL2PS_UNINITIALIZED;
+
+  gl2ps->options = options;
 
   return GL2PS_SUCCESS;
 }
