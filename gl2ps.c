@@ -1,8 +1,8 @@
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
- * Copyright (C) 1999-2003  Christophe Geuzaine 
+ * Copyright (C) 1999-2002  Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.61 2002-12-14 02:34:40 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.62 2002-12-14 04:18:18 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -795,17 +795,17 @@ void gl2psSplitPrimitive2D(GL2PSprimitive *prim,
 			   GL2PSprimitive **front, 
 			   GL2PSprimitive **back){
 
-  // cur will hold the position of current vertex
-  // prev will holds the position of previous vertex
-  // prev0 will holds the position of vertex number 0
-  // v1 and v2 represent the current and previous vertexs respectively
-  // flag will represents that should the current be checked against the plane
+  /* cur will hold the position of current vertex
+     prev will holds the position of previous vertex
+     prev0 will holds the position of vertex number 0
+     v1 and v2 represent the current and previous vertexs respectively
+     flag will represents that should the current be checked against the plane */
   GLint cur = -1, prev = -1, i, v1 = 0, v2 = 0, flag = 1, prev0 = -1;
   
-  // list of vertexs which will go in front and back Primitive
+  /* list of vertexs which will go in front and back Primitive */
   GL2PSvertex *front_list = NULL, *back_list = NULL;
   
-  // number of vertex in front and back list
+  /* number of vertex in front and back list */
   GLint front_count = 0, back_count = 0;
 
   for(i = 0; i <= prim->numverts; i++){
@@ -1274,7 +1274,7 @@ void gl2psPrintPostScriptHeader(void){
 
   fprintf(gl2ps->stream,
 	  "%%%%BoundingBox: %d %d %d %d\n"
-	  "%%%%Copyright: GNU LGPL (C) 1999-2003 Christophe Geuzaine <geuz@geuz.org>\n"
+	  "%%%%Copyright: GNU LGPL (C) 1999-2002 Christophe Geuzaine <geuz@geuz.org>\n"
 	  "%%%%EndComments\n",
 	  (gl2ps->options & GL2PS_LANDSCAPE) ? viewport[1] : viewport[0],
 	  (gl2ps->options & GL2PS_LANDSCAPE) ? viewport[0] : viewport[1],
