@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.99 2003-06-02 17:57:32 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.100 2003-06-04 06:02:57 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1317,32 +1317,29 @@ void gl2psWriteByte(FILE *stream, unsigned char byte){
   fprintf(stream, "%x%x", h, l);
 }
 
-int gl2psGetRGB(GLfloat *pixels, GLsizei width, GLsizei height, GLuint x, GLuint y,
-		GLfloat *red, GLfloat *green, GLfloat *blue){
+void gl2psGetRGB(GLfloat *pixels, GLsizei width, GLsizei height, GLuint x, GLuint y,
+		 GLfloat *red, GLfloat *green, GLfloat *blue){
   /* OpenGL image is from down to up, PS image is up to down */
   GLfloat *pimag;
   pimag = pixels + 3 * (width * (height - 1 - y) + x);
   *red   = *pimag; pimag++;
   *green = *pimag; pimag++;
   *blue  = *pimag; pimag++;
-  return 1;
 }
 
 void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei height,
 				GLenum format, GLenum type, GLfloat *pixels,
 				FILE *stream){
-  typedef unsigned char Uchar;
-  int status = 1, nbhex, nbyte2, nbyte4, nbyte8;
+  int nbhex, nbyte2, nbyte4, nbyte8;
   GLsizei row, col, col_max;
   float dr, dg, db, fgrey;
-  Uchar red, green, blue, b, grey;
-  /* FIXME: this has to be generalized... */
-  int shade = 0;
-  int nbit = 4;
+  unsigned char red, green, blue, b, grey;
+
+  /* FIXME: define an option for these? */
+  int shade = 0; /* set to 1 for greyscale pixmap output */
+  int nbit = 4; /* number of bits per color compoment (2, 4 or 8) */
 
   if((width <= 0) || (height <= 0)) return;
-
-  /* Msg(INFO, "gl2psPrintPostScriptPixmap: x %g y %g w %d h %d", x, y, width, height); */
 
   fprintf(stream, "gsave\n");
   fprintf(stream, "%.2f %.2f translate\n", x, y); 
@@ -1356,10 +1353,9 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     fprintf(stream, "image\n");
     for(row = 0; row < height; row++){
       for(col = 0; col < width; col++){ 
-	status = gl2psGetRGB(pixels, width, height,
-			     col, row, &dr, &dg, &db) == 0 ? 0 : status;
+	gl2psGetRGB(pixels, width, height, col, row, &dr, &dg, &db);
 	fgrey = (0.30 * dr + 0.59 * dg + 0.11 * db);
-	grey = (Uchar)(255. * fgrey);
+	grey = (unsigned char)(255. * fgrey);
 	gl2psWriteByte(stream, grey);
       }
       fprintf(stream, "\n");
@@ -1367,13 +1363,11 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     nbhex = width * height * 2; 
     fprintf(stream, "%%%% nbhex digit          :%d\n", nbhex); 
   }
-  else if(nbit == 2){ 
+  else if(nbit == 2){ /* 2 bit for r and g and b; rgbs following each other */
     nbyte2 = (width * 3)/4;
     nbyte2 /=3;
     nbyte2 *=3;
     col_max = (nbyte2 * 4)/3;
-    /* 2 bit for r and g and b */
-    /* rgbs following each other */
     fprintf(stream, "/rgbstr %d string def\n", nbyte2); 
     fprintf(stream, "%d %d %d\n", col_max, height, 2); 
     fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", col_max, height, height); 
@@ -1382,39 +1376,33 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     fprintf(stream, "colorimage\n" );
     for(row = 0; row < height; row++){
       for(col = 0; col < col_max; col+=4){
-	status = gl2psGetRGB(pixels, width, height,
-			     col, row, &dr, &dg, &db) == 0 ? 0 : status;
-	red = (Uchar)(3. * dr);
-	green = (Uchar)(3. * dg);
-	blue = (Uchar)(3. * db);
+	gl2psGetRGB(pixels, width, height, col, row, &dr, &dg, &db);
+	red = (unsigned char)(3. * dr);
+	green = (unsigned char)(3. * dg);
+	blue = (unsigned char)(3. * db);
 	b = red;
 	b = (b<<2)+green;
 	b = (b<<2)+blue;
-	status = gl2psGetRGB(pixels, width, height,
-			     col+1, row, &dr, &dg, &db) == 0 ? 0 : status;
-	red = (Uchar)(3. * dr);
-	green = (Uchar)(3. * dg);
-	blue = (Uchar)(3. * db);
+	gl2psGetRGB(pixels, width, height, col+1, row, &dr, &dg, &db);
+	red = (unsigned char)(3. * dr);
+	green = (unsigned char)(3. * dg);
+	blue = (unsigned char)(3. * db);
 	b = (b<<2)+red;
 	gl2psWriteByte(stream, b);
-	
 	b = green;
 	b = (b<<2)+blue;
-	status = gl2psGetRGB(pixels, width, height,
-			     col+2, row, &dr, &dg, &db) == 0 ? 0 : status;
-	red = (Uchar)(3. * dr);
-	green = (Uchar)(3. * dg);
-	blue = (Uchar)(3. * db);
+	gl2psGetRGB(pixels, width, height, col+2, row, &dr, &dg, &db);
+	red = (unsigned char)(3. * dr);
+	green = (unsigned char)(3. * dg);
+	blue = (unsigned char)(3. * db);
 	b = (b<<2)+red;
 	b = (b<<2)+green;
 	gl2psWriteByte(stream, b);
-	
 	b = blue;
-	status = gl2psGetRGB(pixels,width,height,
-			     col+3, row, &dr, &dg, &db) == 0 ? 0 : status;
-	red = (Uchar)(3. * dr);
-	green = (Uchar)(3. * dg);
-	blue = (Uchar)(3. * db);
+	gl2psGetRGB(pixels, width, height, col+3, row, &dr, &dg, &db);
+	red = (unsigned char)(3. * dr);
+	green = (unsigned char)(3. * dg);
+	blue = (unsigned char)(3. * db);
 	b = (b<<2)+red;
 	b = (b<<2)+green;
 	b = (b<<2)+blue;
@@ -1423,13 +1411,11 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
       fprintf(stream, "\n");
     }
   }
-  else if(nbit == 4){ 
+  else if(nbit == 4){ /* 4 bit for r and g and b; rgbs following each other */
     nbyte4 = (width  * 3)/2;
     nbyte4 /=3;
     nbyte4 *=3;
     col_max = (nbyte4 * 2)/3;
-    /* 4 bit for r and g and b */
-    /* rgbs following each other */
     fprintf(stream, "/rgbstr %d string def\n", nbyte4);
     fprintf(stream, "%d %d %d\n", col_max, height,4);
     fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", col_max, height, height);
@@ -1438,27 +1424,23 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     fprintf(stream, "colorimage\n");
     for(row = 0; row < height; row++){
       for(col = 0; col < col_max; col+=2){
-	status = gl2psGetRGB(pixels, width, height,
-			     col, row, &dr, &dg, &db) == 0 ? 0 : status;
-	red = (Uchar)(15. * dr);
-	green = (Uchar)(15. * dg);
+	gl2psGetRGB(pixels, width, height, col, row, &dr, &dg, &db);
+	red = (unsigned char)(15. * dr);
+	green = (unsigned char)(15. * dg);
 	fprintf(stream, "%x%x", red, green);
-	blue = (Uchar)(15. * db);
-	
-	status = gl2psGetRGB(pixels, width, height,
-			     col+1, row, &dr, &dg, &db) == 0 ? 0 : status;
-	red = (Uchar)(15. * dr);
+	blue = (unsigned char)(15. * db);
+	gl2psGetRGB(pixels, width, height, col+1, row, &dr, &dg, &db);
+	red = (unsigned char)(15. * dr);
 	fprintf(stream,"%x%x",blue,red);
-	green = (Uchar)(15. * dg);
-	blue = (Uchar)(15. * db);
+	green = (unsigned char)(15. * dg);
+	blue = (unsigned char)(15. * db);
 	fprintf(stream, "%x%x", green, blue);
       }
       fprintf(stream, "\n");
     }
   }
-  else{ 
+  else{ /* 8 bit for r and g and b */
     nbyte8 = width * 3;
-    /* 8 bit for r and g and b */
     fprintf(stream, "/rgbstr %d string def\n", nbyte8);
     fprintf(stream, "%d %d %d\n", width, height, 8);
     fprintf(stream, "[ %d 0 0 -%d 0 %d ]\n", width, height, height); 
@@ -1467,22 +1449,18 @@ void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GLsizei width, GLsizei hei
     fprintf(stream, "colorimage\n");
     for(row = 0; row < height; row++){
       for(col = 0; col < width; col++){
-	status = gl2psGetRGB(pixels, width, height,
-			     col, row, &dr, &dg, &db) == 0 ? 0 : status;
-	red = (Uchar)(255. * dr);
+	gl2psGetRGB(pixels, width, height, col, row, &dr, &dg, &db);
+	red = (unsigned char)(255. * dr);
 	gl2psWriteByte(stream, red);
-	green = (Uchar)(255. * dg);
+	green = (unsigned char)(255. * dg);
 	gl2psWriteByte(stream, green);
-	blue = (Uchar)(255. * db);
+	blue = (unsigned char)(255. * db);
 	gl2psWriteByte(stream, blue);
       }
       fprintf(stream, "\n");
     }
   }
 
-  if(status == 0){
-    gl2psMsg(GL2PS_ERROR, "Problem to retrieve some pixel rgb");
-  }
   fprintf(stream, "grestore\n");
 }
 
