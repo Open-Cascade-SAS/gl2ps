@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.167 2004-03-17 18:55:51 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.168 2004-03-19 16:47:25 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2004 Christophe Geuzaine <geuz@geuz.org>
@@ -1842,7 +1842,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
       switch((GLint)current[1]){
       case GL2PS_BEGIN_POLYGON_OFFSET_FILL : offset = 1; break;
       case GL2PS_END_POLYGON_OFFSET_FILL : offset = 0; break;
-      case GL2PS_BEGIN_POLYGON_BOUNDARY : boundary = GL_FALSE; break;
+      case GL2PS_BEGIN_POLYGON_BOUNDARY : boundary = GL_TRUE; break;
       case GL2PS_END_POLYGON_BOUNDARY : boundary = GL_FALSE; break;
       case GL2PS_BEGIN_LINE_STIPPLE : dash = 4; break;
       case GL2PS_END_LINE_STIPPLE : dash = 0; break;
