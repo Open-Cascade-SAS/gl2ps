@@ -2,7 +2,7 @@
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2003 Christophe Geuzaine 
  *
- * $Id: gl2ps.c,v 1.104 2003-06-11 06:53:26 geuzaine Exp $
+ * $Id: gl2ps.c,v 1.105 2003-06-11 15:55:15 geuzaine Exp $
  *
  * E-mail: geuz@geuz.org
  * URL: http://www.geuz.org/gl2ps/
@@ -1881,7 +1881,7 @@ GLint gl2psPrintTeXEndViewport(void){
 GLint gl2psPrintPrimitives(void){
   GL2PSbsptree *root;
   GL2PSxyz eye = {0., 0., 100000.};
-  GLint used, res = GL2PS_SUCCESS;
+  GLint used;
   void (*pprim)(void *a, void *b) = 0;
 
   used = glRenderMode(GL_RENDER);
@@ -1899,10 +1899,8 @@ GLint gl2psPrintPrimitives(void){
     gl2psParseFeedbackBuffer(used);
   }
 
-  /* This test is mostly redundant, but it would for example catch the
-     case where unknown tokens are present in the feedback buffer */
   if(!gl2psListNbr(gl2ps->primitives)){
-    return GL2PS_NO_FEEDBACK;
+    return GL2PS_SUCCESS; /* Nothing to print */
   }
 
   switch(gl2ps->format){
@@ -1951,13 +1949,12 @@ GLint gl2psPrintPrimitives(void){
     break;
   default :
     gl2psMsg(GL2PS_ERROR, "Unknown sorting algorithm: %d", gl2ps->sort);
-    res = GL2PS_ERROR;
-    break;
+    return GL2PS_ERROR;
   }
 
   fflush(gl2ps->stream);
 
-  return res;
+  return GL2PS_SUCCESS;
 }
 
 /* The public routines */
