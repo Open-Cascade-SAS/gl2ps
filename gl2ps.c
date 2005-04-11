@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.205 2005-03-22 07:45:33 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.206 2005-04-11 05:00:29 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -483,7 +483,7 @@ static void gl2psListRealloc(GL2PSlist *list, GLint n)
   }
   if(n <= 0) return;
   if(!list->array){
-    list->nmax = ((n - 1) / list->incr + 1) * list->incr;
+    list->nmax = n;
     list->array = (char*)gl2psMalloc(list->nmax * list->size);
   }
   else{
