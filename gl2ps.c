@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.209 2005-05-20 23:22:13 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.210 2005-06-08 22:07:59 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -873,6 +873,7 @@ static void gl2psCutEdge(GL2PSvertex *a, GL2PSvertex *b, GL2PSplane plane,
   v[0] = b->xyz[0] - a->xyz[0];
   v[1] = b->xyz[1] - a->xyz[1];
   v[2] = b->xyz[2] - a->xyz[2];
+
   sect = - gl2psComparePointPlane(a->xyz, plane) / gl2psPsca(plane, v);
 
   c->xyz[0] = a->xyz[0] + v[0] * sect;
@@ -905,10 +906,11 @@ static void gl2psCreateSplitPrimitive(GL2PSprimitive *parent, GL2PSplane plane,
     case 2 : child->type = GL2PS_LINE; break; 
     case 3 : child->type = GL2PS_TRIANGLE; break; 
     case 4 : child->type = GL2PS_QUADRANGLE; break;    
+    default: child->type = GL2PS_NOTYPE; break;
     }
   }
 
-  child->boundary = 0; /* not done! */
+  child->boundary = 0; /* FIXME: not done! */
   child->culled = parent->culled;
   child->offset = parent->offset;
   child->pattern = parent->pattern;
@@ -1568,9 +1570,10 @@ static GL2PSprimitive *gl2psCreateSplitPrimitive2D(GL2PSprimitive *parent,
     case 2 : child->type = GL2PS_LINE; break;
     case 3 : child->type = GL2PS_TRIANGLE; break;
     case 4 : child->type = GL2PS_QUADRANGLE; break;
+    default: child->type = GL2PS_NOTYPE; break; /* FIXME */
     }
   }
-  child->boundary = 0; /* not done! */
+  child->boundary = 0; /* FIXME: not done! */
   child->culled = parent->culled;
   child->offset = parent->offset;
   child->pattern = parent->pattern;
