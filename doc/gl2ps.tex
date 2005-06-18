@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.196 2005-05-20 23:22:13 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.197 2005-06-18 18:06:20 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -58,13 +58,13 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 1.2.4, 27 April 2005}
+\date{Version 1.2.5, 18 June 2005}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.2.4.tgz}{gl2ps-1.2.4.tgz}.
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.2.5.tgz}{gl2ps-1.2.5.tgz}.
 %%tth: This distribution contains a complete
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.pdf}
 %%tth: {documentation in PDF format}. Older versions are still
@@ -232,6 +232,10 @@ determine the way primitives are handled:
   the output, thus substantially reducing the size of the output file.
 \item[\dd{GL2PS_USE_CURRENT_VIEWPORT}] The current OpenGL viewport is used
   instead of \dd{viewport}.
+\item[\dd{GL2PS_TIGHT_BOUNDING_BOX}] The viewport is ignored and the
+  the plot is generated with a tight bounding box, i.e., a bounding
+  box enclosing as tightly as possible all the OpenGL entities in the
+  scene.
 \item[\dd{GL2PS_COMPRESS}] The output stream is compressed. For this option
   to take effect you need to compile GL2PS with \dd{HAVE_ZLIB},
   \dd{HAVE_LIBZ} or \dd{GL2PS_HAVE_ZLIB} defined, and link the executable
@@ -347,8 +351,8 @@ The additional arguments for \dd{gl2psTextOpt} are:
  C     CL    CR    B     BL    BR    T     TL    TR
 \end{verbatim}
 
-\item[\dd{angle}] (for \LaTeX\ output only) Specifies a rotation angle for
-  the text string (counter-clockwise, in degrees).
+\item[\dd{angle}] (for PostScript and \LaTeX\ output only) Specifies a
+ rotation angle for the text string (counter-clockwise, in degrees).
 \end{description}
 
 \subsubsection{Return value}
@@ -761,7 +765,10 @@ improvement of \dd{GL2PS_BEST_ROOT} and the imagemap support;
 \email{Rouben Rostamian}{rostamian@umbc.edu} and \email{Prabhu
 Ramachandran}{prabhu@aero.iitm.ernet.in} for various bug reports and fixes;
 %
-\email{Micha Bieber}{bieber@traits.de} for the PDF code.
+\email{Micha Bieber}{bieber@traits.de} for the PDF code;
+%
+\email{Shai Ayal}{shaiay@gmail.com} for rotated text support in
+PostScript.
 
 \section{Links}
 \label{sec:links}
@@ -875,8 +882,9 @@ does not seem to be available anymore).
   multi-viewport PostScript output when \dd{GL2PS_DRAW_BACKGROUND} is
   not set; new \dd{gl2psSetOptions} interface to change the current
   options on the fly.
-\item[1.2.5] (?, 2005) Fixed a couple of uninitialized variables in
-  PDF code;
+\item[1.2.5] (Jun 18, 2005) Fixed a couple of uninitialized variables in
+  PDF code; new \dd{GL2PS_TIGHT_BOUNDING_BOX} option; added rotated
+  text support for PostScript output.
 \end{description}
 
 \end{document}

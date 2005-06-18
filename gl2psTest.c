@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.67 2005-03-22 07:32:29 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.68 2005-06-18 18:06:20 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -552,7 +552,7 @@ void keyboard(unsigned char key, int x, int y){
     ext = (format == GL2PS_EPS) ? "eps" : "pdf";
     writefile(format, GL2PS_SIMPLE_SORT, opt, 0, "outSimpleCulled", ext);
 
-    opt = GL2PS_NO_PS3_SHADING | GL2PS_DRAW_BACKGROUND;
+    opt = GL2PS_NO_PS3_SHADING | GL2PS_DRAW_BACKGROUND | GL2PS_TIGHT_BOUNDING_BOX;
     ext = (format == GL2PS_EPS) ? "eps" : "pdf";
     writefile(format, GL2PS_SIMPLE_SORT, opt, 2, "outSimpleShading2", ext);
     writefile(format, GL2PS_SIMPLE_SORT, opt, 8, "outSimpleShading8", ext);

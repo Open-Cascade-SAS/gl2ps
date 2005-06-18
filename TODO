@@ -1,20 +1,4 @@
-$Id: TODO,v 1.17 2005-04-11 05:00:29 geuzaine Exp $
-
-------------------------------------------------------------------------
-
-* At last, after so many help requests, I have a small contribution --
-rotated text in ps output. Actually, I just figured out the ps code,
-not the changes needed in gl2ps to implement it. just replace the /S
-macro with
-
-/SR { gsave FC translate 0 0 moveto rotate show grestore } BD
-
-which now shows rotated text:
-
-(rotated) -45 100 25 10 /Helvetica SR
-
-All the other "/S??" macros need to be altered accordingly. Tell if
-you like the idea.
+$Id: TODO,v 1.18 2005-06-18 18:06:20 geuzaine Exp $
 
 ------------------------------------------------------------------------
 
