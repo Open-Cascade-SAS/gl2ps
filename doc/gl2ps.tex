@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.197 2005-06-18 18:06:20 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.198 2005-06-19 18:30:10 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -606,7 +606,7 @@ while( state == GL2PS_OVERFLOW ){
                    GL2PS_SIMPLE_LINE_OFFSET | GL2PS_NO_BLENDING |
                    GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT,
                    GL_RGBA, 0, NULL, 0, 0, 0, buffsize,
-                   fp, "MyFileName" );
+                   fp, "MyFile" );
   draw(); 
   state = gl2psEndPage();
 }
