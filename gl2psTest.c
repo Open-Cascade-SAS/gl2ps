@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.68 2005-06-18 18:06:20 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.69 2005-06-19 19:18:35 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -496,7 +496,7 @@ void writefile(int format, int sort, int options, int nbcol,
 
   while(state == GL2PS_OVERFLOW){
     buffsize += 1024*1024;
-    gl2psBeginPage(file, "test", viewport, format, sort, options,
+    gl2psBeginPage(file, "gl2psTest", viewport, format, sort, options,
                    GL_RGBA, 0, NULL, nbcol, nbcol, nbcol, 
                    buffsize, fp, file);
     display();

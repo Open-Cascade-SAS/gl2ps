@@ -38,7 +38,7 @@ distrib:
 	mkdir gl2ps-${RELEASE}
 	cd doc && ${MAKE}
 	cp TODO COPYING.GL2PS COPYING.LGPL gl2ps.c gl2ps.h gl2psTest.c\
-           doc/gl2ps.pdf gl2ps-${RELEASE}
+           gl2psTestSimple.c doc/gl2ps.pdf gl2ps-${RELEASE}
 	tar zcvf gl2ps-${RELEASE}.tgz gl2ps-${RELEASE}
 	@echo "********************************************************************"
 	@echo "Did you remember to untabify both gl2ps.c and gl2ps.h?"
@@ -49,6 +49,6 @@ distrib-nightly:
 	mkdir gl2ps-${DATE}
 	cd doc && ${MAKE} gl2ps.pdf
 	cp TODO COPYING.GL2PS COPYING.LGPL gl2ps.c gl2ps.h gl2psTest.c\
-           doc/gl2ps.pdf gl2ps-${DATE}
+           gl2psTestSimple.c doc/gl2ps.pdf gl2ps-${DATE}
 	tar zcvf gl2ps-nightly.tgz gl2ps-${DATE}
 	rm -rf gl2ps-${DATE}
