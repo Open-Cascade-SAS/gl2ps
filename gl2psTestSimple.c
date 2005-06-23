@@ -1,4 +1,4 @@
-/* $Id: gl2psTestSimple.c,v 1.8 2005-06-19 19:18:35 geuzaine Exp $ */
+/* $Id: gl2psTestSimple.c,v 1.9 2005-06-23 07:04:59 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -50,7 +50,7 @@
 #include "gl2ps.h"
 
 void display(void){
-  int i;
+  unsigned int i;
   char *help = "Press 's' to save image or 'q' to quit";  
 
   glClearColor(0.3, 0.5, 0.8, 0.);

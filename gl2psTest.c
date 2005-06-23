@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.69 2005-06-19 19:18:35 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.70 2005-06-23 07:04:59 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -236,7 +236,7 @@ void objects(void){
 }
 
 void printstring(char *string){
-  int len, i;
+  unsigned int i;
   char *fonts[] = 
     { "Times-Roman", "Times-Bold", "Times-Italic", "Times-BoldItalic",
       "Helvetica", "Helvetica-Bold", "Helvetica-Oblique", "Helvetica-BoldOblique",
@@ -247,8 +247,7 @@ void printstring(char *string){
      changes the raster position... */
   gl2psText(string, fonts[4], 12);
 
-  len = (int)strlen(string);
-  for (i = 0; i < len; i++)
+  for (i = 0; i < strlen(string); i++)
     glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, string[i]);
 }
 
@@ -469,7 +468,7 @@ void reshape(int w, int h){
 }
 
 void writefile(int format, int sort, int options, int nbcol,
-               char *filename, char *extension){
+               char *filename, const char *extension){
   FILE *fp;
   char file[256];
   int state = GL2PS_OVERFLOW, buffsize = 0;
@@ -511,7 +510,6 @@ void writefile(int format, int sort, int options, int nbcol,
 
 void keyboard(unsigned char key, int x, int y){
   int opt;
-  char *ext;
   static int format = GL2PS_EPS;
 
   switch(key){
@@ -539,40 +537,41 @@ void keyboard(unsigned char key, int x, int y){
     break;
   case 's':
     opt = GL2PS_DRAW_BACKGROUND;
-    ext = (format == GL2PS_EPS) ? "eps" : "pdf";
-    writefile(format, GL2PS_SIMPLE_SORT, opt, 0, "outSimple", ext);
+    writefile(format, GL2PS_SIMPLE_SORT, opt, 0, "outSimple",
+	      (format == GL2PS_EPS) ? "eps" : "pdf");
 
 #ifdef GL2PS_HAVE_ZLIB
     opt = GL2PS_DRAW_BACKGROUND | GL2PS_COMPRESS;
-    ext = (format == GL2PS_EPS) ? "eps.gz" : "pdf";
-    writefile(format, GL2PS_SIMPLE_SORT, opt, 0, "outSimpleCompressed", ext);
+    writefile(format, GL2PS_SIMPLE_SORT, opt, 0, "outSimpleCompressed", 
+	      (format == GL2PS_EPS) ? "eps.gz" : "pdf");
 #endif
 
     opt = GL2PS_OCCLUSION_CULL | GL2PS_DRAW_BACKGROUND;
-    ext = (format == GL2PS_EPS) ? "eps" : "pdf";
-    writefile(format, GL2PS_SIMPLE_SORT, opt, 0, "outSimpleCulled", ext);
+    writefile(format, GL2PS_SIMPLE_SORT, opt, 0, "outSimpleCulled",
+	      (format == GL2PS_EPS) ? "eps" : "pdf");
 
     opt = GL2PS_NO_PS3_SHADING | GL2PS_DRAW_BACKGROUND | GL2PS_TIGHT_BOUNDING_BOX;
-    ext = (format == GL2PS_EPS) ? "eps" : "pdf";
-    writefile(format, GL2PS_SIMPLE_SORT, opt, 2, "outSimpleShading2", ext);
-    writefile(format, GL2PS_SIMPLE_SORT, opt, 8, "outSimpleShading8", ext);
-    writefile(format, GL2PS_SIMPLE_SORT, opt, 16, "outSimpleShading16", ext);
+    writefile(format, GL2PS_SIMPLE_SORT, opt, 2, "outSimpleShading2", 
+	      (format == GL2PS_EPS) ? "eps" : "pdf");
+    writefile(format, GL2PS_SIMPLE_SORT, opt, 8, "outSimpleShading8",
+	      (format == GL2PS_EPS) ? "eps" : "pdf");
+    writefile(format, GL2PS_SIMPLE_SORT, opt, 16, "outSimpleShading16",
+	      (format == GL2PS_EPS) ? "eps" : "pdf");
 
     opt = GL2PS_BEST_ROOT | GL2PS_DRAW_BACKGROUND;
-    ext = (format == GL2PS_EPS) ? "eps" : "pdf";
-    writefile(format, GL2PS_BSP_SORT, opt, 0, "outBsp", ext);
+    writefile(format, GL2PS_BSP_SORT, opt, 0, "outBsp",
+	      (format == GL2PS_EPS) ? "eps" : "pdf");
 
-    opt = GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT | GL2PS_DRAW_BACKGROUND;
-    ext = (format == GL2PS_EPS) ? "eps" : "pdf";
-    writefile(format, GL2PS_BSP_SORT, opt, 0, "outBspCulled", ext);
+    opt = GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT | GL2PS_DRAW_BACKGROUND;    
+    writefile(format, GL2PS_BSP_SORT, opt, 0, "outBspCulled",
+	      (format == GL2PS_EPS) ? "eps" : "pdf");
 
     opt = GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT | GL2PS_NO_TEXT;
-    ext = (format == GL2PS_EPS) ? "eps" : "pdf";
-    writefile(format, GL2PS_BSP_SORT, opt, 0, "outLatex", ext);
+    writefile(format, GL2PS_BSP_SORT, opt, 0, "outLatex",
+	      (format == GL2PS_EPS) ? "eps" : "pdf");
 
     opt = GL2PS_NONE;
-    ext = "tex";
-    writefile(GL2PS_TEX, GL2PS_BSP_SORT, opt, 0, "outLatex", ext);
+    writefile(GL2PS_TEX, GL2PS_BSP_SORT, opt, 0, "outLatex", "tex");
 
     printf("GL2PS %d.%d.%d done with all images\n",
            GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION, GL2PS_PATCH_VERSION);

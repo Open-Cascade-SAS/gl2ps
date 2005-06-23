@@ -1,4 +1,4 @@
-RELEASE = 1.2.5
+RELEASE = 1.2.6
 DATE = `date "+%Y%m%d"`
 
 clean:
@@ -32,6 +32,7 @@ test:
            -Wsign-compare -Wpointer-arith -Wundef -ansi -pedantic\
            -c gl2ps.c
 	g++ -O3 -Wall -ansi -pedantic -c gl2ps.c
+	g++ -g -O3 -W -Wall -ansi -pedantic -c gl2psTest.c
 
 distrib:
 	rm -rf gl2ps-${RELEASE}/ gl2ps-${RELEASE}.tgz

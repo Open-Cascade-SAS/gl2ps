@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.199 2005-06-19 19:18:35 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.200 2005-06-23 07:04:59 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -58,13 +58,13 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 1.2.5, 18 June 2005}
+\date{Version 1.2.6, 22 June 2005}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.2.5.tgz}{gl2ps-1.2.5.tgz}.
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.2.6.tgz}{gl2ps-1.2.6.tgz}.
 %%tth: This distribution contains a complete
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.pdf}
 %%tth: {documentation in PDF format}. Older versions are still
@@ -886,6 +886,11 @@ does not seem to be available anymore).
 \item[1.2.5] (Jun 18, 2005) Fixed a couple of uninitialized variables in
   PDF code; new \dd{GL2PS_TIGHT_BOUNDING_BOX} option; added rotated
   text support for PostScript output.
+\item[1.2.6] (Jun 22, 2005) Fixed crash when creating PDF file with
+  overflowing feedback buffer (bug introduced in 1.2.5); added
+  additional example program \dd{gl2psTestSimple.c} to the
+  distribution.
+
 \end{description}
 
 \end{document}
