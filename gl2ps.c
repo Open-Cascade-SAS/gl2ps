@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.213 2005-06-23 07:04:59 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.214 2005-06-24 19:57:12 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -4542,10 +4542,6 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
 
   if(stream){
     gl2ps->stream = stream;
-    /* In case gl2psEndPage failed (e.g. due to a GL2PS_OVERFLOW) and
-       we didn't reopen the stream before calling gl2psBeginPage
-       again, we need to rewind the stream */
-    rewind(gl2ps->stream);
   }
   else{
     gl2psMsg(GL2PS_ERROR, "Bad file pointer");
