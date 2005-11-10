@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.214 2005-06-24 19:57:12 geuzaine Exp $ */
+ /* $Id: gl2ps.c,v 1.215 2005-11-10 16:04:13 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -44,6 +44,8 @@
  *   Guy Barrand <barrand@lal.in2p3.fr>
  *   Prabhu Ramachandran <prabhu@aero.iitm.ernet.in>
  *   Micha Bieber <bieber@traits.de>
+ *   Olivier Couet <couet@mail.cern.ch>
+ *   Shai Ayal <shaiay@gmail.com>
  *
  * For the latest info about gl2ps, see http://www.geuz.org/gl2ps/.
  * Please report all bugs and problems to <gl2ps@geuz.org>.
@@ -2956,6 +2958,124 @@ static void gl2psPrintTeXFooter(void)
 
 /********************************************************************* 
  *
+ * SVG routines
+ *
+ *********************************************************************/
+
+/* FIXME: this is just a canvas: it's still far from being usable in
+   any way :-) */
+
+static void gl2psSVGColorString(GL2PSrgba rgba, char str[32])
+{
+  int r = (int)(255. * rgba[0]);
+  int g = (int)(255. * rgba[1]);
+  int b = (int)(255. * rgba[2]);
+  int rc = (r < 0) ? 0 : (r > 255) ? 255 : r;
+  int gc = (g < 0) ? 0 : (g > 255) ? 255 : g;
+  int bc = (b < 0) ? 0 : (b > 255) ? 255 : b;
+  sprintf(str, "#%2.2x%2.2x%2.2x", rc, gc, bc);
+}
+
+static void gl2psPrintSVGHeader(void)
+{
+  time_t now;
+  time(&now);
+
+  gl2psPrintf("<svg viewBox=\"%d %d %d %d\" xmlns=\"http://www.w3.org/2000/svg\">\n",
+              (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[1] : 
+              (int)gl2ps->viewport[0],
+              (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[0] :
+              (int)gl2ps->viewport[1],
+              (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[3] : 
+              (int)gl2ps->viewport[2],
+              (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[2] :
+              (int)gl2ps->viewport[3]);
+  gl2psPrintf("<title>\n");
+  gl2psPrintf("%s\n",gl2ps->title);
+  gl2psPrintf("</title>\n");
+  gl2psPrintf("<desc>\n");
+  gl2psPrintf("Creator: GL2PS %d.%d.%d\n"
+              "For: %s\n"
+              "CreationDate: %s",
+              GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION, GL2PS_PATCH_VERSION,
+              gl2ps->producer, ctime(&now));
+  gl2psPrintf("</desc>\n");
+  gl2psPrintf("<defs>\n");
+  gl2psPrintf("</defs>\n");
+}
+
+static void gl2psPrintSVGPrimitive(void *data)
+{
+  GL2PSprimitive *prim;
+  char col[32];
+
+  prim = *(GL2PSprimitive**)data;
+
+  if((gl2ps->options & GL2PS_OCCLUSION_CULL) && prim->culled) return;
+
+  switch(prim->type){
+  case GL2PS_PIXMAP :
+    /* FIXME */
+    break;
+  case GL2PS_IMAGEMAP :
+    /* FIXME */
+    break;
+  case GL2PS_TEXT :
+    gl2psSVGColorString(prim->verts[0].rgba, col);
+    gl2psPrintf("<text x=\"%g\" y=\"%g\" fill=\"%s\" "
+		"font-size=\"%d\" font-family=\"%s\">%s</text>\n",
+                prim->verts[0].xyz[0], prim->verts[0].xyz[1], col,
+                prim->data.text->fontsize,
+		prim->data.text->fontname,
+                prim->data.text->str);
+    break;
+  case GL2PS_POINT :
+    /* FIXME */
+    break;
+  case GL2PS_LINE :
+    gl2psSVGColorString(prim->verts[0].rgba, col);
+    gl2psPrintf("<line stroke=\"%s\" stroke-width=\"%d\" "
+		"x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n",
+		col, (int)(prim->width),
+		prim->verts[0].xyz[0], prim->verts[0].xyz[1],
+		prim->verts[1].xyz[0], prim->verts[1].xyz[1]);
+
+    break;
+  case GL2PS_TRIANGLE :
+    gl2psSVGColorString(prim->verts[0].rgba, col);
+    gl2psPrintf("<polygon fill=\"%s\" points=\"%g,%g %g,%g %g,%g\"/>\n",
+		col,
+		prim->verts[0].xyz[0], prim->verts[0].xyz[1],
+		prim->verts[1].xyz[0], prim->verts[1].xyz[1],
+		prim->verts[2].xyz[0], prim->verts[2].xyz[1]);
+    break;
+  case GL2PS_QUADRANGLE :
+    gl2psMsg(GL2PS_WARNING, "There should not be any quad left to print");
+    break;
+  default :
+    gl2psMsg(GL2PS_ERROR, "Unknown type of primitive to print");
+    break;
+  }
+}
+
+static void gl2psPrintSVGFooter(void)
+{
+  gl2psPrintf("</svg>\n");
+}
+
+static void gl2psPrintSVGBeginViewport(GLint viewport[4])
+{
+  /* FIXME */
+}
+
+static GLint gl2psPrintSVGEndViewport(void)
+{
+  /* FIXME */
+  return 0;
+}
+
+/********************************************************************* 
+ *
  * PDF routines
  *
  *********************************************************************/
@@ -4429,6 +4549,9 @@ static GLint gl2psPrintPrimitives(void)
     case GL2PS_PDF :
       gl2psPrintPDFHeader();
       break;
+    case GL2PS_SVG :
+      gl2psPrintSVGHeader();
+      break;
     }
     gl2ps->header = GL_FALSE;
   }
@@ -4448,6 +4571,9 @@ static GLint gl2psPrintPrimitives(void)
     break;
   case GL2PS_PDF :
     pprim = gl2psPrintPDFPrimitive;
+    break;
+  case GL2PS_SVG :
+    pprim = gl2psPrintSVGPrimitive;
     break;
   }
   
@@ -4518,6 +4644,7 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
   case GL2PS_PS :
   case GL2PS_EPS :
   case GL2PS_PDF :
+  case GL2PS_SVG :
     gl2ps->format = format;
     break;
   default :
@@ -4680,6 +4807,9 @@ GL2PSDLL_API GLint gl2psEndPage(void)
     case GL2PS_PDF :
       gl2psPrintPDFFooter();
       break;
+    case GL2PS_SVG :
+      gl2psPrintSVGFooter();
+      break;
     }
   }
 
@@ -4710,6 +4840,9 @@ GL2PSDLL_API GLint gl2psBeginViewport(GLint viewport[4])
   case GL2PS_PDF :
     gl2psPrintPDFBeginViewport(viewport);
     break;
+  case GL2PS_SVG :
+    gl2psPrintSVGBeginViewport(viewport);
+    break;
   default :
     break;
   }
@@ -4730,6 +4863,9 @@ GL2PSDLL_API GLint gl2psEndViewport(void)
     break;
   case GL2PS_PDF :
     res = gl2psPrintPDFEndViewport();
+    break;
+  case GL2PS_SVG :
+    res = gl2psPrintSVGEndViewport();
     break;
   default :
     res = GL2PS_SUCCESS;
