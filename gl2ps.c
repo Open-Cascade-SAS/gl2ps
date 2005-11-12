@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.216 2005-11-12 02:15:38 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.217 2005-11-12 03:03:40 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -2962,8 +2962,11 @@ static void gl2psPrintTeXFooter(void)
  *
  *********************************************************************/
 
-/* FIXME: this is just a canvas: it's still far from being usable in
-   any way :-) */
+/* FIXME: this is just a canvas, still far from being usable in any
+   way. One big problem is that it seems like there is no easy way to
+   do Gouraud shading in SVG!? Another is horrible rendering
+   performance (that could be partially fixed by using 'path' instead
+   of 'polygon') */
 
 static void gl2psSVGGetColorString(GL2PSrgba rgba, char str[32])
 {
