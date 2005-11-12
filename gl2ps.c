@@ -1,4 +1,4 @@
- /* $Id: gl2ps.c,v 1.215 2005-11-10 16:04:13 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.216 2005-11-12 02:15:38 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -2965,7 +2965,7 @@ static void gl2psPrintTeXFooter(void)
 /* FIXME: this is just a canvas: it's still far from being usable in
    any way :-) */
 
-static void gl2psSVGColorString(GL2PSrgba rgba, char str[32])
+static void gl2psSVGGetColorString(GL2PSrgba rgba, char str[32])
 {
   int r = (int)(255. * rgba[0]);
   int g = (int)(255. * rgba[1]);
@@ -2974,6 +2974,16 @@ static void gl2psSVGColorString(GL2PSrgba rgba, char str[32])
   int gc = (g < 0) ? 0 : (g > 255) ? 255 : g;
   int bc = (b < 0) ? 0 : (b > 255) ? 255 : b;
   sprintf(str, "#%2.2x%2.2x%2.2x", rc, gc, bc);
+}
+
+static void gl2psSVGGetCoords(int n, GL2PSvertex *verts, GL2PSxyz *xyz)
+{
+  int i;
+
+  for(i = 0; i < n; i++){
+    xyz[i][0] = verts[i].xyz[0];
+    xyz[i][1] = gl2ps->viewport[3] - verts[i].xyz[1];
+  }
 }
 
 static void gl2psPrintSVGHeader(void)
@@ -3007,11 +3017,14 @@ static void gl2psPrintSVGHeader(void)
 static void gl2psPrintSVGPrimitive(void *data)
 {
   GL2PSprimitive *prim;
+  GL2PSxyz xyz[4];
   char col[32];
 
   prim = *(GL2PSprimitive**)data;
 
   if((gl2ps->options & GL2PS_OCCLUSION_CULL) && prim->culled) return;
+
+  gl2psSVGGetCoords(prim->numverts, prim->verts, xyz);
 
   switch(prim->type){
   case GL2PS_PIXMAP :
@@ -3021,10 +3034,10 @@ static void gl2psPrintSVGPrimitive(void *data)
     /* FIXME */
     break;
   case GL2PS_TEXT :
-    gl2psSVGColorString(prim->verts[0].rgba, col);
+    gl2psSVGGetColorString(prim->verts[0].rgba, col);
     gl2psPrintf("<text x=\"%g\" y=\"%g\" fill=\"%s\" "
 		"font-size=\"%d\" font-family=\"%s\">%s</text>\n",
-                prim->verts[0].xyz[0], prim->verts[0].xyz[1], col,
+                xyz[0][0], xyz[0][1], col,
                 prim->data.text->fontsize,
 		prim->data.text->fontname,
                 prim->data.text->str);
@@ -3033,21 +3046,18 @@ static void gl2psPrintSVGPrimitive(void *data)
     /* FIXME */
     break;
   case GL2PS_LINE :
-    gl2psSVGColorString(prim->verts[0].rgba, col);
+    gl2psSVGGetColorString(prim->verts[0].rgba, col);
     gl2psPrintf("<line stroke=\"%s\" stroke-width=\"%d\" "
 		"x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n",
 		col, (int)(prim->width),
-		prim->verts[0].xyz[0], prim->verts[0].xyz[1],
-		prim->verts[1].xyz[0], prim->verts[1].xyz[1]);
+		xyz[0][0], xyz[0][1], xyz[1][0], xyz[1][1]);
 
     break;
   case GL2PS_TRIANGLE :
-    gl2psSVGColorString(prim->verts[0].rgba, col);
+    gl2psSVGGetColorString(prim->verts[0].rgba, col);
     gl2psPrintf("<polygon fill=\"%s\" points=\"%g,%g %g,%g %g,%g\"/>\n",
 		col,
-		prim->verts[0].xyz[0], prim->verts[0].xyz[1],
-		prim->verts[1].xyz[0], prim->verts[1].xyz[1],
-		prim->verts[2].xyz[0], prim->verts[2].xyz[1]);
+		xyz[0][0], xyz[0][1], xyz[1][0], xyz[1][1], xyz[2][0], xyz[2][1]);
     break;
   case GL2PS_QUADRANGLE :
     gl2psMsg(GL2PS_WARNING, "There should not be any quad left to print");
