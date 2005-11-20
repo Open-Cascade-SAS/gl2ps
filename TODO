@@ -1,4 +1,4 @@
-$Id: TODO,v 1.18 2005-06-18 18:06:20 geuzaine Exp $
+$Id: TODO,v 1.19 2005-11-20 17:05:06 geuzaine Exp $
 
 ------------------------------------------------------------------------
 
@@ -19,31 +19,6 @@ $Id: TODO,v 1.18 2005-06-18 18:06:20 geuzaine Exp $
 ------------------------------------------------------------------------
 
 * Enhance the polygon/line/point offset stuff
-
-------------------------------------------------------------------------
-
-* SVG output...
-
-From Lassi A. Tuura" <lassi.tuura@cern.ch>:
-
-SVG can also be produced from PS, search google for ps2svg.ps; works
-fine for the files I produced with gl2ps.  SVG is easy to produce in
-itself and similar to postscript; see http://www.w3.org/Graphics/SVG.
-Here's an abbreviated sample from a cube printed with gl2ps and
-coverted with ps2svg (M = moveto, L = lineto):
-<svg width="100%" viewBox="0 0 594 840" stroke="rgb(0,0,0)" fill="none">
-<g stroke-miterlimit="10">
- <g transform="matrix(1,0,0,-1,0,840)">
-   <path stroke="none" fill="rgb(65,10,10)"
-     d="M256.018,103.084L238.296,230.246L182.367,162.194Z"/>
-   <path stroke="none" fill="rgb(65,10,10)"
-     d="M256.018,103.084L182.367,162.194L187.264,56.048Z"/>
-   <path stroke="none" fill="rgb(10,10,10)"
-     d="M187.264,56.048L182.367,162.194L74.7287,183.309Z"/>
-   [...]
-  </g>
-</g>
-</svg>
 
 ------------------------------------------------------------------------
 
