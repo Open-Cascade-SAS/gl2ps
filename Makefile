@@ -2,7 +2,7 @@ RELEASE = 1.2.6
 DATE = `date "+%Y%m%d"`
 
 clean:
-	rm -f *.tex *.ps *.eps *.eps.gz *.pdf *.o gl2psTest a.out *~
+	rm -f a.out out* *.o gl2psTest *~
 	cd doc && ${MAKE} clean
 
 purge:

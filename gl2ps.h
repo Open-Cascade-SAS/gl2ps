@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.102 2005-11-10 16:04:13 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.103 2005-11-20 17:03:29 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -84,13 +84,14 @@
                        0.01 * GL2PS_MINOR_VERSION + \
                        0.0001 * GL2PS_PATCH_VERSION)
 
-/* Output file format */
+/* Output file formats (the values and the ordering are important!) */
 
-#define GL2PS_PS  1
-#define GL2PS_EPS 2
-#define GL2PS_TEX 3
-#define GL2PS_PDF 4
-#define GL2PS_SVG 5
+#define GL2PS_PS  0
+#define GL2PS_EPS 1
+#define GL2PS_TEX 2
+#define GL2PS_PDF 3
+#define GL2PS_SVG 4
+#define GL2PS_PGF 5
 
 /* Sorting algorithms */
 
@@ -181,6 +182,8 @@ GL2PSDLL_API GLint gl2psBlendFunc(GLenum sfactor, GLenum dfactor);
 GL2PSDLL_API GLint gl2psDrawImageMap(GLsizei width, GLsizei height,
                                      const GLfloat position[3],
                                      const unsigned char *imagemap);
+GL2PSDLL_API const char *gl2psGetFileExtension(GLint format);
+GL2PSDLL_API const char *gl2psGetFormatDescription(GLint format);
 
 #if defined(__cplusplus)
 }
