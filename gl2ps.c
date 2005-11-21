@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.219 2005-11-21 00:10:53 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.220 2005-11-21 00:39:54 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -763,6 +763,32 @@ static void gl2psAdaptVertexForBlending(GL2PSvertex *v)
   default:
     break;
   }
+}
+
+static GLfloat gl2psGetRGB(GL2PSimage *im, GLuint x, GLuint y,
+                           GLfloat *red, GLfloat *green, GLfloat *blue)
+{
+  
+  GLsizei width = im->width;
+  GLsizei height = im->height;
+  GLfloat *pixels = im->pixels;
+  GLfloat *pimag;
+
+  /* OpenGL image is from down to up, PS image is up to down */  
+  switch(im->format){
+  case GL_RGBA:
+    pimag = pixels + 4 * (width * (height - 1 - y) + x);
+    break;
+  case GL_RGB:
+  default:
+    pimag = pixels + 3 * (width * (height - 1 - y) + x);
+    break;
+  }
+  *red = *pimag; pimag++;
+  *green = *pimag; pimag++;
+  *blue = *pimag; pimag++;
+
+  return (im->format == GL_RGBA) ? *pimag : 1.0F;
 }
 
 /********************************************************************* 
@@ -2093,32 +2119,6 @@ static void gl2psParseFeedbackBuffer(GLint used)
  *
  *********************************************************************/
 
-static GLfloat gl2psGetRGB(GL2PSimage *im, GLuint x, GLuint y,
-                           GLfloat *red, GLfloat *green, GLfloat *blue)
-{
-  
-  GLsizei width = im->width;
-  GLsizei height = im->height;
-  GLfloat *pixels = im->pixels;
-  GLfloat *pimag;
-
-  /* OpenGL image is from down to up, PS image is up to down */  
-  switch(im->format){
-  case GL_RGBA:
-    pimag = pixels + 4 * (width * (height - 1 - y) + x);
-    break;
-  case GL_RGB:
-  default:
-    pimag = pixels + 3 * (width * (height - 1 - y) + x);
-    break;
-  }
-  *red = *pimag; pimag++;
-  *green = *pimag; pimag++;
-  *blue = *pimag; pimag++;
-
-  return (im->format == GL_RGBA) ? *pimag : 1.0F;
-}
-
 static void gl2psWriteByte(unsigned char byte)
 {
   unsigned char h = byte / 16;
@@ -2609,7 +2609,7 @@ static void gl2psResetPostScriptColor(void)
   gl2ps->lastrgba[0] = gl2ps->lastrgba[1] = gl2ps->lastrgba[2] = -1.;
 }
 
-static int gl2psPrintDash(GLushort pattern, GLint factor, char *str)
+static int gl2psPrintPostScriptDash(GLushort pattern, GLint factor, char *str)
 {
   int len = 0, i, n, on[5] = {0, 0, 0, 0, 0}, off[5] = {0, 0, 0, 0, 0};
   char tmp[16];
@@ -2725,7 +2725,7 @@ static void gl2psPrintPostScriptPrimitive(void *data)
       gl2ps->lastlinewidth = prim->width;
       gl2psPrintf("%g W\n", gl2ps->lastlinewidth);
     }
-    gl2psPrintDash(prim->pattern, prim->factor, "setdash");
+    gl2psPrintPostScriptDash(prim->pattern, prim->factor, "setdash");
     if(!gl2psVertsSameColor(prim)){
       gl2psResetPostScriptColor();
       gl2psPrintf("%g %g %g %g %g %g %g %g %g %g SL\n",
@@ -3302,7 +3302,7 @@ static void gl2psPDFgroupListWriteMainStream(void)
     case GL2PS_LINE:
       gl2ps->streamlength += gl2psPrintPDFLineWidth(prim->width);
       gl2ps->streamlength += gl2psPrintPDFStrokeColor(prim->verts[0].rgba);
-      gl2ps->streamlength += gl2psPrintDash(prim->pattern, prim->factor, "d");
+      gl2ps->streamlength += gl2psPrintPostScriptDash(prim->pattern, prim->factor, "d");
       for(j = 0; j <= lastel; ++j){  
         prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
         gl2ps->streamlength += 
