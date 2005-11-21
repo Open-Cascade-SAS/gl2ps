@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.220 2005-11-21 00:39:54 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.221 2005-11-21 00:56:02 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -4669,16 +4669,16 @@ static void gl2psPrintPGFDash(GLushort pattern, GLint factor)
 static const char *gl2psPGFTextAlignment(int align)
 {
   switch(align){
-  case GL2PS_TEXT_C : return "center";
-  case GL2PS_TEXT_CL: return "west";
-  case GL2PS_TEXT_CR: return "east";
-  case GL2PS_TEXT_B : return "south";
-  case GL2PS_TEXT_BR: return "south east";
-  case GL2PS_TEXT_T : return "north";
-  case GL2PS_TEXT_TL: return "north west";
-  case GL2PS_TEXT_TR: return "north east";
-  case GL2PS_TEXT_BL: 
-  default           : return "south west";
+  case GL2PS_TEXT_C  : return "center";
+  case GL2PS_TEXT_CL : return "west";
+  case GL2PS_TEXT_CR : return "east";
+  case GL2PS_TEXT_B  : return "south";
+  case GL2PS_TEXT_BR : return "south east";
+  case GL2PS_TEXT_T  : return "north";
+  case GL2PS_TEXT_TL : return "north west";
+  case GL2PS_TEXT_TR : return "north east";
+  case GL2PS_TEXT_BL : 
+  default            : return "south west";
   }
 }
 
@@ -4717,34 +4717,35 @@ static void gl2psPrintPGFPrimitive(void *data)
 	    prim->width,prim->width);
     break;
   case GL2PS_LINE :
-      gl2psPrintPGFColor(prim->verts[0].rgba);
-      if(gl2ps->lastlinewidth != prim->width){
-        gl2ps->lastlinewidth = prim->width;
-        fprintf(gl2ps->stream, "\\pgfsetlinewidth{%fpt}\n", gl2ps->lastlinewidth);
-      }
-      gl2psPrintPGFDash(prim->pattern, prim->factor);
-      fprintf(gl2ps->stream, 
-	      "\\pgfpathmoveto{\\pgfpoint{%fpt}{%fpt}}\n"
-	      "\\pgflineto{\\pgfpoint{%fpt}{%fpt}}\n"
-	      "\\pgfusepath{stroke}\n",
-	      prim->verts[1].xyz[0], prim->verts[1].xyz[1],
-	      prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
+    gl2psPrintPGFColor(prim->verts[0].rgba);
+    if(gl2ps->lastlinewidth != prim->width){
+      gl2ps->lastlinewidth = prim->width;
+      fprintf(gl2ps->stream, "\\pgfsetlinewidth{%fpt}\n", gl2ps->lastlinewidth);
+    }
+    gl2psPrintPGFDash(prim->pattern, prim->factor);
+    fprintf(gl2ps->stream, 
+	    "\\pgfpathmoveto{\\pgfpoint{%fpt}{%fpt}}\n"
+	    "\\pgflineto{\\pgfpoint{%fpt}{%fpt}}\n"
+	    "\\pgfusepath{stroke}\n",
+	    prim->verts[1].xyz[0], prim->verts[1].xyz[1],
+	    prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
     break;
   case GL2PS_TRIANGLE :
-      if(gl2ps->lastlinewidth != 0){
-        gl2ps->lastlinewidth = 0;
-        fprintf(gl2ps->stream, "\\pgfsetlinewidth{0.01pt}\n");
-      }
-      gl2psPrintPGFColor(prim->verts[0].rgba);
-      fprintf(gl2ps->stream, 
-	      "\\pgfpathmoveto{\\pgfpoint{%fpt}{%fpt}}\n"
-	      "\\pgflineto{\\pgfpoint{%fpt}{%fpt}}\n"
-	      "\\pgflineto{\\pgfpoint{%fpt}{%fpt}}\n"
-	      "\\pgfpathclose\n"
-	      "\\pgfusepath{fill,stroke}\n",
-	      prim->verts[2].xyz[0], prim->verts[2].xyz[1],
-	      prim->verts[1].xyz[0], prim->verts[1].xyz[1],
-	      prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
+    if(gl2ps->lastlinewidth != 0){
+      gl2ps->lastlinewidth = 0;
+      fprintf(gl2ps->stream, "\\pgfsetlinewidth{0.01pt}\n");
+    }
+    gl2psPrintPGFColor(prim->verts[0].rgba);
+    fprintf(gl2ps->stream, 
+	    "\\pgfpathmoveto{\\pgfpoint{%fpt}{%fpt}}\n"
+	    "\\pgflineto{\\pgfpoint{%fpt}{%fpt}}\n"
+	    "\\pgflineto{\\pgfpoint{%fpt}{%fpt}}\n"
+	    "\\pgfpathclose\n"
+	    "\\pgfusepath{fill,stroke}\n",
+	    prim->verts[2].xyz[0], prim->verts[2].xyz[1],
+	    prim->verts[1].xyz[0], prim->verts[1].xyz[1],
+	    prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
+    break;
   default :
     break;
   }
