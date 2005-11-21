@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.72 2005-11-20 17:03:29 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.73 2005-11-21 00:10:53 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -565,7 +565,7 @@ void keyboard(unsigned char key, int x, int y){
 
 #ifdef GL2PS_HAVE_ZLIB
     opt = GL2PS_DRAW_BACKGROUND | GL2PS_COMPRESS;
-    if(format != GL2PS_PDF) strcat(ext, ".gz");
+    if(format == GL2PS_PS || format == GL2PS_EPS) strcat(ext, ".gz");
     writefile(format, GL2PS_SIMPLE_SORT, opt, 0, "outSimpleCompressed", ext);
 #endif
 
