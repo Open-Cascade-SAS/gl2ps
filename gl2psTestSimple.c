@@ -1,4 +1,4 @@
-/* $Id: gl2psTestSimple.c,v 1.9 2005-06-23 07:04:59 geuzaine Exp $ */
+/* $Id: gl2psTestSimple.c,v 1.10 2005-11-26 06:29:26 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -83,7 +83,7 @@ void keyboard(unsigned char key, int x, int y){
       buffsize += 1024*1024;
       gl2psBeginPage("test", "gl2psTestSimple", NULL, GL2PS_EPS, GL2PS_BSP_SORT, 
 		     GL2PS_DRAW_BACKGROUND | GL2PS_USE_CURRENT_VIEWPORT, 
-		     GL_RGBA, 0, NULL, 0, 0, 0,  buffsize, fp, "out.eps");
+		     GL_RGBA, 0, NULL, 0, 0, 0, buffsize, fp, "out.eps");
       display();
       state = gl2psEndPage();
     }
@@ -94,13 +94,14 @@ void keyboard(unsigned char key, int x, int y){
 }
 
 int main(int argc, char **argv){
+  GLfloat pos[4]={1.,1.,-1.,0.};
+
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH);
   glutInitWindowSize(400, 400);
   glutInitWindowPosition(100, 100);
   glutCreateWindow(argv[0]);
 
-  GLfloat pos[4]={1.,1.,-1.,0.};
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
   glShadeModel(GL_SMOOTH);
@@ -109,7 +110,6 @@ int main(int argc, char **argv){
 
   glutDisplayFunc(display);
   glutKeyboardFunc(keyboard);
-
   glutMainLoop();
   return 0;
 }
