@@ -15,7 +15,7 @@ mac:
 
 linux:
 	gcc -Wall -g -O3 -I/usr/X11R6/include -o gl2psTest gl2psTest.c gl2ps.c\
-            -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm
+            -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
 
 macz:
 	gcc -DHAVE_ZLIB -Wall -g -O2 -o gl2psTest gl2psTest.c gl2ps.c\
@@ -23,7 +23,7 @@ macz:
 
 linuxz:
 	gcc -DHAVE_ZLIB -Wall -g -O3 -I/usr/X11R6/include -o gl2psTest gl2psTest.c gl2ps.c\
-            -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm -lz
+            -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm -lz
 
 # -Wbad-function-cast
 test:
