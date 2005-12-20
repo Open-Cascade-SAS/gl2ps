@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.221 2005-11-21 00:56:02 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.222 2005-12-20 21:49:26 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -72,7 +72,7 @@
 
 #define GL2PS_EPSILON       5.0e-3F
 #define GL2PS_ZSCALE        1000.0F
-#define GL2PS_ZOFFSET       1.0F
+#define GL2PS_ZOFFSET       5.0e-2F
 #define GL2PS_ZOFFSET_LARGE 20.0F
 #define GL2PS_ZERO(arg)     (fabs(arg) < 1.e-20)
 
