@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.203 2005-11-20 17:09:10 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.204 2006-02-11 18:02:19 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
@@ -51,6 +51,7 @@
 
 \newcommand{\dd}{\begingroup\Url}
 \newcommand{\email}[2]{\href{mailto:#2}{#1}}
+\newcommand{\noemail}[2]{#1}
 
 %%tth: \def\dd#1{\textmd{\texttt{#1}}}
 
@@ -734,51 +735,51 @@ GL2PS does not support textures, fog effects, etc.
 \section{Contributors}
 \label{sec:contrib}
 
-\email{Michael Sweet}{mike@easysw.com} for the original implementation of
+\noemail{Michael Sweet}{mike@easysw.com} for the original implementation of
 the feedback buffer parser; 
 %
-\email{Bruce Naylor}{naylor@comp-graphics.com} for BSP tree and occlusion
+\noemail{Bruce Naylor}{naylor@comp-graphics.com} for BSP tree and occlusion
 culling hints;
 %
-\email{Marc Um{\'e}}{marc.ume@digitalgraphics.be} for the original list
+\noemail{Marc Um{\'e}}{marc.ume@digitalgraphics.be} for the original list
 code;
 %
-\email{Jean-Fran\c{c}ois Remacle}{remacle@gce.ucl.ac.be} for plane equation
+\noemail{Jean-Fran\c{c}ois Remacle}{remacle@gce.ucl.ac.be} for plane equation
 fixes; 
 %
-\email{Bart Kaptein}{B.L.Kaptein@lumc.nl} for memory leak fixes;
+\noemail{Bart Kaptein}{B.L.Kaptein@lumc.nl} for memory leak fixes;
 %
-\email{Quy Nguyen-Dai}{quy@nguyendai.org} for output file size optimization;
+\noemail{Quy Nguyen-Dai}{quy@nguyendai.org} for output file size optimization;
 %
-\email{Sam Buss}{sbuss@ucsd.edu} for the \dd{shfill}-based smooth shaded
+\noemail{Sam Buss}{sbuss@ucsd.edu} for the \dd{shfill}-based smooth shaded
 triangle code;
 %
-\email{Shane Hill}{Shane.Hill@dsto.defence.gov.au} for the landscape option
+\noemail{Shane Hill}{Shane.Hill@dsto.defence.gov.au} for the landscape option
 implementation;
 %
-\email{Romain Boman}{r_boman@yahoo.fr} for the Windows dll generation;
+\noemail{Romain Boman}{r_boman@yahoo.fr} for the Windows dll generation;
 %
-\email{Diego Santa Cruz}{Diego.SantaCruz@epfl.ch} for the new optimized
+\noemail{Diego Santa Cruz}{Diego.SantaCruz@epfl.ch} for the new optimized
 shaded triangle code and the \dd{shfill} management;
 %
-\email{Shahzad Muzaffar}{Shahzad.Muzaffar@cern.ch} and \email{Lassi
+\noemail{Shahzad Muzaffar}{Shahzad.Muzaffar@cern.ch} and \noemail{Lassi
 Tuura}{lassi.tuura@cern.ch} for the new occlusion culling code, the
 improvement of \dd{GL2PS_BEST_ROOT} and the imagemap support;
 %
-\email{Guy Barrand}{barrand@lal.in2p3.fr} for his work on
+\noemail{Guy Barrand}{barrand@lal.in2p3.fr} for his work on
 \dd{gl2psDrawPixels} and the new viewport management;
 %
-\email{Rouben Rostamian}{rostamian@umbc.edu} and \email{Prabhu
+\noemail{Rouben Rostamian}{rostamian@umbc.edu} and \noemail{Prabhu
 Ramachandran}{prabhu@aero.iitm.ernet.in} for various bug reports and fixes;
 %
-\email{Micha Bieber}{bieber@traits.de} for the PDF code;
+\noemail{Micha Bieber}{bieber@traits.de} for the PDF code;
 %
-\email{Olivier Couet}{couet@mail.cern.ch} for the SVG code;
+\noemail{Olivier Couet}{couet@mail.cern.ch} for the SVG code;
 %
-\email{Fabian Wenzel}{wenzel@tu-harburg.de} for the PGF code and the
+\noemail{Fabian Wenzel}{wenzel@tu-harburg.de} for the PGF code and the
 backend reorganization;
 %
-\email{Shai Ayal}{shaiay@gmail.com} for rotated text support in
+\noemail{Shai Ayal}{shaiay@gmail.com} for rotated text support in
 PostScript.
 
 \section{Links}
@@ -791,7 +792,7 @@ Sweet's GLP library (\url{http://www.easysw.com/~mike/opengl/}); the GLpr
 library from CEI international (\url{http://www.ceintl.com/}; this product
 does not seem to be available anymore).
 
-%\email{Toby White}{tow@sdf.lonestar.org} maintains a Python wrapper for
+%\noemail{Toby White}{tow@sdf.lonestar.org} maintains a Python wrapper for
 %\dd{GL2PS}, available at \url{http://tow.freeshell.org/software.html}.
 
 \section{Versions}
