@@ -1,7 +1,7 @@
-/* $Id: gl2psTest.c,v 1.73 2005-11-21 00:10:53 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.74 2006-02-14 13:23:16 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
- * Copyright (C) 1999-2005 Christophe Geuzaine <geuz@geuz.org>
+ * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of either:
