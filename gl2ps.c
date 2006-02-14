@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.223 2006-02-14 13:23:16 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.224 2006-02-14 14:51:43 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -1385,6 +1385,7 @@ static void gl2psRescaleAndOffset()
   /* rescale z-buffer coordinate in [0,GL2PS_ZSCALE], to make it of
      the same order of magnitude as the x and y coordinates */
   scaleZ = GL2PS_ZERO(rangeZ) ? GL2PS_ZSCALE : (GL2PS_ZSCALE / rangeZ);
+  if(scaleZ > 100000.F) scaleZ = 100000.F;
 
   /* apply offsets */
   for(i = 0; i < gl2psListNbr(gl2ps->primitives); i++){
