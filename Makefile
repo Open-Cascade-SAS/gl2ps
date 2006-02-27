@@ -1,4 +1,4 @@
-RELEASE = 1.2.7
+RELEASE = 1.2.8
 DATE = `date "+%Y%m%d"`
 
 clean:
@@ -10,7 +10,11 @@ purge:
                -o -name ".\#*" -o -name "gmon.out"`
 
 mac:
-	gcc -Wall -g -o gl2psTest gl2psTest.c gl2ps.c\
+	gcc -Wall -g -O0 -o gl2psTest gl2psTest.c gl2ps.c\
+            -framework OpenGL -framework GLUT -framework Cocoa
+
+mac2:
+	gcc -Wall -g -O0 -o gl2psTestSimple gl2psTestSimple.c gl2ps.c\
             -framework OpenGL -framework GLUT -framework Cocoa
 
 linux:

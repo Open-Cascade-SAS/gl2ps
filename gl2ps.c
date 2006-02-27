@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.225 2006-02-14 19:09:30 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.226 2006-02-27 03:31:52 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -220,6 +220,7 @@ typedef struct {
   GLint viewport[4], blendfunc[2], lastfactor;
   GL2PSrgba *colormap, lastrgba, threshold, bgcolor;
   GLushort lastpattern;
+  GL2PSvertex lastvertex;
   GL2PSlist *primitives;
   FILE *stream;
   GL2PScompress *compress;
@@ -251,11 +252,12 @@ typedef struct {
 } GL2PScontext;
 
 typedef struct {
-  void  (*header)(void);
-  void  (*footer)(void);
+  void  (*printHeader)(void);
+  void  (*printFooter)(void);
   void  (*beginViewport)(GLint viewport[4]);
   GLint (*endViewport)(void);
   void  (*printPrimitive)(void *data);
+  void  (*printFinalPrimitive)(void);
   const char *file_extension;
   const char *description;
 } GL2PSbackend;
@@ -791,6 +793,15 @@ static GLfloat gl2psGetRGB(GL2PSimage *im, GLuint x, GLuint y,
   return (im->format == GL_RGBA) ? *pimag : 1.0F;
 }
 
+static GLboolean gl2psSamePosition(GL2PSxyz p1, GL2PSxyz p2)
+{
+  if(!GL2PS_ZERO(p1[0] - p2[0]) ||
+     !GL2PS_ZERO(p1[1] - p2[1]) ||
+     !GL2PS_ZERO(p1[2] - p2[2]))
+    return GL_FALSE;
+  return GL_TRUE;
+}
+
 /********************************************************************* 
  *
  * 3D sorting routines 
@@ -986,7 +997,7 @@ static void gl2psAddIndex(GLshort *index0, GLshort *index1, GLshort *nb,
 
 static GLshort gl2psGetIndex(GLshort i, GLshort num)
 {
-  return(i < num-1) ? i+1 : 0;
+  return (i < num - 1) ? i + 1 : 0;
 }
 
 static GLint gl2psTestSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane)
@@ -1125,10 +1136,10 @@ static int gl2psCompareDepth(const void *a, const void *b)
 
   diff = dq - dw;
   if(diff > 0.){
-    return 1;
+    return -1;
   }
   else if(diff < 0.){
-    return -1;
+    return 1;
   }
   else{
     return 0;
@@ -2422,7 +2433,9 @@ static void gl2psPrintPostScriptHeader(void)
      Rotated text string: (string) angle x y size fontname S??R
      Point primitive: x y size P
      Line width: width W
-     Flat-shaded line: x2 y2 x1 y1 L
+     Line start: x y LS
+     Line joining last point: x y L
+     Line end: x y LE
      Smooth-shaded line: x2 y2 r2 g2 b2 x1 y1 r1 g1 b1 SL
      Flat-shaded triangle: x3 y3 x2 y2 x1 y1 T
      Smooth-shaded triangle: x3 y3 r3 g3 b3 x2 y2 r2 g2 b2 x1 y1 r1 g1 b1 ST */
@@ -2468,8 +2481,9 @@ static void gl2psPrintPostScriptHeader(void)
               "/STRR{ gsave FCT moveto rotate SW neg SH neg rmoveto show grestore } BD\n");
 
   gl2psPrintf("/P  { newpath 0.0 360.0 arc closepath fill } BD\n"
-              "/L  { newpath moveto lineto stroke } BD\n"
-              "/SL { C moveto C lineto stroke } BD\n"
+              "/LS { moveto } BD\n"
+              "/L  { lineto } BD\n"
+              "/LE { lineto stroke } BD\n"
               "/T  { newpath moveto lineto lineto closepath fill } BD\n");
   
   /* Smooth-shaded triangle with PostScript level 3 shfill operator:
@@ -2615,6 +2629,18 @@ static void gl2psResetPostScriptColor(void)
   gl2ps->lastrgba[0] = gl2ps->lastrgba[1] = gl2ps->lastrgba[2] = -1.;
 }
 
+static void gl2psEndPostScriptLine(void)
+{
+  int i;
+  if(gl2ps->lastvertex.rgba[0] >= 0.){
+    gl2psPrintf("%g %g LE\n", gl2ps->lastvertex.xyz[0], gl2ps->lastvertex.xyz[1]);
+    for(i = 0; i < 3; i++)
+      gl2ps->lastvertex.xyz[i] = -1.;
+    for(i = 0; i < 4; i++)
+      gl2ps->lastvertex.rgba[i] = -1.;
+  }
+}
+
 static int gl2psPrintPostScriptDash(GLushort pattern, GLint factor, char *str)
 {
   int len = 0, i, n, on[5] = {0, 0, 0, 0, 0}, off[5] = {0, 0, 0, 0, 0};
@@ -2661,13 +2687,78 @@ static int gl2psPrintPostScriptDash(GLushort pattern, GLint factor, char *str)
 
 static void gl2psPrintPostScriptPrimitive(void *data)
 {
+  int newline;
   GL2PSprimitive *prim;
 
   prim = *(GL2PSprimitive**)data;
 
   if((gl2ps->options & GL2PS_OCCLUSION_CULL) && prim->culled) return;
 
+  /* Every effort is made to draw lines as connected segments (i.e.,
+     using a single PostScript path): this is the only way to get nice
+     line joins and to not restart the stippling for every line
+     segment. So if the primitive to print is not a line we must first
+     finish the current line (if any): */
+  if(prim->type != GL2PS_LINE) gl2psEndPostScriptLine();
+
   switch(prim->type){
+  case GL2PS_POINT :
+    gl2psPrintPostScriptColor(prim->verts[0].rgba);
+    gl2psPrintf("%g %g %g P\n", 
+                prim->verts[0].xyz[0], prim->verts[0].xyz[1], 0.5*prim->width);
+    break;
+  case GL2PS_LINE :
+    if(!gl2psSamePosition(gl2ps->lastvertex.xyz, prim->verts[0].xyz) ||
+       !gl2psSameColor(gl2ps->lastrgba, prim->verts[0].rgba) ||
+       gl2ps->lastlinewidth != prim->width ||
+       gl2ps->lastpattern != prim->pattern ||
+       gl2ps->lastfactor != prim->factor){
+      /* End the current line if the new segment does not start where
+	 the last one ended, or if the color, the width or the
+	 stippling have changed (multi-stroking lines with changing
+	 colors is necessary until we use /shfill for lines;
+	 unfortunately this means that at the moment we can screw up
+	 line stippling for smooth-shaded lines) */
+      gl2psEndPostScriptLine();
+      newline = 1;
+    }
+    else{
+      newline = 0;
+    }
+    if(gl2ps->lastlinewidth != prim->width){
+      gl2ps->lastlinewidth = prim->width;
+      gl2psPrintf("%g W\n", gl2ps->lastlinewidth);
+    }
+    gl2psPrintPostScriptDash(prim->pattern, prim->factor, "setdash");
+    gl2psPrintPostScriptColor(prim->verts[0].rgba);
+    gl2psPrintf("%g %g %s\n", prim->verts[0].xyz[0], prim->verts[0].xyz[1],
+		newline ? "LS" : "L");
+    gl2ps->lastvertex = prim->verts[1];
+    break;
+  case GL2PS_TRIANGLE :
+    if(!gl2psVertsSameColor(prim)){
+      gl2psResetPostScriptColor();
+      gl2psPrintf("%g %g %g %g %g %g %g %g %g %g %g %g %g %g %g ST\n",
+                  prim->verts[2].xyz[0], prim->verts[2].xyz[1],
+                  prim->verts[2].rgba[0], prim->verts[2].rgba[1],
+                  prim->verts[2].rgba[2], prim->verts[1].xyz[0],
+                  prim->verts[1].xyz[1], prim->verts[1].rgba[0],
+                  prim->verts[1].rgba[1], prim->verts[1].rgba[2],
+                  prim->verts[0].xyz[0], prim->verts[0].xyz[1],
+                  prim->verts[0].rgba[0], prim->verts[0].rgba[1],
+                  prim->verts[0].rgba[2]);
+    }
+    else{
+      gl2psPrintPostScriptColor(prim->verts[0].rgba);
+      gl2psPrintf("%g %g %g %g %g %g T\n",
+                  prim->verts[2].xyz[0], prim->verts[2].xyz[1],
+                  prim->verts[1].xyz[0], prim->verts[1].xyz[1],
+                  prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
+    }
+    break;
+  case GL2PS_QUADRANGLE :
+    gl2psMsg(GL2PS_WARNING, "There should not be any quad left to print");
+    break;
   case GL2PS_PIXMAP :
     gl2psPrintPostScriptPixmap(prim->verts[0].xyz[0], prim->verts[0].xyz[1],
                                prim->data.image);
@@ -2720,57 +2811,6 @@ static void gl2psPrintPostScriptPrimitive(void *data)
       gl2psPrintf(prim->data.text->angle ? "SR\n" : "S\n");
       break;
     }
-    break;
-  case GL2PS_POINT :
-    gl2psPrintPostScriptColor(prim->verts[0].rgba);
-    gl2psPrintf("%g %g %g P\n", 
-                prim->verts[0].xyz[0], prim->verts[0].xyz[1], 0.5*prim->width);
-    break;
-  case GL2PS_LINE :
-    if(gl2ps->lastlinewidth != prim->width){
-      gl2ps->lastlinewidth = prim->width;
-      gl2psPrintf("%g W\n", gl2ps->lastlinewidth);
-    }
-    gl2psPrintPostScriptDash(prim->pattern, prim->factor, "setdash");
-    if(!gl2psVertsSameColor(prim)){
-      gl2psResetPostScriptColor();
-      gl2psPrintf("%g %g %g %g %g %g %g %g %g %g SL\n",
-                  prim->verts[1].xyz[0], prim->verts[1].xyz[1],
-                  prim->verts[1].rgba[0], prim->verts[1].rgba[1],
-                  prim->verts[1].rgba[2], prim->verts[0].xyz[0],
-                  prim->verts[0].xyz[1], prim->verts[0].rgba[0],
-                  prim->verts[0].rgba[1], prim->verts[0].rgba[2]);
-    }
-    else{
-      gl2psPrintPostScriptColor(prim->verts[0].rgba);
-      gl2psPrintf("%g %g %g %g L\n",
-                  prim->verts[1].xyz[0], prim->verts[1].xyz[1],
-                  prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
-    }
-    break;
-  case GL2PS_TRIANGLE :
-    if(!gl2psVertsSameColor(prim)){
-      gl2psResetPostScriptColor();
-      gl2psPrintf("%g %g %g %g %g %g %g %g %g %g %g %g %g %g %g ST\n",
-                  prim->verts[2].xyz[0], prim->verts[2].xyz[1],
-                  prim->verts[2].rgba[0], prim->verts[2].rgba[1],
-                  prim->verts[2].rgba[2], prim->verts[1].xyz[0],
-                  prim->verts[1].xyz[1], prim->verts[1].rgba[0],
-                  prim->verts[1].rgba[1], prim->verts[1].rgba[2],
-                  prim->verts[0].xyz[0], prim->verts[0].xyz[1],
-                  prim->verts[0].rgba[0], prim->verts[0].rgba[1],
-                  prim->verts[0].rgba[2]);
-    }
-    else{
-      gl2psPrintPostScriptColor(prim->verts[0].rgba);
-      gl2psPrintf("%g %g %g %g %g %g T\n",
-                  prim->verts[2].xyz[0], prim->verts[2].xyz[1],
-                  prim->verts[1].xyz[0], prim->verts[1].xyz[1],
-                  prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
-    }
-    break;
-  case GL2PS_QUADRANGLE :
-    gl2psMsg(GL2PS_WARNING, "There should not be any quad left to print");
     break;
   default :
     gl2psMsg(GL2PS_ERROR, "Unknown type of primitive to print");
@@ -2876,6 +2916,12 @@ static GLint gl2psPrintPostScriptEndViewport(void)
   return res;
 }
 
+static void gl2psPrintPostScriptFinalPrimitive(void)
+{
+  /* End any remaining line, if any */
+  gl2psEndPostScriptLine();
+}
+
 /* definition of the PostScript and Encapsulated PostScript backends */
 
 static GL2PSbackend gl2psPS = {
@@ -2884,6 +2930,7 @@ static GL2PSbackend gl2psPS = {
   gl2psPrintPostScriptBeginViewport,
   gl2psPrintPostScriptEndViewport,
   gl2psPrintPostScriptPrimitive,
+  gl2psPrintPostScriptFinalPrimitive,
   "ps",
   "Postscript"
 };
@@ -2894,6 +2941,7 @@ static GL2PSbackend gl2psEPS = {
   gl2psPrintPostScriptBeginViewport,
   gl2psPrintPostScriptEndViewport,
   gl2psPrintPostScriptPrimitive,
+  gl2psPrintPostScriptFinalPrimitive,
   "eps",
   "Encapsulated Postscript"
 };
@@ -3004,6 +3052,10 @@ static GLint gl2psPrintTeXEndViewport(void)
   return 0;
 }
 
+static void gl2psPrintTeXFinalPrimitive(void)
+{
+}
+
 /* definition of the LaTeX backend */
 
 static GL2PSbackend gl2psTEX = {
@@ -3012,6 +3064,7 @@ static GL2PSbackend gl2psTEX = {
   gl2psPrintTeXBeginViewport,
   gl2psPrintTeXEndViewport,
   gl2psPrintTeXPrimitive,
+  gl2psPrintTeXFinalPrimitive,
   "tex",
   "LaTeX text"
 };
@@ -3290,34 +3343,6 @@ static void gl2psPDFgroupListWriteMainStream(void)
     prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, 0);
 
     switch(prim->type){
-    case GL2PS_PIXMAP:
-      for(j = 0; j <= lastel; ++j){
-        prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
-        gl2psPutPDFImage(prim->data.image, gro->imno, prim->verts[0].xyz[0], 
-                         prim->verts[0].xyz[1]);
-      }
-      break;
-    case GL2PS_TEXT:
-      for(j = 0; j <= lastel; ++j){  
-        prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
-        gl2ps->streamlength += gl2psPrintPDFFillColor(prim->verts[0].rgba);
-        gl2psPutPDFText(prim->data.text, gro->fontno, prim->verts[0].xyz[0],
-                        prim->verts[0].xyz[1]);
-      }
-      break;
-    case GL2PS_LINE:
-      gl2ps->streamlength += gl2psPrintPDFLineWidth(prim->width);
-      gl2ps->streamlength += gl2psPrintPDFStrokeColor(prim->verts[0].rgba);
-      gl2ps->streamlength += gl2psPrintPostScriptDash(prim->pattern, prim->factor, "d");
-      for(j = 0; j <= lastel; ++j){  
-        prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
-        gl2ps->streamlength += 
-          gl2psPrintf("%f %f m %f %f l\n",
-                      prim->verts[0].xyz[0], prim->verts[0].xyz[1],
-                      prim->verts[1].xyz[0], prim->verts[1].xyz[1]);
-      }
-      gl2ps->streamlength += gl2psPrintf("S\n");
-      break;
     case GL2PS_POINT:
       gl2ps->streamlength += gl2psPrintf("1 J\n");
       gl2ps->streamlength += gl2psPrintPDFLineWidth(prim->width);
@@ -3331,6 +3356,19 @@ static void gl2psPDFgroupListWriteMainStream(void)
       }
       gl2ps->streamlength += gl2psPrintf("S\n"); 
       gl2ps->streamlength += gl2psPrintf("0 J\n");
+      break;
+    case GL2PS_LINE:
+      gl2ps->streamlength += gl2psPrintPDFLineWidth(prim->width);
+      gl2ps->streamlength += gl2psPrintPDFStrokeColor(prim->verts[0].rgba);
+      gl2ps->streamlength += gl2psPrintPostScriptDash(prim->pattern, prim->factor, "d");
+      for(j = 0; j <= lastel; ++j){  
+        prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
+        gl2ps->streamlength += 
+          gl2psPrintf("%f %f m %f %f l\n",
+                      prim->verts[0].xyz[0], prim->verts[0].xyz[1],
+                      prim->verts[1].xyz[0], prim->verts[1].xyz[1]);
+      }
+      gl2ps->streamlength += gl2psPrintf("S\n");
       break;
     case GL2PS_TRIANGLE:
       gl2psFillTriangleFromPrimitive(&t, prim, GL_TRUE);
@@ -3421,6 +3459,21 @@ static void gl2psPDFgroupListWriteMainStream(void)
                                            "/Sh%d sh\n"
                                            "Q\n",
                                            gro->gsno, gro->trgroupno, gro->shno);
+      }
+      break;
+    case GL2PS_PIXMAP:
+      for(j = 0; j <= lastel; ++j){
+        prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
+        gl2psPutPDFImage(prim->data.image, gro->imno, prim->verts[0].xyz[0], 
+                         prim->verts[0].xyz[1]);
+      }
+      break;
+    case GL2PS_TEXT:
+      for(j = 0; j <= lastel; ++j){  
+        prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
+        gl2ps->streamlength += gl2psPrintPDFFillColor(prim->verts[0].rgba);
+        gl2psPutPDFText(prim->data.text, gro->fontno, prim->verts[0].xyz[0],
+                        prim->verts[0].xyz[1]);
       }
       break;
     default:
@@ -4259,17 +4312,9 @@ static int gl2psPDFgroupListWriteObjects(int entryoffs)
       continue;
     p = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, 0);
     switch(p->type){
-    case GL2PS_PIXMAP:
-      gl2ps->xreflist[gro->imobjno] = offs;
-      offs += gl2psPrintPDFPixmap(gro->imobjno, gro->imobjno+1, p->data.image, 0);
-      if(p->data.image->format == GL_RGBA){
-        gl2ps->xreflist[gro->imobjno+1] = offs;
-        offs += gl2psPrintPDFPixmap(gro->imobjno+1, -1, p->data.image, 8);
-      }
+    case GL2PS_POINT:
       break;
-    case GL2PS_TEXT:
-      gl2ps->xreflist[gro->fontobjno] = offs;
-      offs += gl2psPrintPDFText(gro->fontobjno,p->data.text,gro->fontno);
+    case GL2PS_LINE:
       break;
     case GL2PS_TRIANGLE:
       size = gl2psListNbr(gro->ptrlist);
@@ -4296,9 +4341,17 @@ static int gl2psPDFgroupListWriteObjects(int entryoffs)
       }
       gl2psFree(triangles);
       break;
-    case GL2PS_LINE:
+    case GL2PS_PIXMAP:
+      gl2ps->xreflist[gro->imobjno] = offs;
+      offs += gl2psPrintPDFPixmap(gro->imobjno, gro->imobjno+1, p->data.image, 0);
+      if(p->data.image->format == GL_RGBA){
+        gl2ps->xreflist[gro->imobjno+1] = offs;
+        offs += gl2psPrintPDFPixmap(gro->imobjno+1, -1, p->data.image, 8);
+      }
       break;
-    case GL2PS_POINT:
+    case GL2PS_TEXT:
+      gl2ps->xreflist[gro->fontobjno] = offs;
+      offs += gl2psPrintPDFText(gro->fontobjno,p->data.text,gro->fontno);
       break;
     default:
       break;
@@ -4427,6 +4480,10 @@ static GLint gl2psPrintPDFEndViewport(void)
   return res;
 }
 
+static void gl2psPrintPDFFinalPrimitive(void)
+{
+}
+
 /* definition of the PDF backend */
 
 static GL2PSbackend gl2psPDF = {
@@ -4435,6 +4492,7 @@ static GL2PSbackend gl2psPDF = {
   gl2psPrintPDFBeginViewport,
   gl2psPrintPDFEndViewport,
   gl2psPrintPDFPrimitive,
+  gl2psPrintPDFFinalPrimitive,
   "pdf",
   "Portable Document Format"
 };
@@ -4515,22 +4573,6 @@ static void gl2psPrintSVGPrimitive(void *data)
   gl2psSVGGetCoords(prim->numverts, prim->verts, xyz);
 
   switch(prim->type){
-  case GL2PS_PIXMAP :
-    /* FIXME */
-    break;
-  case GL2PS_IMAGEMAP :
-    /* FIXME */
-    break;
-  case GL2PS_TEXT :
-    gl2psSVGGetColorString(prim->verts[0].rgba, col);
-    fprintf(gl2ps->stream,
-            "<text x=\"%g\" y=\"%g\" fill=\"%s\" "
-            "font-size=\"%d\" font-family=\"%s\">%s</text>\n",
-            xyz[0][0], xyz[0][1], col,
-            prim->data.text->fontsize,
-            prim->data.text->fontname,
-            prim->data.text->str);
-    break;
   case GL2PS_POINT :
     /* FIXME */
     break;
@@ -4550,6 +4592,22 @@ static void gl2psPrintSVGPrimitive(void *data)
     break;
   case GL2PS_QUADRANGLE :
     gl2psMsg(GL2PS_WARNING, "There should not be any quad left to print");
+    break;
+  case GL2PS_PIXMAP :
+    /* FIXME */
+    break;
+  case GL2PS_IMAGEMAP :
+    /* FIXME */
+    break;
+  case GL2PS_TEXT :
+    gl2psSVGGetColorString(prim->verts[0].rgba, col);
+    fprintf(gl2ps->stream,
+            "<text x=\"%g\" y=\"%g\" fill=\"%s\" "
+            "font-size=\"%d\" font-family=\"%s\">%s</text>\n",
+            xyz[0][0], xyz[0][1], col,
+            prim->data.text->fontsize,
+            prim->data.text->fontname,
+            prim->data.text->str);
     break;
   default :
     gl2psMsg(GL2PS_ERROR, "Unknown type of primitive to print");
@@ -4573,6 +4631,10 @@ static GLint gl2psPrintSVGEndViewport(void)
   return 0;
 }
 
+static void gl2psPrintSVGFinalPrimitive(void)
+{
+}
+
 /* definition of the SVG backend */
 
 static GL2PSbackend gl2psSVG = {
@@ -4581,6 +4643,7 @@ static GL2PSbackend gl2psSVG = {
   gl2psPrintSVGBeginViewport,
   gl2psPrintSVGEndViewport,
   gl2psPrintSVGPrimitive,
+  gl2psPrintSVGFinalPrimitive,
   "svg",
   "Scalable Vector Graphics"
 };
@@ -4695,23 +4758,6 @@ static void gl2psPrintPGFPrimitive(void *data)
   prim = *(GL2PSprimitive**)data;
 
   switch(prim->type){
-  case GL2PS_TEXT :
-    fprintf(gl2ps->stream, "{\n\\pgftransformshift{\\pgfpoint{%fpt}{%fpt}}\n",
-            prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
-
-    if(prim->data.text->angle)
-      fprintf(gl2ps->stream, "\\pgftransformrotate{%f}{", prim->data.text->angle);
-
-    fprintf(gl2ps->stream, "\\pgfnode{rectangle}{%s}{\\fontsize{%d}{0}\\selectfont",
-            gl2psPGFTextAlignment(prim->data.text->alignment),
-            prim->data.text->fontsize);
-
-    fprintf(gl2ps->stream, "\\textcolor[rgb]{%g,%g,%g}{{%s}}",
-            prim->verts[0].rgba[0], prim->verts[0].rgba[1],
-            prim->verts[0].rgba[2], prim->data.text->str);
-
-    fprintf(gl2ps->stream, "}{}{\\pgfusepath{discard}}}\n");
-    break;
   case GL2PS_POINT :
     /* Points in openGL are rectangular */
     gl2psPrintPGFColor(prim->verts[0].rgba);
@@ -4751,6 +4797,23 @@ static void gl2psPrintPGFPrimitive(void *data)
             prim->verts[2].xyz[0], prim->verts[2].xyz[1],
             prim->verts[1].xyz[0], prim->verts[1].xyz[1],
             prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
+    break;
+  case GL2PS_TEXT :
+    fprintf(gl2ps->stream, "{\n\\pgftransformshift{\\pgfpoint{%fpt}{%fpt}}\n",
+            prim->verts[0].xyz[0], prim->verts[0].xyz[1]);
+
+    if(prim->data.text->angle)
+      fprintf(gl2ps->stream, "\\pgftransformrotate{%f}{", prim->data.text->angle);
+
+    fprintf(gl2ps->stream, "\\pgfnode{rectangle}{%s}{\\fontsize{%d}{0}\\selectfont",
+            gl2psPGFTextAlignment(prim->data.text->alignment),
+            prim->data.text->fontsize);
+
+    fprintf(gl2ps->stream, "\\textcolor[rgb]{%g,%g,%g}{{%s}}",
+            prim->verts[0].rgba[0], prim->verts[0].rgba[1],
+            prim->verts[0].rgba[2], prim->data.text->str);
+
+    fprintf(gl2ps->stream, "}{}{\\pgfusepath{discard}}}\n");
     break;
   default :
     break;
@@ -4810,6 +4873,10 @@ static GLint gl2psPrintPGFEndViewport(void)
   return res;
 }
 
+static void gl2psPrintPGFFinalPrimitive(void)
+{
+}
+
 /* definition of the PGF backend */
 
 static GL2PSbackend gl2psPGF = {
@@ -4818,6 +4885,7 @@ static GL2PSbackend gl2psPGF = {
   gl2psPrintPGFBeginViewport,
   gl2psPrintPGFEndViewport,
   gl2psPrintPGFPrimitive,
+  gl2psPrintPGFFinalPrimitive,
   "tex",
   "PGF Latex Graphics"
 };
@@ -4886,7 +4954,7 @@ static GLint gl2psPrintPrimitives(void)
       gl2ps->viewport[2] = gl2ps->viewport[3] = -100000;
       gl2psListAction(gl2ps->primitives, gl2psComputeTightBoundingBox);
     }
-    (gl2psbackends[gl2ps->format]->header)();
+    (gl2psbackends[gl2ps->format]->printHeader)();
     gl2ps->header = GL_FALSE;
   }
 
@@ -4905,10 +4973,10 @@ static GLint gl2psPrintPrimitives(void)
   case GL2PS_SIMPLE_SORT :
     gl2psListSort(gl2ps->primitives, gl2psCompareDepth);
     if(gl2ps->options & GL2PS_OCCLUSION_CULL){
-      gl2psListAction(gl2ps->primitives, gl2psAddInImageTree);
+      gl2psListActionInverse(gl2ps->primitives, gl2psAddInImageTree);
       gl2psFreeBspImageTree(&gl2ps->imagetree);
     }
-    gl2psListActionInverse(gl2ps->primitives, gl2psbackends[gl2ps->format]->printPrimitive);
+    gl2psListAction(gl2ps->primitives, gl2psbackends[gl2ps->format]->printPrimitive);
     gl2psListAction(gl2ps->primitives, gl2psFreePrimitive);
     /* reset the primitive list, waiting for the next viewport */
     gl2psListReset(gl2ps->primitives);
@@ -4930,6 +4998,7 @@ static GLint gl2psPrintPrimitives(void)
     gl2ps->primitives = gl2psListCreate(500, 500, sizeof(GL2PSprimitive*));
     break;
   }
+  gl2psbackends[gl2ps->format]->printFinalPrimitive();
 
   return GL2PS_SUCCESS;
 }
@@ -5020,7 +5089,11 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
   gl2ps->threshold[2] = nb ? 1.0F/(GLfloat)nb : 0.050F;
   gl2ps->colormode = colormode;
   gl2ps->buffersize = buffersize > 0 ? buffersize : 2048 * 2048;
+  for(i = 0; i < 3; i++){
+    gl2ps->lastvertex.xyz[i] = -1.0F;
+  }
   for(i = 0; i < 4; i++){
+    gl2ps->lastvertex.rgba[i] = -1.0F;
     gl2ps->lastrgba[i] = -1.0F;
   }
   gl2ps->lastlinewidth = -1.0F;
@@ -5109,7 +5182,7 @@ GL2PSDLL_API GLint gl2psEndPage(void)
   res = gl2psPrintPrimitives();
 
   if(res != GL2PS_OVERFLOW)
-    (gl2psbackends[gl2ps->format]->footer)();
+    (gl2psbackends[gl2ps->format]->printFooter)();
   
   fflush(gl2ps->stream);
 

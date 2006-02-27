@@ -1,4 +1,4 @@
-/* $Id: gl2psTestSimple.c,v 1.11 2006-02-14 13:23:16 geuzaine Exp $ */
+/* $Id: gl2psTestSimple.c,v 1.12 2006-02-27 03:31:52 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -51,17 +51,31 @@
 
 void display(void){
   unsigned int i;
+  int N = 50;
   char *help = "Press 's' to save image or 'q' to quit";  
 
   glClearColor(0.3, 0.5, 0.8, 0.);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
   glPushMatrix();
   glRotatef(-60., 2., 0., 1.);
   glEnable(GL_LIGHTING);
   glutSolidTorus(0.3, 0.6, 30, 30);
   glDisable(GL_LIGHTING);
   glPopMatrix();
+  
   glColor3f(1.,1.,1.);
+
+  glEnable(GL_LINE_STIPPLE);
+  glLineStipple(1, 0x087F);
+  gl2psEnable(GL2PS_LINE_STIPPLE);
+  glBegin(GL_LINE_STRIP);
+  for(i = 0; i < N; i++)
+    glVertex3f(-0.75 + 1.5 * (double)i/(double)(N - 1), 0.75, -0.9);
+  glEnd();
+  glDisable(GL_LINE_STIPPLE);
+  gl2psDisable(GL2PS_LINE_STIPPLE);
+
   glRasterPos2d(-0.9,-0.9);
   gl2psText(help, "Times-Roman", 24);
   for (i = 0; i < strlen(help); i++)
@@ -81,7 +95,7 @@ void keyboard(unsigned char key, int x, int y){
     fp = fopen("out.eps", "wb");
     while(state == GL2PS_OVERFLOW){
       buffsize += 1024*1024;
-      gl2psBeginPage("test", "gl2psTestSimple", NULL, GL2PS_EPS, GL2PS_BSP_SORT, 
+      gl2psBeginPage("test", "gl2psTestSimple", NULL, GL2PS_EPS, GL2PS_SIMPLE_SORT, 
 		     GL2PS_DRAW_BACKGROUND | GL2PS_USE_CURRENT_VIEWPORT, 
 		     GL_RGBA, 0, NULL, 0, 0, 0, buffsize, fp, "out.eps");
       display();
