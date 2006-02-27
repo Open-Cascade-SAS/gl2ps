@@ -1,4 +1,4 @@
-/* $Id: gl2psTestSimple.c,v 1.12 2006-02-27 03:31:52 geuzaine Exp $ */
+/* $Id: gl2psTestSimple.c,v 1.13 2006-02-27 18:25:38 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -57,15 +57,19 @@ void display(void){
   glClearColor(0.3, 0.5, 0.8, 0.);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  /* draw a smooth-shaded torus */
   glPushMatrix();
   glRotatef(-60., 2., 0., 1.);
   glEnable(GL_LIGHTING);
   glutSolidTorus(0.3, 0.6, 30, 30);
   glDisable(GL_LIGHTING);
   glPopMatrix();
-  
+
   glColor3f(1.,1.,1.);
 
+  /* draw a stippled line with many small segments (this tests the
+     ability of gl2ps to render lines using as few strokes as
+     possible) */
   glEnable(GL_LINE_STIPPLE);
   glLineStipple(1, 0x087F);
   gl2psEnable(GL2PS_LINE_STIPPLE);
@@ -76,10 +80,12 @@ void display(void){
   glDisable(GL_LINE_STIPPLE);
   gl2psDisable(GL2PS_LINE_STIPPLE);
 
+  /* draw a text string */
   glRasterPos2d(-0.9,-0.9);
   gl2psText(help, "Times-Roman", 24);
   for (i = 0; i < strlen(help); i++)
     glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, help[i]);
+
   glFlush();
 }
 
