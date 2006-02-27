@@ -2,7 +2,7 @@ RELEASE = 1.2.8
 DATE = `date "+%Y%m%d"`
 
 clean:
-	rm -f a.out out* *.o gl2psTest *~
+	rm -f a.out out* *.o gl2psTest gl2psTestSimple *~
 	cd doc && ${MAKE} clean
 
 purge:
