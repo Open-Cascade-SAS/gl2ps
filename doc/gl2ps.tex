@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.207 2006-02-27 03:31:52 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.208 2006-07-20 09:45:44 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -59,13 +59,13 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 1.2.8, ? 2006}
+\date{Version 1.3.0, ? 2006}
 
 \maketitle
 
 %%tth: \section*{Download}
 %%tth: The current distribution of GL2PS is
-%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.2.8.tgz}{gl2ps-1.2.8.tgz}.
+%%tth: \href{http://www.geuz.org/gl2ps/src/gl2ps-1.3.0.tgz}{gl2ps-1.3.0.tgz}.
 %%tth: This distribution contains a complete
 %%tth: \href{http://www.geuz.org/gl2ps/gl2ps.pdf}
 %%tth: {documentation in PDF format}. Older versions are still
@@ -109,7 +109,7 @@ under certain conditions) for static linking with closed-source software
 corrections, questions or suggestions should be e-mailed to the GL2PS
 mailing list \email{gl2ps@geuz.org}{gl2ps@geuz.org}.
 
-The interface consists of thirteen functions, all beginning with the prefix
+The interface consists of fourteen functions, all beginning with the prefix
 \dd{gl2ps}. All the data structures and the symbolic constants peculiar to
 GL2PS begin with \dd{GL2PS}.
 
@@ -247,13 +247,12 @@ determine the way primitives are handled:
   \dd{HAVE_LIBZ} or \dd{GL2PS_HAVE_ZLIB} defined, and link the executable
   with the zlib library (\url{http://www.gzip.org/zlib/}).
 
-  A word of caution: PostScript files generated with this option turned on
-  are simply compressed ``as a whole'', i.e., they are identical to regular
-  files compressed with the gzip program--and may thus not be readable
-  directly by all PostScript interpreters. There is no such problem with PDF
-  files: the compression is done ``locally'' for each group of primitives in
-  the output stream, in accordance to the official PDF specification, and
-  compressed PDF files should thus be as portable as non-compressed ones.
+  PostScript or SVG files generated with this option turned on are
+  simply compressed ``as a whole'', i.e., they are identical to
+  regular PostScript or SVG files compressed with the gzip
+  program. For PDF files the compression is done ``locally'' for each
+  group of primitives, in accordance with the official PDF
+  specification.
 \end{description}
 
 \item[\dd{colormode}] Specifies the color mode: \dd{GL_RGBA} or
@@ -411,6 +410,40 @@ position of the current raster position only. The arguments are:
 \noindent\dd{gl2psDrawPixels} returns:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if \dd{pixels} is \dd{NULL} or if the
+  library is not initialized;
+\item[\dd{GL2PS_ERROR}] if an error occurred;
+\item[\dd{GL2PS_SUCCESS}] otherwise.
+\end{description}
+
+% -------------------------------------------------------------------------
+
+\subsection{\texttt{gl2psSpecial}}
+\label{sec:gl2psSpecial}
+
+\subsubsection{Specification}
+
+\begin{verbatim}
+GLint gl2psSpecial( GLint format, const char *str )
+\end{verbatim}
+
+\subsubsection{Description and arguments}
+
+\dd{gl2psSpecial} permits to output an arbitrary command string in an
+output stream of a given format. The arguments are:
+
+\begin{description}
+\item[\dd{format}] Specifies the output format for which the special
+  string will be printed. If the stream format (specified with
+  \dd{gl2psBeginPage}, see Section~\ref{sec:gl2psBeginPage}) does not
+  match \dd{format}, the command has no effect.
+\item[\dd{str}] Specifies the string to print.
+\end{description}
+
+\subsubsection{Return value}
+
+\noindent\dd{gl2psSpecial} returns:
+\begin{description}
+\item[\dd{GL2PS_UNINITIALIZED}] if \dd{str} is \dd{NULL} or if the
   library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
@@ -642,8 +675,9 @@ Here are, in no particular order, some useful tips and solutions to common
 problems:
 \begin{itemize}
 \item For PDF (both compressed and non-compressed) and for compressed
-  PostScript output, files should always be opened in binary mode, i.e.,
-  with \dd{fopen(..., "wb")}, instead of \dd{fopen(..., "w")}.
+  PostScript and SVG output, files should always be opened in binary
+  mode, i.e., with \dd{fopen(..., "wb")}, instead of \dd{fopen(...,
+    "w")}.
 \item Blending is not yet very well supported by many viewers/printers. To
   disable blending entirely, add \dd{GL2PS_NO_BLENDING} to the list of
   options passed to \dd{gl2psBeginPage}.
@@ -780,7 +814,12 @@ Ramachandran}{prabhu@aero.iitm.ernet.in} for various bug reports and fixes;
 backend reorganization;
 %
 \noemail{Shai Ayal}{shaiay@gmail.com} for rotated text support in
-PostScript.
+PostScript;
+%
+\noemail{Ian D. Gay}{gay@sfu.ca} for 64 bit arch patch.
+%
+\noemail{Cosmin Truta}{cosmin@cs.toronto.edu} and \noemail{Baiju
+  Devani}{} for various bug fixes and the new \dd{gl2psSpecial} code.
 
 \section{Links}
 \label{sec:links}
@@ -904,8 +943,11 @@ does not seem to be available anymore).
 \item[1.2.7] (Feb 15, 2006) Fixed bug that could cause sorting to be
   inverted in BSP mode (bug introduced in 1.2.3); added limited
   support for SVG and PGF formats; made backend code more generic.
-\item[1.2.8] (?, 2006) Whenever possible lines are now rendered in a
-  single path;
+\item[1.3.0] (?, 2006) Whenever possible lines are now rendered in a
+  single path; better sorting of text and bitmap elements; improved
+  SVG support (smooth shading, compression); new function
+  \dd{gl2psSpecial} to print device-specific strings in the output
+  stream.
 \end{description}
 
 \end{document}

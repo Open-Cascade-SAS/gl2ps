@@ -1,4 +1,4 @@
-RELEASE = 1.2.8
+RELEASE = 1.3.0
 DATE = `date "+%Y%m%d"`
 
 clean:
@@ -22,7 +22,7 @@ linux:
             -lglut -lGLU -lGL -L/usr/X11R6/lib -lX11 -lm
 
 macz:
-	gcc -DHAVE_ZLIB -Wall -g -O2 -o gl2psTest gl2psTest.c gl2ps.c\
+	gcc -DHAVE_ZLIB -Wall -g -O0 -o gl2psTest gl2psTest.c gl2ps.c\
             -framework OpenGL -framework GLUT -framework Cocoa -lz
 
 linuxz:
@@ -42,7 +42,9 @@ distrib:
 	rm -rf gl2ps-${RELEASE}/ gl2ps-${RELEASE}.tgz
 	mkdir gl2ps-${RELEASE}
 	cd doc && ${MAKE}
-	cp TODO COPYING.GL2PS COPYING.LGPL gl2ps.c gl2ps.h gl2psTest.c\
+	sed -e "s/GL2PS_EXTRA_VERSION.*/GL2PS_EXTRA_VERSION \"\"/g"\
+           gl2ps.h > gl2ps-${RELEASE}/gl2ps.h
+	cp TODO COPYING.GL2PS COPYING.LGPL gl2ps.c gl2psTest.c\
            gl2psTestSimple.c doc/gl2ps.pdf gl2ps-${RELEASE}
 	tar zcvf gl2ps-${RELEASE}.tgz gl2ps-${RELEASE}
 	@echo "********************************************************************"
@@ -51,9 +53,11 @@ distrib:
 
 distrib-nightly:
 	rm -rf gl2ps-nightly*
-	mkdir gl2ps-${DATE}
+	mkdir gl2ps-cvs-${DATE}
 	cd doc && ${MAKE} gl2ps.pdf
-	cp TODO COPYING.GL2PS COPYING.LGPL gl2ps.c gl2ps.h gl2psTest.c\
-           gl2psTestSimple.c doc/gl2ps.pdf gl2ps-${DATE}
-	tar zcvf gl2ps-nightly.tgz gl2ps-${DATE}
-	rm -rf gl2ps-${DATE}
+	sed -e "s/GL2PS_EXTRA_VERSION.*/GL2PS_EXTRA_VERSION \"-cvs-${DATE}\"/g"\
+           gl2ps.h > gl2ps-cvs-${DATE}/gl2ps.h
+	cp TODO COPYING.GL2PS COPYING.LGPL gl2ps.c gl2psTest.c\
+           gl2psTestSimple.c doc/gl2ps.pdf gl2ps-cvs-${DATE}
+	tar zcvf gl2ps-nightly.tgz gl2ps-cvs-${DATE}
+	rm -rf gl2ps-cvs-${DATE}
