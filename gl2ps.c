@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.229 2006-07-20 09:45:43 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.230 2006-07-21 17:07:49 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -884,7 +884,7 @@ static void gl2psAdaptVertexForBlending(GL2PSvertex *v)
 {
   if(!v || !gl2ps)
     return;
-  
+
   if(gl2ps->options & GL2PS_NO_BLENDING || !gl2ps->blending){
     v->rgba[3] = 1.0F;
     return;
@@ -2772,10 +2772,39 @@ static void gl2psEndPostScriptLine(void)
   }
 }
 
+static void gl2psParseStipplePattern(GLushort pattern, GLint factor, 
+				     int *nb, int array[10])
+{
+  int i, n, on[5] = {0, 0, 0, 0, 0}, off[5] = {0, 0, 0, 0, 0};
+  char tmp[16];
+
+  /* extract the 16 bits from the OpenGL stipple pattern */
+  for(n = 15; n >= 0; n--){
+    tmp[n] = (char)(pattern & 0x01);
+    pattern >>= 1;
+  }
+  /* compute the on/off pixel sequence (since the PostScript
+     specification allows for at most 11 elements in the on/off array,
+     we limit ourselves to 5 couples of on/off states) */
+  n = 0;
+  for(i = 0; i < 5; i++){
+    while(n < 16 && !tmp[n]){ off[i]++; n++; }
+    while(n < 16 && tmp[n]){ on[i]++; n++; }
+    if(n >= 15) break;
+  }
+  /* store the on/off array from right to left, starting with off
+     pixels (the longest possible array is: [on4 off4 on3 off3 on2
+     off2 on1 off1 on0 off0]) */
+  *nb = 0;
+  for(n = i; n >= 0; n--){
+    array[(*nb)++] = factor * on[n];
+    array[(*nb)++] = factor * off[n];
+  }
+}
+
 static int gl2psPrintPostScriptDash(GLushort pattern, GLint factor, char *str)
 {
-  int len = 0, i, n, on[5] = {0, 0, 0, 0, 0}, off[5] = {0, 0, 0, 0, 0};
-  char tmp[16];
+  int len = 0, i, n, array[10];
 
   if(pattern == gl2ps->lastpattern && factor == gl2ps->lastfactor)
     return 0;
@@ -2788,27 +2817,11 @@ static int gl2psPrintPostScriptDash(GLushort pattern, GLint factor, char *str)
     len += gl2psPrintf("[] 0 %s\n", str);
   }
   else{
-    /* extract the 16 bits from the stipple pattern */
-    for(n = 15; n >= 0; n--){
-      tmp[n] = (char)(pattern & 0x01);
-      pattern >>= 1;
-    }
-    /* compute the on/off pixel sequence (since the PostScript
-       specification allows for at most 11 elements in the on/off
-       array, we limit ourselves to 5 couples of on/off states) */
-    n = 0;
-    for(i = 0; i < 5; i++){
-      while(n < 16 && !tmp[n]){ off[i]++; n++; }
-      while(n < 16 && tmp[n]){ on[i]++; n++; }
-      if(n >= 15) break;
-    }
-    /* print the on/off array from right to left, starting with off
-       pixels (the longest possible array is: [on4 off4 on3 off3 on2
-       off2 on1 off1 on0 off0]) */
+    gl2psParseStipplePattern(pattern, factor, &n, array);
     len += gl2psPrintf("[");
-    for(n = i; n >= 0; n--){
-      len += gl2psPrintf("%d %d", factor * on[n], factor * off[n]);
-      if(n) len += gl2psPrintf(" ");
+    for(i = 0; i < n; i++){
+      if(i) len += gl2psPrintf(" ");
+      len += gl2psPrintf("%d", array[i]);
     }
     len += gl2psPrintf("] 0 %s\n", str);
   }
@@ -2994,7 +3007,7 @@ static void gl2psPrintPostScriptBeginViewport(GLint viewport[4])
       rgba[0] = gl2ps->colormap[index][0];
       rgba[1] = gl2ps->colormap[index][1];
       rgba[2] = gl2ps->colormap[index][2];
-      rgba[3] = 0.0F;
+      rgba[3] = 1.0F;
     }
     gl2psPrintf("%g %g %g C\n"
                 "newpath %d %d moveto %d %d lineto %d %d lineto %d %d lineto\n"
@@ -4608,7 +4621,7 @@ static void gl2psPrintPDFBeginViewport(GLint viewport[4])
       rgba[0] = gl2ps->colormap[index][0];
       rgba[1] = gl2ps->colormap[index][1];
       rgba[2] = gl2ps->colormap[index][2];
-      rgba[3] = 0.0F;
+      rgba[3] = 1.0F;
     }
     offs += gl2psPrintPDFFillColor(rgba);
     offs += gl2psPrintf("%d %d %d %d re\n"
@@ -4685,6 +4698,7 @@ static void gl2psSVGGetColorString(GL2PSrgba rgba, char str[32])
 
 static void gl2psPrintSVGHeader(void)
 {
+  char col[32];
   time_t now;
 
   /* Compressed SVG files (.svgz) are simply gzipped SVG files */
@@ -4713,6 +4727,15 @@ static void gl2psPrintSVGHeader(void)
   gl2psPrintf("</desc>\n");
   gl2psPrintf("<defs>\n");
   gl2psPrintf("</defs>\n");
+
+  if(gl2ps->options & GL2PS_DRAW_BACKGROUND){
+    gl2psSVGGetColorString(gl2ps->bgcolor, col);
+    gl2psPrintf("<polygon fill=\"%s\" points=\"%d,%d %d,%d %d,%d %d,%d\"/>\n", col,
+		(int)gl2ps->viewport[0], (int)gl2ps->viewport[1], 
+		(int)gl2ps->viewport[2], (int)gl2ps->viewport[1], 
+		(int)gl2ps->viewport[2], (int)gl2ps->viewport[3], 
+                (int)gl2ps->viewport[0], (int)gl2ps->viewport[3]);
+  }
 }
 
 static void gl2psPrintSVGSmoothTriangle(GL2PSxyz xyz[3], GL2PSrgba rgba[3])
@@ -4723,13 +4746,15 @@ static void gl2psPrintSVGSmoothTriangle(GL2PSxyz xyz[3], GL2PSrgba rgba[3])
   char col[32];
 
   /* Apparently there is no easy way to do Gouraud shading in SVG
-     without explicitly pre-defining gradients... So for now we just
-     do recursive subdivision */
+     without explicitly pre-defining gradients, so for now we just do
+     recursive subdivision */
 
   if(gl2psSameColorThreshold(3, rgba, gl2ps->threshold)){
     gl2psSVGGetColorString(rgba[0], col);
-    gl2psPrintf("<polygon fill=\"%s\" points=\"%g,%g %g,%g %g,%g\"/>\n",
-		col, xyz[0][0], xyz[0][1], xyz[1][0], xyz[1][1], xyz[2][0], xyz[2][1]);
+    gl2psPrintf("<polygon fill=\"%s\" ", col);
+    if(rgba[0][3] < 1.0F) gl2psPrintf("fill-opacity=\"%g\" ", rgba[0][3]);
+    gl2psPrintf("points=\"%g,%g %g,%g %g,%g\"/>\n", xyz[0][0], xyz[0][1], 
+		xyz[1][0], xyz[1][1], xyz[2][0], xyz[2][1]);
   }
   else{
     /* subdivide into 4 subtriangles */
@@ -4780,40 +4805,31 @@ static void gl2psPrintSVGSmoothTriangle(GL2PSxyz xyz[3], GL2PSrgba rgba[3])
   }
 }
 
-static void gl2psPrintSVGSmoothLine(GL2PSxyz xyz[2], GL2PSrgba rgba[2], 
-				    GLfloat width)
+static void gl2psPrintSVGDash(GLushort pattern, GLint factor)
+{
+  int i, n, array[10];
+
+  if(!pattern || !factor) return; /* solid line */
+
+  gl2psParseStipplePattern(pattern, factor, &n, array);
+  gl2psPrintf("stroke-dasharray=\"");
+  for(i = 0; i < n; i++){
+    if(i) gl2psPrintf(",");
+    gl2psPrintf("%d", array[i]);
+  }
+  gl2psPrintf("\" ");
+}
+
+static void gl2psEndSVGLine(void)
 {
   int i;
-  GL2PSxyz xyz2[2];
-  GL2PSrgba rgba2[2];
-  char col[32];
-
-  if(gl2psSameColorThreshold(2, rgba, gl2ps->threshold)){
-    gl2psSVGGetColorString(rgba[0], col);
-    gl2psPrintf("<line stroke=\"%s\" stroke-width=\"%g\" "
-		"x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n",
-		col, width, xyz[0][0], xyz[0][1], xyz[1][0], xyz[1][1]);
-  }
-  else{
-    /* subdivide into 2 sublines */
-    for(i = 0; i < 3; i++){
-      xyz2[0][i] = xyz[0][i]; 
-      xyz2[1][i] = 0.5 * (xyz[0][i] + xyz[1][i]);
-    }
-    for(i = 0; i < 4; i++){
-      rgba2[0][i] = rgba[0][i]; 
-      rgba2[1][i] = 0.5 * (rgba[0][i] + rgba[1][i]);
-    }
-    gl2psPrintSVGSmoothLine(xyz2, rgba2, width);
-    for(i = 0; i < 3; i++){
-      xyz2[0][i] = 0.5 * (xyz[0][i] + xyz[1][i]);
-      xyz2[1][i] = xyz[1][i]; 
-    }
-    for(i = 0; i < 4; i++){
-      rgba2[0][i] = 0.5 * (rgba[0][i] + rgba[1][i]);
-      rgba2[1][i] = rgba[1][i]; 
-    }
-    gl2psPrintSVGSmoothLine(xyz2, rgba2, width);
+  if(gl2ps->lastvertex.rgba[0] >= 0.){
+    gl2psPrintf("%g,%g\"/>\n", gl2ps->lastvertex.xyz[0], 
+		gl2ps->viewport[3] - gl2ps->lastvertex.xyz[1]);
+    for(i = 0; i < 3; i++)
+      gl2ps->lastvertex.xyz[i] = -1.;
+    for(i = 0; i < 4; i++)
+      gl2ps->lastvertex.rgba[i] = -1.;
   }
 }
 
@@ -4823,21 +4839,59 @@ static void gl2psPrintSVGPrimitive(void *data)
   GL2PSxyz xyz[4];
   GL2PSrgba rgba[4];
   char col[32];
+  int newline;
 
   prim = *(GL2PSprimitive**)data;
 
   if((gl2ps->options & GL2PS_OCCLUSION_CULL) && prim->culled) return;
+
+  /* We try to draw connected lines as a single path to get nice line
+     joins and correct stippling. So if the primitive to print is not
+     a line we must first finish the current line (if any): */
+  if(prim->type != GL2PS_LINE) gl2psEndSVGLine();
 
   gl2psSVGGetCoordsAndColors(prim->numverts, prim->verts, xyz, rgba);
 
   switch(prim->type){
   case GL2PS_POINT :
     gl2psSVGGetColorString(rgba[0], col);
-    gl2psPrintf("<circle fill=\"%s\" cx=\"%g\" cy=\"%g\" r=\"%g\"/>\n",
-		col, xyz[0][0], xyz[0][1], 0.5 * prim->width);
+    gl2psPrintf("<circle fill=\"%s\" ", col);
+    if(rgba[0][3] < 1.0F) gl2psPrintf("fill-opacity=\"%g\" ", rgba[0][3]);
+    gl2psPrintf("cx=\"%g\" cy=\"%g\" r=\"%g\"/>\n",
+		xyz[0][0], xyz[0][1], 0.5 * prim->width);
     break;
   case GL2PS_LINE :
-    gl2psPrintSVGSmoothLine(xyz, rgba, prim->width);
+    if(!gl2psSamePosition(gl2ps->lastvertex.xyz, prim->verts[0].xyz) ||
+       !gl2psSameColor(gl2ps->lastrgba, prim->verts[0].rgba) ||
+       gl2ps->lastlinewidth != prim->width ||
+       gl2ps->lastpattern != prim->pattern ||
+       gl2ps->lastfactor != prim->factor){
+      /* End the current line if the new segment does not start where
+         the last one ended, or if the color, the width or the
+         stippling have changed (we will need to use multi-point
+         gradients for smooth-shaded lines) */
+      gl2psEndSVGLine();
+      newline = 1;
+    }
+    else{
+      newline = 0;
+    }
+    gl2ps->lastvertex = prim->verts[1];
+    gl2psSetLastColor(prim->verts[0].rgba);
+    gl2ps->lastlinewidth = prim->width;
+    gl2ps->lastpattern = prim->pattern;
+    gl2ps->lastfactor = prim->factor;
+    if(newline){
+      gl2psSVGGetColorString(rgba[0], col);
+      gl2psPrintf("<polyline fill=\"none\" stroke=\"%s\" stroke-width=\"%g\" ", 
+		  col, prim->width);
+      if(rgba[0][3] < 1.0F) gl2psPrintf("stroke-opacity=\"%g\" ", rgba[0][3]);
+      gl2psPrintSVGDash(prim->pattern, prim->factor);
+      gl2psPrintf("points=\"%g,%g ", xyz[0][0], xyz[0][1]);
+    }
+    else{
+      gl2psPrintf("%g,%g ", xyz[0][0], xyz[0][1]);
+    }
     break;
   case GL2PS_TRIANGLE :
     gl2psPrintSVGSmoothTriangle(xyz, rgba);
@@ -4853,9 +4907,9 @@ static void gl2psPrintSVGPrimitive(void *data)
     break;
   case GL2PS_TEXT :
     gl2psSVGGetColorString(prim->verts[0].rgba, col);
-    gl2psPrintf("<text x=\"%g\" y=\"%g\" fill=\"%s\" "
+    gl2psPrintf("<text fill=\"%s\" x=\"%g\" y=\"%g\" "
 		"font-size=\"%d\" font-family=\"%s\">%s</text>\n",
-		xyz[0][0], xyz[0][1], col,
+		col, xyz[0][0], xyz[0][1],
 		prim->data.text->fontsize,
 		prim->data.text->fontname,
 		prim->data.text->str);
@@ -4881,21 +4935,60 @@ static void gl2psPrintSVGFooter(void)
 
 static void gl2psPrintSVGBeginViewport(GLint viewport[4])
 {
+  GLint index;
+  char col[32];
+  GLfloat rgba[4];
+  int x = viewport[0], y = viewport[1], w = viewport[2], h = viewport[3];
+
   glRenderMode(GL_FEEDBACK);
   
   if(gl2ps->header){
     gl2psPrintSVGHeader();
     gl2ps->header = GL_FALSE;
   }
+
+  if(gl2ps->options & GL2PS_DRAW_BACKGROUND){
+    if(gl2ps->colormode == GL_RGBA || gl2ps->colorsize == 0){
+      glGetFloatv(GL_COLOR_CLEAR_VALUE, rgba);
+    }
+    else{
+      glGetIntegerv(GL_INDEX_CLEAR_VALUE, &index);
+      rgba[0] = gl2ps->colormap[index][0];
+      rgba[1] = gl2ps->colormap[index][1];
+      rgba[2] = gl2ps->colormap[index][2];
+      rgba[3] = 1.0F;
+    }
+    gl2psSVGGetColorString(rgba, col);
+    gl2psPrintf("<polygon fill=\"%s\" points=\"%d,%d %d,%d %d,%d %d,%d\"/>\n", col, 
+		x, gl2ps->viewport[3] - y, 
+		x + w, gl2ps->viewport[3] - y, 
+		x + w, gl2ps->viewport[3] - (y + h), 
+		x, gl2ps->viewport[3] - (y + h));
+  }
+
+  gl2psPrintf("<clipPath id=\"cp%d%d%d%d\">\n", x, y, w, h);
+  gl2psPrintf("  <polygon points=\"%d,%d %d,%d %d,%d %d,%d\"/>\n", 
+	      x, gl2ps->viewport[3] - y, 
+	      x + w, gl2ps->viewport[3] - y, 
+	      x + w, gl2ps->viewport[3] - (y + h), 
+	      x, gl2ps->viewport[3] - (y + h));
+  gl2psPrintf("</clipPath>\n");
+  gl2psPrintf("<g stroke=\"none\" clip-path=\"url(#cp%d%d%d%d)\">\n", x, y, w, h);
 }
 
 static GLint gl2psPrintSVGEndViewport(void)
 {
-  return gl2psPrintPrimitives();
+  GLint res;
+
+  res = gl2psPrintPrimitives();
+  gl2psPrintf("</g>\n");
+  return res;
 }
 
 static void gl2psPrintSVGFinalPrimitive(void)
 {
+  /* End any remaining line, if any */
+  gl2psEndSVGLine();
 }
 
 /* definition of the SVG backend */
@@ -5117,7 +5210,7 @@ static void gl2psPrintPGFBeginViewport(GLint viewport[4])
       rgba[0] = gl2ps->colormap[index][0];
       rgba[1] = gl2ps->colormap[index][1];
       rgba[2] = gl2ps->colormap[index][2];
-      rgba[3] = 0.0F;
+      rgba[3] = 1.0F;
     }
     gl2psPrintPGFColor(rgba);
     fprintf(gl2ps->stream, 
@@ -5373,7 +5466,9 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
   gl2ps->pdfgrouplist = NULL;
   gl2ps->xreflist = NULL;
   
-  gl2ps->blending = glIsEnabled(GL_BLEND);
+  /* get default blending mode from current OpenGL state (enabled by
+     default for SVG) */
+  gl2ps->blending = (gl2ps->format == GL2PS_SVG) ? GL_TRUE : glIsEnabled(GL_BLEND);
   glGetIntegerv(GL_BLEND_SRC, &gl2ps->blendfunc[0]);
   glGetIntegerv(GL_BLEND_DST, &gl2ps->blendfunc[1]);
 
@@ -5396,7 +5491,7 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
     gl2ps->bgcolor[0] = gl2ps->colormap[index][0];
     gl2ps->bgcolor[1] = gl2ps->colormap[index][1];
     gl2ps->bgcolor[2] = gl2ps->colormap[index][2];
-    gl2ps->bgcolor[3] = 0.0F;
+    gl2ps->bgcolor[3] = 1.0F;
   }
   else{
     gl2psMsg(GL2PS_ERROR, "Unknown color mode in gl2psBeginPage");

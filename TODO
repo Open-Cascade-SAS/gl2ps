@@ -1,16 +1,24 @@
-$Id: TODO,v 1.23 2006-07-20 09:45:43 geuzaine Exp $
+$Id: TODO,v 1.24 2006-07-21 17:07:49 geuzaine Exp $
 
 ------------------------------------------------------------------------
 
 * Add an simple option to subdivide long, stretched triangles so that
   SIMPLE_SORT can still be used for simple, non-intersecting geometries
-  (cf. Olivier Couet's long cylinders at Cern) where BSP_SORT is horribly
-  slow due to the manu curved surfaces
+  (cf. Olivier Couet's long cylinders at Cern) where BSP_SORT is very
+  slow due to the presence of many, many curved surfaces
+
+
+------------------------------------------------------------------------
+
+* Implement pixmaps for SVG
 
 ------------------------------------------------------------------------
 
 * do we really need gl2psEnable(GL2PS_BLEND)? Couldn't we just check
   what's in rgba[3] and try to do the "right thing" right away?
+  Update Thu Jul 20 14:51:33 2006: that's what I do now for SVG and it
+  works pretty well. I think we could greatly simplify the PDF code
+  that way.
 
 ------------------------------------------------------------------------
 
@@ -20,12 +28,8 @@ $Id: TODO,v 1.23 2006-07-20 09:45:43 geuzaine Exp $
 
 ------------------------------------------------------------------------
 
-* Apple's Preview.app doesn't support '/ShadingType 4'... Should we
-  submit a bug report to Apple?
-
-------------------------------------------------------------------------
-
-* Enhance the polygon/line/point offset stuff
+* Apple's Preview.app doesn't support '/ShadingType 4'... Submit a bug 
+  report to Apple?
 
 ------------------------------------------------------------------------
 

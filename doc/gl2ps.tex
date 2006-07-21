@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.208 2006-07-20 09:45:44 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.209 2006-07-21 17:07:49 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -808,7 +808,7 @@ Ramachandran}{prabhu@aero.iitm.ernet.in} for various bug reports and fixes;
 %
 \noemail{Micha Bieber}{bieber@traits.de} for the PDF code;
 %
-\noemail{Olivier Couet}{couet@mail.cern.ch} for the SVG code;
+\noemail{Olivier Couet}{couet@mail.cern.ch} for the initial SVG code;
 %
 \noemail{Fabian Wenzel}{wenzel@tu-harburg.de} for the PGF code and the
 backend reorganization;
@@ -826,10 +826,11 @@ PostScript;
 
 Projects similar to \dd{GL2PS} include: Mark Kilgard's original
 ``rendereps'' tutorial
-(\url{http://www.opengl.org/developers/code/mjktips/Feedback.html}); Michael
-Sweet's GLP library (\url{http://www.easysw.com/~mike/opengl/}); the GLpr
-library from CEI international (\url{http://www.ceintl.com/}; this product
-does not seem to be available anymore).
+(\url{http://www.opengl.org/developers/code/mjktips/Feedback.html});
+Michael Sweet's GLP library
+(\url{http://www.easysw.com/~mike/opengl/}); the GLpr library from CEI
+international (\url{http://www.ceintl.com/}; this product does not
+seem to be available anymore).
 
 %\noemail{Toby White}{tow@sdf.lonestar.org} maintains a Python wrapper for
 %\dd{GL2PS}, available at \url{http://tow.freeshell.org/software.html}.
@@ -945,9 +946,9 @@ does not seem to be available anymore).
   support for SVG and PGF formats; made backend code more generic.
 \item[1.3.0] (?, 2006) Whenever possible lines are now rendered in a
   single path; better sorting of text and bitmap elements; improved
-  SVG support (smooth shading, compression); new function
-  \dd{gl2psSpecial} to print device-specific strings in the output
-  stream.
+  SVG support (smooth shading, compression, stippling, viewports); new
+  function \dd{gl2psSpecial} to print device-specific strings in the
+  output stream.
 \end{description}
 
 \end{document}
