@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.230 2006-07-21 17:07:49 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.231 2006-07-22 09:48:56 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -5051,8 +5051,7 @@ static void gl2psPrintPGFHeader(void)
 
 static void gl2psPrintPGFDash(GLushort pattern, GLint factor)
 {
-  int i, n, on[5] = {0, 0, 0, 0, 0}, off[5] = {0, 0, 0, 0, 0};
-  char tmp[16];
+  int i, n, array[10];
 
   if(pattern == gl2ps->lastpattern && factor == gl2ps->lastfactor)
     return;
@@ -5065,28 +5064,9 @@ static void gl2psPrintPGFDash(GLushort pattern, GLint factor)
     fprintf(gl2ps->stream, "\\pgfsetdash{}{0pt}\n");
   }
   else{
-    /* extract the 16 bits from the stipple pattern */
-    for(n = 15; n >= 0; n--){
-      tmp[n] = (char)(pattern & 0x01);
-      pattern >>= 1;
-    }
-    /* compute the on/off pixel sequence (since the PostScript
-       specification allows for at most 11 elements in the on/off
-       array, we limit ourselves to 5 couples of on/off states) */
-    n = 0;
-    for(i = 0; i < 5; i++){
-      while(n < 16 && !tmp[n]){ off[i]++; n++; }
-      while(n < 16 && tmp[n]){ on[i]++; n++; }
-      if(n >= 15) break;
-    }
-    /* print the on/off array from right to left, starting with off
-       pixels (the longest possible array is: [on4 off4 on3 off3 on2
-       off2 on1 off1 on0 off0]) */
+    gl2psParseStipplePattern(pattern, factor, &n, array);
     fprintf(gl2ps->stream, "\\pgfsetdash{");
-    for(n = i; n >= 0; n--){
-      fprintf(gl2ps->stream, "{%dpt}{%dpt}",
-              (int)(factor * on[n]), (int)(factor * off[n]));
-    }
+    for(i = 0; i < n; i++) fprintf(gl2ps->stream, "{%dpt}", array[i]);
     fprintf(gl2ps->stream, "}{0pt}\n");
   }
 }
