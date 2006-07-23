@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.108 2006-07-20 09:45:43 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.109 2006-07-23 08:12:22 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -64,12 +64,12 @@
 #  include <GL/gl.h>
 #endif
 
-/* Support for compressed PostScript/PDF */
+/* Support for compressed PostScript/PDF and for embedded PNG images in SVG */
 
-#if defined(HAVE_ZLIB) || defined(HAVE_LIBZ) || defined(GL2PS_HAVE_ZLIB)
-#  include <zlib.h>
-#  if !defined(GL2PS_HAVE_ZLIB)
-#    define GL2PS_HAVE_ZLIB
+#if defined(HAVE_ZLIB) || defined(HAVE_LIBZ)
+#  define GL2PS_HAVE_ZLIB
+#  if defined(HAVE_LIBPNG) || defined(HAVE_PNG)
+#    define GL2PS_HAVE_LIBPNG
 #  endif
 #endif
 

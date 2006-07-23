@@ -1,4 +1,4 @@
-$Id: TODO,v 1.24 2006-07-21 17:07:49 geuzaine Exp $
+$Id: TODO,v 1.25 2006-07-23 08:12:22 geuzaine Exp $
 
 ------------------------------------------------------------------------
 
@@ -6,11 +6,6 @@ $Id: TODO,v 1.24 2006-07-21 17:07:49 geuzaine Exp $
   SIMPLE_SORT can still be used for simple, non-intersecting geometries
   (cf. Olivier Couet's long cylinders at Cern) where BSP_SORT is very
   slow due to the presence of many, many curved surfaces
-
-
-------------------------------------------------------------------------
-
-* Implement pixmaps for SVG
 
 ------------------------------------------------------------------------
 

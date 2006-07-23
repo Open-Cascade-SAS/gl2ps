@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.76 2006-07-21 17:07:49 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.77 2006-07-23 08:12:22 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -43,6 +43,9 @@
 
   To compile on MacOSX:
   gcc -O3 gl2psTest.c gl2ps.c -framework OpenGL -framework GLUT -framework Cocoa
+
+  (To enable compression and raster images in SVG files you must add
+  "-DHAVE_ZLIB -DHAVE_LIBPNG -lz -lpng" to the commands above.)
 */
 
 #ifdef _MSC_VER /* MSVC Compiler */
