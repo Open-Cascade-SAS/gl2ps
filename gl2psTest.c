@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.77 2006-07-23 08:12:22 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.78 2006-07-24 14:01:20 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -38,14 +38,15 @@
  */
 
 /*
-  To compile on Linux:
-  gcc -O3 gl2psTest.c gl2ps.c -lglut -lGL -lGLU -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm
+  To compile on Linux: 
+  gcc gl2psTest.c gl2ps.c -lglut -lGL -lGLU -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm
 
-  To compile on MacOSX:
-  gcc -O3 gl2psTest.c gl2ps.c -framework OpenGL -framework GLUT -framework Cocoa
+  To compile on MacOSX: 
+  gcc gl2psTest.c gl2ps.c -framework OpenGL -framework GLUT -framework Cocoa
 
-  (To enable compression and raster images in SVG files you must add
-  "-DHAVE_ZLIB -DHAVE_LIBPNG -lz -lpng" to the commands above.)
+  (To enable file compression you must add "-DHAVE_ZLIB -lz" to the
+  commands above.  To enable embedded bitmaps in SVG files you must
+  add "-DHAVE_LIBPNG -DHAVE_ZLIB -lpng -lz".)
 */
 
 #ifdef _MSC_VER /* MSVC Compiler */
@@ -316,7 +317,8 @@ void image(float x, float y, GLboolean opaque){
   int w = 64, h = 66, row, col, pos = 0;
   float *pixels, r = 0., g = 0., b = 0.;
 
-  /* Fill a pixmap (each pixel contains three floats defining an RGB color) */
+  /* Fill a pixmap (each pixel contains three floats defining an RGB
+     color) */
   pixels = (opaque == GL_TRUE) 
     ? (float*)malloc(3*w*h*sizeof(float)) 
     : (float*)malloc(4*w*h*sizeof(float));
@@ -574,7 +576,7 @@ void keyboard(unsigned char key, int x, int y){
 #endif
 
     printf("GL2PS %d.%d.%d%s done with all images\n", GL2PS_MAJOR_VERSION, 
-	   GL2PS_MINOR_VERSION, GL2PS_PATCH_VERSION, GL2PS_EXTRA_VERSION);
+           GL2PS_MINOR_VERSION, GL2PS_PATCH_VERSION, GL2PS_EXTRA_VERSION);
     break;
   }
 }

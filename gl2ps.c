@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.232 2006-07-23 08:12:22 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.233 2006-07-24 14:01:20 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -341,6 +341,16 @@ static void gl2psFree(void *ptr)
   free(ptr);
 }
 
+static size_t gl2psWriteBigEndian(unsigned long data, size_t bytes)
+{
+  size_t i;
+  size_t size = sizeof(unsigned long);
+  for(i = 1; i <= bytes; ++i){
+    fputc(0xff & (data >> (size-i) * 8), gl2ps->stream);
+  }
+  return bytes;
+}
+
 /* zlib compression helper routines */
 
 #if defined(GL2PS_HAVE_ZLIB)
@@ -510,16 +520,6 @@ static void gl2psPrintGzipFooter()
 #endif 
 }
 
-static size_t gl2psWriteBigEndian(unsigned long data, size_t bytes)
-{
-  size_t i;
-  size_t size = sizeof(unsigned long);
-  for(i = 1; i <= bytes; ++i){
-    fputc(0xff & (data >> (size-i) * 8), gl2ps->stream);
-  }
-  return bytes;
-}
-
 /* The list handling routines */
 
 static void gl2psListRealloc(GL2PSlist *list, GLint n)
@@ -632,13 +632,12 @@ static void gl2psListActionInverse(GL2PSlist *list, void (*action)(void *data))
 
 static void gl2psListRead(GL2PSlist *list, int index, void *data)
 {
-  if ((index < 0) || (index >= list->n))
+  if((index < 0) || (index >= list->n))
     gl2psMsg(GL2PS_ERROR, "Wrong list index in gl2psListRead");
   memcpy(data, &list->array[index * list->size], list->size);
 }
 
-static void gl2psListEncodeBase64Block(unsigned char in[3], unsigned char out[4], 
-                                       int len)
+static void gl2psEncodeBase64Block(unsigned char in[3], unsigned char out[4], int len)
 {
   static const char cb64[] = 
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -671,7 +670,7 @@ static void gl2psListEncodeBase64(GL2PSlist *list)
         in[i] = 0;
     }
     if(len) {
-      gl2psListEncodeBase64Block(in, out, len);
+      gl2psEncodeBase64Block(in, out, len);
       for(i = 0; i < 4; i++)
         gl2psListAdd(list, &out[i]);
     }
@@ -755,7 +754,7 @@ static GLfloat gl2psGetRGB(GL2PSimage *im, GLuint x, GLuint y,
   return (im->format == GL_RGBA) ? *pimag : 1.0F;
 }
 
-/* Helper for pixmaps and strings */
+/* Helper routines for pixmaps */
 
 static GL2PSimage *gl2psCopyPixmap(GL2PSimage *im)
 {
@@ -800,16 +799,13 @@ static void gl2psFreePixmap(GL2PSimage *im)
 static void gl2psUserWritePNG(png_structp png_ptr, png_bytep data, png_size_t length)
 {
   unsigned int i;
-  GL2PSlist *png;
-
-  png = (GL2PSlist*)png_get_io_ptr(png_ptr);
-  for(i = 0; i < length; i++)
+  GL2PSlist *png = (GL2PSlist*)png_get_io_ptr(png_ptr);
+  for(i = 0; i < length; i++) 
     gl2psListAdd(png, &data[i]);
 }
 
 static void gl2psUserFlushPNG(png_structp png_ptr)
 {
-  return;
 }
 
 static void gl2psConvertPixmapToPNG(GL2PSimage *pixmap, GL2PSlist *png)
@@ -857,6 +853,8 @@ static void gl2psConvertPixmapToPNG(GL2PSimage *pixmap, GL2PSlist *png)
 }
 
 #endif
+
+/* Helper routines for text strings */
 
 static GLint gl2psAddText(GLint type, const char *str, const char *fontname, 
                           GLshort fontsize, GLint alignment, GLfloat angle)
@@ -927,52 +925,6 @@ static void gl2psFreeText(GL2PSstring *text)
   gl2psFree(text->str);
   gl2psFree(text->fontname);
   gl2psFree(text);
-}
-
-static GL2PSprimitive *gl2psCopyPrimitive(GL2PSprimitive *p)
-{
-  GL2PSprimitive *prim;
-
-  if(!p){
-    gl2psMsg(GL2PS_ERROR, "Trying to copy an empty primitive");
-    return NULL;
-  }
-
-  prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
-  
-  prim->type = p->type;
-  prim->numverts = p->numverts;
-  prim->boundary = p->boundary;
-  prim->offset = p->offset;
-  prim->pattern = p->pattern;
-  prim->factor = p->factor;
-  prim->culled = p->culled;
-  prim->width = p->width;
-  prim->verts = (GL2PSvertex*)gl2psMalloc(p->numverts*sizeof(GL2PSvertex));
-  memcpy(prim->verts, p->verts, p->numverts * sizeof(GL2PSvertex));
-
-  switch(prim->type){
-  case GL2PS_PIXMAP :
-    prim->data.image = gl2psCopyPixmap(p->data.image);
-    break;
-  case GL2PS_TEXT :
-  case GL2PS_SPECIAL :
-    prim->data.text = gl2psCopyText(p->data.text);
-    break;
-  default:
-    break;
-  }
-
-  return prim;
-}
-
-static GLboolean gl2psSamePosition(GL2PSxyz p1, GL2PSxyz p2)
-{
-  if(!GL2PS_ZERO(p1[0] - p2[0]) ||
-     !GL2PS_ZERO(p1[1] - p2[1]) ||
-     !GL2PS_ZERO(p1[2] - p2[2]))
-    return GL_FALSE;
-  return GL_TRUE;
 }
 
 /* Helpers for blending modes */
@@ -1062,6 +1014,54 @@ static void gl2psInitTriangle(GL2PStriangle *t)
   for(i = 0; i < 3; i++)
     t->vertex[i] = vertex;
   t->prop = T_UNDEFINED;
+}
+
+/* Miscellaneous helper routines */
+
+static GL2PSprimitive *gl2psCopyPrimitive(GL2PSprimitive *p)
+{
+  GL2PSprimitive *prim;
+
+  if(!p){
+    gl2psMsg(GL2PS_ERROR, "Trying to copy an empty primitive");
+    return NULL;
+  }
+
+  prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
+  
+  prim->type = p->type;
+  prim->numverts = p->numverts;
+  prim->boundary = p->boundary;
+  prim->offset = p->offset;
+  prim->pattern = p->pattern;
+  prim->factor = p->factor;
+  prim->culled = p->culled;
+  prim->width = p->width;
+  prim->verts = (GL2PSvertex*)gl2psMalloc(p->numverts*sizeof(GL2PSvertex));
+  memcpy(prim->verts, p->verts, p->numverts * sizeof(GL2PSvertex));
+
+  switch(prim->type){
+  case GL2PS_PIXMAP :
+    prim->data.image = gl2psCopyPixmap(p->data.image);
+    break;
+  case GL2PS_TEXT :
+  case GL2PS_SPECIAL :
+    prim->data.text = gl2psCopyText(p->data.text);
+    break;
+  default:
+    break;
+  }
+
+  return prim;
+}
+
+static GLboolean gl2psSamePosition(GL2PSxyz p1, GL2PSxyz p2)
+{
+  if(!GL2PS_ZERO(p1[0] - p2[0]) ||
+     !GL2PS_ZERO(p1[1] - p2[1]) ||
+     !GL2PS_ZERO(p1[2] - p2[2]))
+    return GL_FALSE;
+  return GL_TRUE;
 }
 
 /********************************************************************* 
@@ -4344,7 +4344,7 @@ static int gl2psPrintPDFShader(int obj, GL2PStriangle *triangles,
     for(i = 0; i < size; ++i)
       gl2psPrintPDFShaderStreamData(&triangles[i],
                                     xmax-xmin, ymax-ymin, xmin, ymin, 
-                                    gl2psWriteBigEndianCompress,gray);
+                                    gl2psWriteBigEndianCompress, gray);
 
     if(Z_OK == gl2psDeflate() && 23 + gl2ps->compress->destLen < gl2ps->compress->srcLen){
       offs += gl2psPrintPDFCompressorType();
@@ -4373,7 +4373,7 @@ static int gl2psPrintPDFShader(int obj, GL2PStriangle *triangles,
     for(i = 0; i < size; ++i)
       offs += gl2psPrintPDFShaderStreamData(&triangles[i],
                                             xmax-xmin, ymax-ymin, xmin, ymin,
-                                            gl2psWriteBigEndian,gray);
+                                            gl2psWriteBigEndian, gray);
   }
   
   offs += fprintf(gl2ps->stream,
@@ -4974,9 +4974,10 @@ static void gl2psPrintSVGPixmap(GLfloat x, GLfloat y, GL2PSimage *pixmap)
   int i;
 
   /* The only image types supported by the SVG standard are JPEG, PNG
-     and SVG. Since we want to embed the image directly in the SVG
-     stream (and not link to an external image file), we need to
-     encode the pixmap into PNG here, then encode it into base64. */
+     and SVG. Here we choose PNG, and since we want to embed the image
+     directly in the SVG stream (and not link to an external image
+     file), we need to encode the pixmap into PNG in memory, then
+     encode it into base64. */
 
   png = gl2psListCreate(pixmap->width * pixmap->height * 3, 1000, 
                         sizeof(unsigned char));
