@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.78 2006-07-24 14:01:20 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.79 2006-07-25 16:41:27 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -276,6 +276,8 @@ void text(void){
   printstring("  q: to quit");
   glRasterPos2d(x, y); y -= dy;
   printstring("Click and move the mouse to rotate the objects");
+
+  gl2psSpecial(GL2PS_TEX, "% This should only be printed in LaTeX output!");
 }
 
 void cube(void){
