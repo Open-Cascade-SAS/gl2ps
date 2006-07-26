@@ -33,6 +33,7 @@ linuxz:
 # -Wbad-function-cast
 test:
 	gcc -g -O3 -W -Wall\
+           -DHAVE_ZLIB -DHAVE_LIBPNG -I/usr/local/include/FL/images\
            -Wredundant-decls -Wcast-align -Wmissing-prototypes\
            -Wsign-compare -Wpointer-arith -Wundef -ansi -pedantic\
            -c gl2ps.c

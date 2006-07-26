@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.235 2006-07-25 16:41:27 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.236 2006-07-26 12:28:39 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -643,9 +643,8 @@ static void gl2psEncodeBase64Block(unsigned char in[3], unsigned char out[4], in
 
   out[0] = cb64[ in[0] >> 2 ];
   out[1] = cb64[ ((in[0] & 0x03) << 4) | ((in[1] & 0xf0) >> 4) ];
-  out[2] = (unsigned char) (len > 1 ? cb64[ ((in[1] & 0x0f) << 2) | 
-                                            ((in[2] & 0xc0) >> 6) ] : '=');
-  out[3] = (unsigned char) (len > 2 ? cb64[ in[2] & 0x3f ] : '=');
+  out[2] = (len > 1) ? cb64[ ((in[1] & 0x0f) << 2) | ((in[2] & 0xc0) >> 6) ] : '=';
+  out[3] = (len > 2) ? cb64[ in[2] & 0x3f ] : '=';
 }
 
 static void gl2psListEncodeBase64(GL2PSlist *list)
@@ -2657,14 +2656,15 @@ static void gl2psPrintPostScriptHeader(void)
   }
 
   gl2psPrintf("%%%%Title: %s\n"
-              "%%%%Creator: GL2PS %d.%d.%d%s, (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>\n"
+              "%%%%Creator: GL2PS %d.%d.%d%s, %s\n"
               "%%%%For: %s\n"
               "%%%%CreationDate: %s"
               "%%%%LanguageLevel: 3\n"
               "%%%%DocumentData: Clean7Bit\n"
               "%%%%Pages: 1\n",
-              gl2ps->title, GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION, GL2PS_PATCH_VERSION,
-              GL2PS_EXTRA_VERSION, gl2ps->producer, ctime(&now));
+              gl2ps->title, GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION, 
+	      GL2PS_PATCH_VERSION, GL2PS_EXTRA_VERSION, GL2PS_COPYRIGHT,
+	      gl2ps->producer, ctime(&now));
 
   if(gl2ps->format == GL2PS_PS){
     gl2psPrintf("%%%%Orientation: %s\n"
@@ -3897,10 +3897,9 @@ static int gl2psPrintPDFInfo(void)
                  "<<\n"
                  "/Title (%s)\n"
                  "/Creator (%s)\n"
-                 "/Producer (GL2PS %d.%d.%d%s, "
-                 "(C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>)\n",
+                 "/Producer (GL2PS %d.%d.%d%s, %s)\n",
                  gl2ps->title, gl2ps->producer, GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION,
-                 GL2PS_PATCH_VERSION, GL2PS_EXTRA_VERSION);
+                 GL2PS_PATCH_VERSION, GL2PS_EXTRA_VERSION, GL2PS_COPYRIGHT);
   
   if(!newtime){
     offs += fprintf(gl2ps->stream, 
@@ -4850,11 +4849,11 @@ static void gl2psPrintSVGHeader(void)
   gl2psPrintf("%s\n", gl2ps->title);
   gl2psPrintf("</title>\n");
   gl2psPrintf("<desc>\n");
-  gl2psPrintf("Creator: GL2PS %d.%d.%d%s\n"
+  gl2psPrintf("Creator: GL2PS %d.%d.%d%s, %s\n"
               "For: %s\n"
               "CreationDate: %s",
               GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION, GL2PS_PATCH_VERSION,
-              GL2PS_EXTRA_VERSION, gl2ps->producer, ctime(&now));
+              GL2PS_EXTRA_VERSION, GL2PS_COPYRIGHT, gl2ps->producer, ctime(&now));
   gl2psPrintf("</desc>\n");
   gl2psPrintf("<defs>\n");
   gl2psPrintf("</defs>\n");
