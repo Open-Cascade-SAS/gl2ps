@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.236 2006-07-26 12:28:39 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.237 2006-07-29 09:40:07 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -3197,6 +3197,7 @@ static GL2PSbackend gl2psEPS = {
 static void gl2psPrintTeXHeader(void)
 {
   char name[256];
+  time_t now;
   int i;
 
   if(gl2ps->filename && strlen(gl2ps->filename) < 256){
@@ -3212,6 +3213,17 @@ static void gl2psPrintTeXHeader(void)
   else{
     strcpy(name, "untitled");
   }
+
+  time(&now);
+
+  fprintf(gl2ps->stream, 
+	  "%% Title: %s\n"
+	  "%% Creator: GL2PS %d.%d.%d%s, %s\n"
+	  "%% For: %s\n"
+	  "%% CreationDate: %s",
+	  gl2ps->title, GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION,
+	  GL2PS_PATCH_VERSION, GL2PS_EXTRA_VERSION, GL2PS_COPYRIGHT,
+	  gl2ps->producer, ctime(&now));
 
   fprintf(gl2ps->stream, 
           "\\setlength{\\unitlength}{1pt}\n"
@@ -3896,10 +3908,11 @@ static int gl2psPrintPDFInfo(void)
                  "1 0 obj\n"
                  "<<\n"
                  "/Title (%s)\n"
-                 "/Creator (%s)\n"
-                 "/Producer (GL2PS %d.%d.%d%s, %s)\n",
-                 gl2ps->title, gl2ps->producer, GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION,
-                 GL2PS_PATCH_VERSION, GL2PS_EXTRA_VERSION, GL2PS_COPYRIGHT);
+                 "/Creator (GL2PS %d.%d.%d%s, %s)\n"
+                 "/Producer (%s)\n",
+                 gl2ps->title, GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION,
+                 GL2PS_PATCH_VERSION, GL2PS_EXTRA_VERSION, GL2PS_COPYRIGHT,
+                 gl2ps->producer);
   
   if(!newtime){
     offs += fprintf(gl2ps->stream, 
@@ -5181,6 +5194,19 @@ static void gl2psPrintPGFColor(GL2PSrgba rgba)
 
 static void gl2psPrintPGFHeader(void)
 {
+  time_t now;
+
+  time(&now);
+
+  fprintf(gl2ps->stream, 
+	  "%% Title: %s\n"
+	  "%% Creator: GL2PS %d.%d.%d%s, %s\n"
+	  "%% For: %s\n"
+	  "%% CreationDate: %s",
+	  gl2ps->title, GL2PS_MAJOR_VERSION, GL2PS_MINOR_VERSION,
+	  GL2PS_PATCH_VERSION, GL2PS_EXTRA_VERSION, GL2PS_COPYRIGHT,
+	  gl2ps->producer, ctime(&now));
+
   fprintf(gl2ps->stream, "\\begin{pgfpicture}\n");
   if(gl2ps->options & GL2PS_DRAW_BACKGROUND){
     gl2psPrintPGFColor(gl2ps->bgcolor);
