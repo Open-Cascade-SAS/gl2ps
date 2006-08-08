@@ -1,4 +1,4 @@
-$Id: TODO,v 1.26 2006-07-25 16:41:27 geuzaine Exp $
+$Id: TODO,v 1.27 2006-08-08 15:20:32 geuzaine Exp $
 
 ------------------------------------------------------------------------
 
@@ -16,8 +16,8 @@ $Id: TODO,v 1.26 2006-07-25 16:41:27 geuzaine Exp $
 * do we really need gl2psEnable(GL2PS_BLEND)? Couldn't we just check
   what's in rgba[3] and try to do the "right thing" right away?
   Update Thu Jul 20 14:51:33 2006: that's what I do now for SVG and it
-  works pretty well. I think we could greatly simplify the PDF code
-  that way.
+  works pretty well. We could probably significantly simplify the PDF
+  code that way.
 
 ------------------------------------------------------------------------
 
