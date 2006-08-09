@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.212 2006-08-09 01:46:07 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.213 2006-08-09 13:57:43 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -64,9 +64,19 @@
 \maketitle
 
 \special{html:<center>
-<table width="50%" cellpadding="5" border="0"><tr>
-<td><img src="http://geuz.org/gl2ps/outThumbnail.png" alt="gl2ps"></td>
-<td><small><em>Example: compressed
+<table width="50%" cellspacing="2" cellpadding="2" border="0">
+<tr>
+<td><a href="http://geuz.org/gl2ps/outBspCulledCompressed.ps.gz"><img
+     src="http://geuz.org/gl2ps/outThumbnail.png" alt="PS"></a></td>
+<td><a href="http://geuz.org/gl2ps/outBspCulledCompressed.eps.gz"><img
+     src="http://geuz.org/gl2ps/outThumbnail.png" alt="EPS"></a></td>
+<td><a href="http://geuz.org/gl2ps/outBspCulledCompressed.pdf"><img
+     src="http://geuz.org/gl2ps/outThumbnail.png" alt="PDF"></a></td>
+<td><a href="http://geuz.org/gl2ps/outBspCulledCompressed.svgz"><img
+     src="http://geuz.org/gl2ps/outThumbnail.png" alt="SVG"></a></td>
+</tr>
+<tr>
+<td colspan="4"><small><em>Example: compressed
 <a href="http://geuz.org/gl2ps/outBspCulledCompressed.ps.gz">PS</a>,
 <a href="http://geuz.org/gl2ps/outBspCulledCompressed.eps.gz">EPS</a>,
 <a href="http://geuz.org/gl2ps/outBspCulledCompressed.pdf">PDF</a> and
@@ -75,9 +85,10 @@ files created with the <tt>gl2psTest.c</tt> demo provided in the
 distribution. This illustrates the handling of smooth shading,
 intersecting primitives, line stippling, vector text rendering,
 multiple viewports and mixed vector/bitmap output.
-<p> Compare with a <a href="http://geuz.org/gl2ps/outBitmap.png">PNG</a>
-screenshot of the same OpenGL scene. 
-</em></small></td></tr></table>
+Compare with a <a href="http://geuz.org/gl2ps/outBitmap.png">PNG</a>
+screenshot of the OpenGL window.</em></small></td>
+</tr>
+</table>
 </center>}
 
 %%tth: \section*{Download}
