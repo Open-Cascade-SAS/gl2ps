@@ -24,7 +24,7 @@ gl2ps.html: gl2ps.tex gl2ps.pdf
 	echo "<link href=\"/general.css\" rel=\"stylesheet\" type=\"text/css\">" >> gl2ps.html
 	echo "</head>" >> gl2ps.html
 	echo "<body>" >> gl2ps.html
-	tth -r -Lgl2ps < gl2ps.tex | sed -e "/<title>/D" >> gl2ps.html
+	tth -r -Lgl2ps < gl2ps.tex | sed -e "/<title>/D" -e "s|<h1>.*Contents.*</h1>||g" >> gl2ps.html
 	echo "<p>" >> gl2ps.html
 	echo "<form action=\"https://www.paypal.com/cgi-bin/webscr\" method=\"post\">" >> gl2ps.html
 	echo "<input type=\"hidden\" name=\"cmd\" value=\"_xclick\">" >> gl2ps.html
