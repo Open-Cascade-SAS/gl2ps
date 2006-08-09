@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.79 2006-07-25 16:41:27 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.80 2006-08-09 01:12:07 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -62,7 +62,7 @@
 #  include <GL/glut.h>
 #endif
 
-static float rotation = -60.;
+static float rotation = -58.;
 static GLsizei window_w = 0; 
 static GLsizei window_h = 0;
 static GLboolean display_multi = GL_TRUE;
@@ -439,12 +439,16 @@ void draw_multi(void){
 }
 
 void display(void){
+  GLfloat spec[4] = {0.6, 0.6, 0.6, 1.0};
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
   glShadeModel(GL_SMOOTH);
   glEnable(GL_LIGHT0);
   glEnable(GL_SCISSOR_TEST);
   glEnable(GL_COLOR_MATERIAL);
+  glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, spec);
+  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 60);
   if(blend){
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -571,10 +575,10 @@ void keyboard(unsigned char key, int x, int y){
     writefile(format, GL2PS_BSP_SORT, opt, 0, "outBspCulled", ext);
 
 #ifdef GL2PS_HAVE_ZLIB
-    opt = GL2PS_DRAW_BACKGROUND | GL2PS_COMPRESS;
+    opt = GL2PS_DRAW_BACKGROUND | GL2PS_OCCLUSION_CULL | GL2PS_BEST_ROOT | GL2PS_COMPRESS;
     if(format == GL2PS_PS || format == GL2PS_EPS) strcat(ext, ".gz");
     else if(format == GL2PS_SVG) strcat(ext, "z");
-    writefile(format, GL2PS_SIMPLE_SORT, opt, 0, "outSimpleCompressed", ext);
+    writefile(format, GL2PS_BSP_SORT, opt, 0, "outBspCulledCompressed", ext);
 #endif
 
     printf("GL2PS %d.%d.%d%s done with all images\n", GL2PS_MAJOR_VERSION, 

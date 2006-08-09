@@ -1,0 +1,48 @@
+Notes to Fortran 90 wrapper to GL2PS:
+
+The f90 wrapper is limited to the gl2psBeginPage and gl2psEndPage
+routines, with limited capabilities for the former.  In a addition to
+the C version of gl2psBeginPage, the Fortran version also opens the
+file.  
+
+!==
+SUBROUTINE gl2psbeginpage(title, format, sort, buffersize, filename, ierr)
+INTEGER :: format, sort, buffersize, ierr
+CHARACTER (LEN=*) :: title, filename
+!==
+SUBROUTINE gl2psendpage(ierr)
+INTEGER :: ierr
+!==
+
+Pre-declared constants for the values of format, sort and ierr are
+defined in gl2ps_fortran.h with the same names as for the C calls.
+For simplicity options and colormode are fixed to:
+(GL2PS_DRAW_BACKGROUND | GL2PS_USE_CURRENT_VIEWPORT) and (GL_RGBA)
+respectively.
+
+
+A typical use is the following:
+
+!==
+INCLUDE 'gl2ps_fortran.h'
+
+INTEGER :: ierr, bufsize
+
+!...
+
+bufsize = 1000000
+ierr = GL2PS_OVERFLOW
+DO WHILE(ierr == GL2PS_OVERFLOW) ! Loop until bufsize is enough
+  bufsize=bufsize*2
+  CALL gl2psbeginpage('geomap', GL2PS_PS, GL2PS_BSP_SORT, bufsize, &
+   'geomap.ps', ierr)
+  CALL display ! Call the desired display function here
+  CALL gl2psendpage(ierr)
+ENDDO
+
+!...
+!==
+
+For any questions or proposals about GL2PS f90 wrappers please refer
+to: Davide Cesari (dcesari at arpa dot emr dot it).  See also
+http://math.nist.gov/f90gl/ for complete f90 bindings to OpenGL.
