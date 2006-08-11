@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.238 2006-08-09 01:15:25 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.239 2006-08-11 13:25:34 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -2741,7 +2741,7 @@ static void gl2psPrintPostScriptHeader(void)
               "/STRR{ gsave FCT moveto rotate SW neg SH neg rmoveto show grestore } BD\n");
 
   gl2psPrintf("/P  { newpath 0.0 360.0 arc closepath fill } BD\n"
-              "/LS { moveto } BD\n"
+              "/LS { newpath moveto } BD\n"
               "/L  { lineto } BD\n"
               "/LE { lineto stroke } BD\n"
               "/T  { newpath moveto lineto lineto closepath fill } BD\n");
@@ -3125,7 +3125,7 @@ static void gl2psPrintPostScriptBeginViewport(GLint viewport[4])
 
   gl2psPrintf("gsave\n"
               "1.0 1.0 scale\n");
-          
+
   if(gl2ps->options & GL2PS_DRAW_BACKGROUND){
     if(gl2ps->colormode == GL_RGBA || gl2ps->colorsize == 0){
       glGetFloatv(GL_COLOR_CLEAR_VALUE, rgba);
@@ -3143,10 +3143,11 @@ static void gl2psPrintPostScriptBeginViewport(GLint viewport[4])
                 rgba[0], rgba[1], rgba[2], 
                 x, y, x+w, y, x+w, y+h, x, y+h);
   }
-  
+    
   gl2psPrintf("newpath %d %d moveto %d %d lineto %d %d lineto %d %d lineto\n"
               "closepath clip\n",
               x, y, x+w, y, x+w, y+h, x, y+h);
+  
 }
 
 static GLint gl2psPrintPostScriptEndViewport(void)
