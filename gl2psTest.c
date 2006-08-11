@@ -1,4 +1,4 @@
-/* $Id: gl2psTest.c,v 1.80 2006-08-09 01:12:07 geuzaine Exp $ */
+/* $Id: gl2psTest.c,v 1.81 2006-08-11 13:33:27 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -39,7 +39,7 @@
 
 /*
   To compile on Linux: 
-  gcc gl2psTest.c gl2ps.c -lglut -lGL -lGLU -L/usr/X11R6/lib -lX11 -lXi -lXmu -lm
+  gcc gl2psTest.c gl2ps.c -lglut -lGL -lGLU -lX11 -lm
 
   To compile on MacOSX: 
   gcc gl2psTest.c gl2ps.c -framework OpenGL -framework GLUT -framework Cocoa
