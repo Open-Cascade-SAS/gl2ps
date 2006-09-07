@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.240 2006-08-30 21:12:08 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.241 2006-09-07 00:10:48 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -48,7 +48,8 @@
  *   Shai Ayal <shaiay@gmail.com>
  *   Fabian Wenzel <wenzel@tu-harburg.de>
  *   Ian D. Gay <gay@sfu.ca>
- *   Cosmin Truta and Baiju Devani <cosmin@cs.toronto.edu>
+ *   Cosmin Truta <cosmin@cs.toronto.edu>
+ *   Baiju Devani <b.devani@gmail.com>
  *   Alexander Danilov <danilov@lanl.gov>
  *
  * For the latest info about gl2ps, see http://www.geuz.org/gl2ps/.
@@ -4840,29 +4841,34 @@ static void gl2psSVGGetColorString(GL2PSrgba rgba, char str[32])
 
 static void gl2psPrintSVGHeader(void)
 {
+  int x, y, width, height;
   char col[32];
   time_t now;
-
+  
+  time(&now);
+  
+  if (gl2ps->options & GL2PS_LANDSCAPE){
+    x = (int)gl2ps->viewport[1];
+    y = (int)gl2ps->viewport[0];
+    width = (int)gl2ps->viewport[3];
+    height = (int)gl2ps->viewport[2];
+  }
+  else{
+    x = (int)gl2ps->viewport[0];
+    y = (int)gl2ps->viewport[1];
+    width = (int)gl2ps->viewport[2];
+    height = (int)gl2ps->viewport[3];
+  }
+  
   /* Compressed SVG files (.svgz) are simply gzipped SVG files */
   gl2psPrintGzipHeader();
-
-  time(&now);
-
+  
   gl2psPrintf("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n");
   gl2psPrintf("<svg xmlns=\"http://www.w3.org/2000/svg\"\n");
-  gl2psPrintf("     xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n");
-  gl2psPrintf("     viewBox=\"%d %d %d %d\">\n",
-              (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[1] : 
-              (int)gl2ps->viewport[0],
-              (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[0] :
-              (int)gl2ps->viewport[1],
-              (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[3] : 
-              (int)gl2ps->viewport[2],
-              (gl2ps->options & GL2PS_LANDSCAPE) ? (int)gl2ps->viewport[2] :
-              (int)gl2ps->viewport[3]);
-  gl2psPrintf("<title>\n");
-  gl2psPrintf("%s\n", gl2ps->title);
-  gl2psPrintf("</title>\n");
+  gl2psPrintf("     xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
+	      "     width=\"%dpx\" height=\"%dpx\" viewBox=\"%d %d %d %d\">\n",
+	      width, height, x, y, width, height);
+  gl2psPrintf("<title>%s</title>\n", gl2ps->title);
   gl2psPrintf("<desc>\n");
   gl2psPrintf("Creator: GL2PS %d.%d.%d%s, %s\n"
               "For: %s\n"
