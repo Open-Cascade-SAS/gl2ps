@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.241 2006-09-07 00:10:48 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.242 2006-10-30 17:11:52 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -2906,7 +2906,9 @@ static void gl2psEndPostScriptLine(void)
 static void gl2psParseStipplePattern(GLushort pattern, GLint factor, 
                                      int *nb, int array[10])
 {
-  int i, n, on[5] = {0, 0, 0, 0, 0}, off[5] = {0, 0, 0, 0, 0};
+  int i, n;
+  int on[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+  int off[8] = {0, 0, 0, 0, 0, 0, 0, 0};
   char tmp[16];
 
   /* extract the 16 bits from the OpenGL stipple pattern */
@@ -2914,22 +2916,24 @@ static void gl2psParseStipplePattern(GLushort pattern, GLint factor,
     tmp[n] = (char)(pattern & 0x01);
     pattern >>= 1;
   }
-  /* compute the on/off pixel sequence (since the PostScript
-     specification allows for at most 11 elements in the on/off array,
-     we limit ourselves to 5 couples of on/off states) */
+  /* compute the on/off pixel sequence */
   n = 0;
-  for(i = 0; i < 5; i++){
+  for(i = 0; i < 8; i++){
     while(n < 16 && !tmp[n]){ off[i]++; n++; }
     while(n < 16 && tmp[n]){ on[i]++; n++; }
-    if(n >= 15) break;
+    if(n >= 15){ i++; break; }
   }
+
   /* store the on/off array from right to left, starting with off
-     pixels (the longest possible array is: [on4 off4 on3 off3 on2
-     off2 on1 off1 on0 off0]) */
+     pixels. The PostScript specification allows for at most 11
+     elements in the on/off array, so we limit ourselves to 5 on/off
+     couples (our longest possible array is thus [on4 off4 on3 off3
+     on2 off2 on1 off1 on0 off0]) */
   *nb = 0;
-  for(n = i; n >= 0; n--){
+  for(n = i - 1; n >= 0; n--){
     array[(*nb)++] = factor * on[n];
     array[(*nb)++] = factor * off[n];
+    if(*nb == 10) break;
   }
 }
 

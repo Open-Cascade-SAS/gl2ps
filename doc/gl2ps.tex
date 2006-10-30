@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.220 2006-09-07 00:10:48 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.221 2006-10-30 17:11:52 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -857,6 +857,9 @@ PostScript;
 %
 \noemail{Alexander Danilov}{danilov@lanl.gov} for a polygon offset bug
 fix.
+%
+%\noemail{Ben Fletcher}{ben.fletcher@dsto.defence.gov.au} for a
+%stippling pattern parser bug report.
 
 \section{Links}
 \label{sec:links}
@@ -988,7 +991,8 @@ seem to be available anymore).
 \item[1.3.1] (Aug 11, 2006) Fixed a small bug for multi-viewport
   PostScript output, where a viewport could be drawn with an unwanted
   colored outline.
-\item[1.3.2] (?, 2006) Fixed bug in polygon offset computation.
+\item[1.3.2] (?, 2006) Fixed bug in polygon offset computation; fixed
+  possible out-of-bound array access in stippling pattern parser.
 \end{description}
 
 \end{document}
