@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.242 2006-10-30 17:11:52 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.243 2006-11-06 00:53:53 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -4870,8 +4870,8 @@ static void gl2psPrintSVGHeader(void)
   gl2psPrintf("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n");
   gl2psPrintf("<svg xmlns=\"http://www.w3.org/2000/svg\"\n");
   gl2psPrintf("     xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
-	      "     width=\"%dpx\" height=\"%dpx\" viewBox=\"%d %d %d %d\">\n",
-	      width, height, x, y, width, height);
+              "     width=\"%dpx\" height=\"%dpx\" viewBox=\"%d %d %d %d\">\n",
+              width, height, x, y, width, height);
   gl2psPrintf("<title>%s</title>\n", gl2ps->title);
   gl2psPrintf("<desc>\n");
   gl2psPrintf("Creator: GL2PS %d.%d.%d%s, %s\n"
