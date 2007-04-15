@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.243 2006-11-06 00:53:53 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.244 2007-04-15 09:29:33 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -4729,6 +4729,7 @@ static void gl2psPrintPDFFooter(void)
   
   /* Free auxiliary lists and arrays */    
   gl2psFree(gl2ps->xreflist);
+  gl2psListAction(gl2ps->pdfprimlist, gl2psFreePrimitive);
   gl2psListDelete(gl2ps->pdfprimlist);
   gl2psPDFgroupListDelete();
   

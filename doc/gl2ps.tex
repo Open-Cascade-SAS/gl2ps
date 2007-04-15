@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.223 2006-11-06 00:53:53 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.224 2007-04-15 09:29:34 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -59,7 +59,7 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 1.3.2, November 5 2006}
+\date{Version 1.3.3, ? ? 2006}
 
 \maketitle
 
@@ -92,7 +92,7 @@ the OpenGL window.</em></small></td>
 </center>
 <h2>Download</h2>
 The latest stable version of GL2PS is
-<a href="http://geuz.org/gl2ps/src/gl2ps-1.3.1.tgz">gl2ps-1.3.1.tgz</a>.
+<a href="http://geuz.org/gl2ps/src/gl2ps-1.3.3.tgz">gl2ps-1.3.3.tgz</a>.
 Older versions and nightly CVS snapshots are available 
 <a href="http://geuz.org/gl2ps/src/">here</a>.
 <p>
@@ -857,9 +857,12 @@ PostScript;
 %
 \noemail{Alexander Danilov}{danilov@lanl.gov} for a polygon offset bug
 fix.
-%
+
 %\noemail{Ben Fletcher}{ben.fletcher@dsto.defence.gov.au} for a
 %stippling pattern parser bug report.
+
+%\noemail{Jason Anderssen}{janderssen@exactal.com} for memory leak fix
+% in pdf code
 
 \section{Links}
 \label{sec:links}
@@ -994,6 +997,7 @@ seem to be available anymore).
 \item[1.3.2] (Nov 5, 2006) Fixed bug in polygon offset computation;
   fixed landscape mode in SVG; fixed potential out-of-bounds array
   access in stippling pattern parser.
+\item[1.3.3] (, 2007) Fixed memory leak in PDF code;
 \end{description}
 
 \end{document}
