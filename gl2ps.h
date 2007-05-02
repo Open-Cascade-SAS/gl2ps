@@ -1,4 +1,4 @@
-/* $Id: gl2ps.h,v 1.113 2006-11-06 00:48:06 geuzaine Exp $ */
+/* $Id: gl2ps.h,v 1.114 2007-05-02 11:35:25 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -78,7 +78,7 @@
 
 #define GL2PS_MAJOR_VERSION 1
 #define GL2PS_MINOR_VERSION 3
-#define GL2PS_PATCH_VERSION 2
+#define GL2PS_PATCH_VERSION 3
 #define GL2PS_EXTRA_VERSION "-cvs"
 
 #define GL2PS_VERSION (GL2PS_MAJOR_VERSION + \
@@ -166,6 +166,7 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
                                   FILE *stream, const char *filename);
 GL2PSDLL_API GLint gl2psEndPage(void);
 GL2PSDLL_API GLint gl2psSetOptions(GLint options);
+GL2PSDLL_API GLint gl2psGetOptions(GLint *options);
 GL2PSDLL_API GLint gl2psBeginViewport(GLint viewport[4]);
 GL2PSDLL_API GLint gl2psEndViewport(void);
 GL2PSDLL_API GLint gl2psText(const char *str, const char *fontname, 

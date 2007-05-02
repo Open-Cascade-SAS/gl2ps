@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.244 2007-04-15 09:29:33 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.245 2007-05-02 11:35:25 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -4893,7 +4893,8 @@ static void gl2psPrintSVGHeader(void)
                 (int)gl2ps->viewport[0], (int)gl2ps->viewport[3]);
   }
 
-  gl2psPrintf("<g>\n");
+  /* group all the primitives and disable antialiasing */
+  gl2psPrintf("<g shape-rendering=\"crispEdges\">\n");
 }
 
 static void gl2psPrintSVGSmoothTriangle(GL2PSxyz xyz[3], GL2PSrgba rgba[3])
@@ -5966,6 +5967,18 @@ GL2PSDLL_API GLint gl2psSetOptions(GLint options)
   if(!gl2ps) return GL2PS_UNINITIALIZED;
 
   gl2ps->options = options;
+
+  return GL2PS_SUCCESS;
+}
+
+GL2PSDLL_API GLint gl2psGetOptions(GLint *options)
+{
+  if(!gl2ps) {
+    *options = 0;
+    return GL2PS_UNINITIALIZED;
+  }
+
+  *options = gl2ps->options;
 
   return GL2PS_SUCCESS;
 }

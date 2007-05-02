@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.224 2007-04-15 09:29:34 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.225 2007-05-02 11:35:25 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2006 Christophe Geuzaine <geuz@geuz.org>
@@ -59,7 +59,7 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 1.3.3, ? ? 2006}
+\date{Version 1.3.3, ? ? 2007}
 
 \maketitle
 
@@ -133,9 +133,9 @@ under certain conditions) for static linking with closed-source software
 corrections, questions or suggestions should be e-mailed to the GL2PS
 mailing list \email{gl2ps@geuz.org}{gl2ps@geuz.org}.
 
-The interface consists of fourteen functions, all beginning with the prefix
-\dd{gl2ps}. All the data structures and the symbolic constants peculiar to
-GL2PS begin with \dd{GL2PS}.
+The interface consists of fifteen functions, all beginning with the
+prefix \dd{gl2ps}. All the data structures and the symbolic constants
+peculiar to GL2PS begin with \dd{GL2PS}.
 
 \section{Usage}
 
@@ -628,20 +628,22 @@ call to \dd{glGetIntegerv(GL_VIEWPORT, viewport)}).
 
 % -------------------------------------------------------------------------
 
-\subsection{\texttt{gl2psSetOptions}}
+\subsection{\texttt{gl2psSetOptions} and \texttt{gl2psGetOptions}}
 \label{sec:gl2psSetOptions}
 
 \subsubsection{Specification}
 
 \begin{verbatim}
 GLint gl2psSetOptions ( GLint options )
+GLint gl2psGetOptions ( GLint *options )
 \end{verbatim}
 
 \subsubsection{Description and arguments}
 
 \dd{gl2psSetOptions} permits to change the global options initially
-set using the \dd{options} argument to
-\dd{gl2psBeginPage} (see section~\ref{sec:gl2psBeginPage}). 
+set using the \dd{options} argument to \dd{gl2psBeginPage} (see
+section~\ref{sec:gl2psBeginPage}). \dd{gl2psGetOptions} permits to
+retrieve the current options.
 
 \dd{gl2psSetOptions} can for example be used to force GL2PS to print
 the background for selected viewports, by setting/unsetting
@@ -649,7 +651,7 @@ the background for selected viewports, by setting/unsetting
 
 \subsubsection{Return value}
 
-\noindent\dd{gl2psSetOptions} returns:
+\noindent\dd{gl2psSetOptions} and \dd{gl2psGetOptions} return:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
@@ -997,7 +999,8 @@ seem to be available anymore).
 \item[1.3.2] (Nov 5, 2006) Fixed bug in polygon offset computation;
   fixed landscape mode in SVG; fixed potential out-of-bounds array
   access in stippling pattern parser.
-\item[1.3.3] (, 2007) Fixed memory leak in PDF code;
+\item[1.3.3] (, 2007) Fixed memory leak in PDF code; added
+  \dd{gl2psGetOptions}; nicer SVG rendering (crispEdges).
 \end{description}
 
 \end{document}
