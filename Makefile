@@ -54,12 +54,12 @@ distrib:
 	@echo "********************************************************************"
 
 distrib-nightly:
-	rm -rf gl2ps-nightly*
+	rm -rf gl2ps-cvs*
 	mkdir gl2ps-cvs-${DATE}
 	cd doc && ${MAKE} gl2ps.pdf
 	sed -e "s/GL2PS_EXTRA_VERSION.*/GL2PS_EXTRA_VERSION \"-cvs-${DATE}\"/g"\
            gl2ps.h > gl2ps-cvs-${DATE}/gl2ps.h
 	cp TODO COPYING.GL2PS COPYING.LGPL gl2ps.c gl2psTest.c\
            gl2psTestSimple.c doc/gl2ps.pdf gl2ps-cvs-${DATE}
-	tar zcvf gl2ps-nightly.tgz gl2ps-cvs-${DATE}
+	tar zcvf gl2ps-cvs.tgz gl2ps-cvs-${DATE}
 	rm -rf gl2ps-cvs-${DATE}
