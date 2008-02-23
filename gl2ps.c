@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.246 2007-05-02 20:57:15 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.247 2008-02-23 10:24:52 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2007 Christophe Geuzaine <geuz@geuz.org>
@@ -1375,7 +1375,7 @@ static void gl2psDivideQuad(GL2PSprimitive *quad,
   (*t2)->verts[0] = quad->verts[0];
   (*t2)->verts[1] = quad->verts[2];
   (*t2)->verts[2] = quad->verts[3];
-  (*t1)->boundary = ((quad->boundary & 4) ? 2 : 0) | ((quad->boundary & 4) ? 2 : 0);
+  (*t2)->boundary = ((quad->boundary & 4) ? 2 : 0) | ((quad->boundary & 4) ? 2 : 0);
 }
 
 static int gl2psCompareDepth(const void *a, const void *b)
@@ -5743,6 +5743,9 @@ GL2PSDLL_API GLint gl2psEndViewport(void)
   if(!gl2ps) return GL2PS_UNINITIALIZED;
 
   res = (gl2psbackends[gl2ps->format]->endViewport)();
+
+  /* reset last used colors, line widths */
+  gl2ps->lastlinewidth = -1.0F;
 
   return res;
 }

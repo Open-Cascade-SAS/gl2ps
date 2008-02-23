@@ -1,4 +1,4 @@
-$Id: TODO,v 1.28 2007-05-02 21:00:22 geuzaine Exp $
+$Id: TODO,v 1.29 2008-02-23 10:24:52 geuzaine Exp $
 
 * Add an option to limit the recursion level depth in BSP tree
 
@@ -16,6 +16,3 @@ $Id: TODO,v 1.28 2007-05-02 21:00:22 geuzaine Exp $
 * Think about a way to provide a progress indicator through a
   callback. Not easy for BSP trees due to the recursive
   implementation.
-
-* Apple's Preview.app doesn't support '/ShadingType 4'... Submit a bug 
-  report to Apple?
