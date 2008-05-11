@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.247 2008-02-23 10:24:52 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.248 2008-05-11 06:56:34 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2007 Christophe Geuzaine <geuz@geuz.org>
@@ -1763,6 +1763,10 @@ static void gl2psAddPlanesInBspTreeImage(GL2PSprimitive *prim,
   GL2PSbsptree2d *head = NULL, *cur = NULL;
 
   if((*tree == NULL) && (prim->numverts > 2)){
+    /* don't cull if transparent
+    for(i = 0; i < prim->numverts-1; i++)
+      if(prim->verts[i].rgba[3] < 1.0F) return;
+    */
     head = (GL2PSbsptree2d*)gl2psMalloc(sizeof(GL2PSbsptree2d));
     for(i = 0; i < prim->numverts-1; i++){
       if(!gl2psGetPlaneFromPoints(prim->verts[i].xyz,
@@ -2937,7 +2941,7 @@ static void gl2psParseStipplePattern(GLushort pattern, GLint factor,
   }
 }
 
-static int gl2psPrintPostScriptDash(GLushort pattern, GLint factor, char *str)
+static int gl2psPrintPostScriptDash(GLushort pattern, GLint factor, const char *str)
 {
   int len = 0, i, n, array[10];
 
