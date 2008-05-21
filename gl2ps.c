@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.249 2008-05-21 17:23:11 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.250 2008-05-21 17:33:34 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2007 Christophe Geuzaine <geuz@geuz.org>
@@ -1188,11 +1188,10 @@ static void gl2psCutEdge(GL2PSvertex *a, GL2PSvertex *b, GL2PSplane plane,
   v[1] = b->xyz[1] - a->xyz[1];
   v[2] = b->xyz[2] - a->xyz[2];
 
-  psca = gl2psPsca(plane, v);
-  if(GL2PS_ZERO(psca))
-    sect = 0.0F;
-  else
+  if(!GL2PS_ZERO(psca = gl2psPsca(plane, v)))
     sect = -gl2psComparePointPlane(a->xyz, plane) / psca;
+  else
+    sect = 0.0F;
   
   c->xyz[0] = a->xyz[0] + v[0] * sect;
   c->xyz[1] = a->xyz[1] + v[1] * sect;
@@ -1691,17 +1690,22 @@ static void gl2psRescaleAndOffset()
         (prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) - 
         (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) * 
         (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]);
-      dZdX = 
-        ((prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) *
-         (prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) -
-         (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]) *
-         (prim->verts[2].xyz[2] - prim->verts[1].xyz[2])) / area;
-      dZdY = 
-        ((prim->verts[1].xyz[0] - prim->verts[0].xyz[0]) *
-         (prim->verts[2].xyz[2] - prim->verts[1].xyz[2]) -
-         (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) *
-         (prim->verts[1].xyz[2] - prim->verts[0].xyz[2])) / area;
-      maxdZ = (GLfloat)sqrt(dZdX * dZdX + dZdY * dZdY);
+      if(!GL2PS_ZERO(area)){
+	dZdX = 
+	  ((prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) *
+	   (prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) -
+	   (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]) *
+	   (prim->verts[2].xyz[2] - prim->verts[1].xyz[2])) / area;
+	dZdY = 
+	  ((prim->verts[1].xyz[0] - prim->verts[0].xyz[0]) *
+	   (prim->verts[2].xyz[2] - prim->verts[1].xyz[2]) -
+	   (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) *
+	   (prim->verts[1].xyz[2] - prim->verts[0].xyz[2])) / area;
+	maxdZ = (GLfloat)sqrt(dZdX * dZdX + dZdY * dZdY);
+      }
+      else{
+	maxdZ = 0.0F;
+      }
       dZ = factor * maxdZ + units;
       prim->verts[0].xyz[2] += dZ;
       prim->verts[1].xyz[2] += dZ;
@@ -1934,7 +1938,7 @@ static void gl2psSplitPrimitive2D(GL2PSprimitive *prim,
     if(v1 == prim->numverts){
       if(prim->numverts < 3) break;
       v1 = 0;
-      v2 = prim->numverts-1;
+      v2 = prim->numverts - 1;
       cur = prev0;
     }
     else if(flag){
@@ -2373,7 +2377,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
         sizeoffloat = sizeof(GLfloat);
         v = 2 * sizeoffloat;
         vtot = node->image->height + node->image->height * 
-          ((node->image->width-1)/8);
+          ((node->image->width - 1) / 8);
         node->image->pixels = (GLfloat*)gl2psMalloc(v + vtot);
         node->image->pixels[0] = prim->verts[0].xyz[0];
         node->image->pixels[1] = prim->verts[0].xyz[1];
@@ -2465,7 +2469,7 @@ static void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GL2PSimage *im)
   else if(nbit == 2){ /* color, 2 bits for r and g and b; rgbs following each other */
     nrgb = width  * 3;
     nbits = nrgb * nbit;
-    nbyte = nbits/8;
+    nbyte = nbits / 8;
     if((nbyte * 8) != nbits) nbyte++;
     gl2psPrintf("/rgbstr %d string def\n", nbyte);
     gl2psPrintf("%d %d %d\n", width, height, nbit);
@@ -2552,7 +2556,7 @@ static void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GL2PSimage *im)
   else if(nbit == 4){ /* color, 4 bits for r and g and b; rgbs following each other */
     nrgb = width  * 3;
     nbits = nrgb * nbit;
-    nbyte = nbits/8;
+    nbyte = nbits / 8;
     if((nbyte * 8) != nbits) nbyte++; 
     gl2psPrintf("/rgbstr %d string def\n", nbyte);
     gl2psPrintf("%d %d %d\n", width, height, nbit);
@@ -2632,7 +2636,7 @@ static void gl2psPrintPostScriptImagemap(GLfloat x, GLfloat y,
   
   if((width <= 0) || (height <= 0)) return;
   
-  size = height + height * (width-1)/8;
+  size = height + height * (width - 1) / 8;
   
   gl2psPrintf("gsave\n");
   gl2psPrintf("%.2f %.2f translate\n", x, y);
@@ -4185,7 +4189,7 @@ static int gl2psPrintPDFShaderStreamDataCoord(GL2PSvertex *vertex,
   /* The Shader stream in PDF requires to be in a 'big-endian'
      order */
     
-  if(GL2PS_ZERO(dx*dy)){
+  if(GL2PS_ZERO(dx * dy)){
     offs += (*action)(0, 4);
     offs += (*action)(0, 4);
   }
@@ -5556,7 +5560,7 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
 
   gl2ps = (GL2PScontext*)gl2psMalloc(sizeof(GL2PScontext));
 
-  if(format >= 0 && format < (GLint)(sizeof(gl2psbackends)/sizeof(gl2psbackends[0]))){
+  if(format >= 0 && format < (GLint)(sizeof(gl2psbackends) / sizeof(gl2psbackends[0]))){
     gl2ps->format = format;
   }
   else {
@@ -5614,9 +5618,9 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
     return GL2PS_ERROR;
   }
 
-  gl2ps->threshold[0] = nr ? 1.0F/(GLfloat)nr : 0.064F;
-  gl2ps->threshold[1] = ng ? 1.0F/(GLfloat)ng : 0.034F;
-  gl2ps->threshold[2] = nb ? 1.0F/(GLfloat)nb : 0.100F;
+  gl2ps->threshold[0] = nr ? 1.0F / (GLfloat)nr : 0.064F;
+  gl2ps->threshold[1] = ng ? 1.0F / (GLfloat)ng : 0.034F;
+  gl2ps->threshold[2] = nb ? 1.0F / (GLfloat)nb : 0.100F;
   gl2ps->colormode = colormode;
   gl2ps->buffersize = buffersize > 0 ? buffersize : 2048 * 2048;
   for(i = 0; i < 3; i++){
@@ -5863,7 +5867,7 @@ GL2PSDLL_API GLint gl2psDrawImageMap(GLsizei width, GLsizei height,
 
   if((width <= 0) || (height <= 0)) return GL2PS_ERROR;
   
-  size = height + height * ((width-1)/8);
+  size = height + height * ((width - 1) / 8);
   glPassThrough(GL2PS_IMAGEMAP_TOKEN);
   glBegin(GL_POINTS);
   glVertex3f(position[0], position[1],position[2]);
@@ -5994,7 +5998,7 @@ GL2PSDLL_API GLint gl2psGetOptions(GLint *options)
 
 GL2PSDLL_API const char *gl2psGetFileExtension(GLint format)
 {
-  if(format >= 0 && format < (GLint)(sizeof(gl2psbackends)/sizeof(gl2psbackends[0])))
+  if(format >= 0 && format < (GLint)(sizeof(gl2psbackends) / sizeof(gl2psbackends[0])))
     return gl2psbackends[format]->file_extension;
   else
     return "Unknown format";
@@ -6002,7 +6006,7 @@ GL2PSDLL_API const char *gl2psGetFileExtension(GLint format)
 
 GL2PSDLL_API const char *gl2psGetFormatDescription(GLint format)
 {
-  if(format >= 0 && format < (GLint)(sizeof(gl2psbackends)/sizeof(gl2psbackends[0])))
+  if(format >= 0 && format < (GLint)(sizeof(gl2psbackends) / sizeof(gl2psbackends[0])))
     return gl2psbackends[format]->description;
   else
     return "Unknown format";
