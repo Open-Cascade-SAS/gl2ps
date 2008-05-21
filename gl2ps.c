@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.248 2008-05-11 06:56:34 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.249 2008-05-21 17:23:11 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2007 Christophe Geuzaine <geuz@geuz.org>
@@ -1182,14 +1182,18 @@ static void gl2psCutEdge(GL2PSvertex *a, GL2PSvertex *b, GL2PSplane plane,
                          GL2PSvertex *c)
 {
   GL2PSxyz v;
-  GLfloat sect;
+  GLfloat sect, psca;
 
   v[0] = b->xyz[0] - a->xyz[0];
   v[1] = b->xyz[1] - a->xyz[1];
   v[2] = b->xyz[2] - a->xyz[2];
 
-  sect = - gl2psComparePointPlane(a->xyz, plane) / gl2psPsca(plane, v);
-
+  psca = gl2psPsca(plane, v);
+  if(GL2PS_ZERO(psca))
+    sect = 0.0F;
+  else
+    sect = -gl2psComparePointPlane(a->xyz, plane) / psca;
+  
   c->xyz[0] = a->xyz[0] + v[0] * sect;
   c->xyz[1] = a->xyz[1] + v[1] * sect;
   c->xyz[2] = a->xyz[2] + v[2] * sect;
@@ -1973,10 +1977,8 @@ static void gl2psSplitPrimitive2D(GL2PSprimitive *prim,
       front_count++;
       front_list = (GL2PSvertex*)gl2psRealloc(front_list,
                                               sizeof(GL2PSvertex)*front_count);
-      gl2psCutEdge(&prim->verts[v2],
-                   &prim->verts[v1],
-                   plane,
-                   &front_list[front_count-1]);
+      gl2psCutEdge(&prim->verts[v2], &prim->verts[v1],
+                   plane, &front_list[front_count-1]);
       back_count++;
       back_list = (GL2PSvertex*)gl2psRealloc(back_list,
                                              sizeof(GL2PSvertex)*back_count);
