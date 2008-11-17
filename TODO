@@ -1,6 +1,4 @@
-$Id: TODO,v 1.30 2008-11-17 07:52:20 geuzaine Exp $
-
-xx
+$Id: TODO,v 1.31 2008-11-17 07:53:46 geuzaine Exp $
 
 * Add an option to limit the recursion level depth in BSP tree
 
