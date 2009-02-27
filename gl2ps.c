@@ -1,4 +1,4 @@
-/* $Id: gl2ps.c,v 1.250 2008-05-21 17:33:34 geuzaine Exp $ */
+/* $Id: gl2ps.c,v 1.251 2009-02-27 21:25:08 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2007 Christophe Geuzaine <geuz@geuz.org>
@@ -5105,12 +5105,31 @@ static void gl2psPrintSVGPrimitive(void *data)
     break;
   case GL2PS_TEXT :
     gl2psSVGGetColorString(prim->verts[0].rgba, col);
-    gl2psPrintf("<text fill=\"%s\" x=\"%g\" y=\"%g\" "
-                "font-size=\"%d\" font-family=\"%s\">%s</text>\n",
-                col, xyz[0][0], xyz[0][1],
-                prim->data.text->fontsize,
-                prim->data.text->fontname,
-                prim->data.text->str);
+    gl2psPrintf("<text fill=\"%s\" x=\"%g\" y=\"%g\" font-size=\"%d\" ",
+                col, xyz[0][0], xyz[0][1], prim->data.text->fontsize);
+    if(!strcmp(prim->data.text->fontname, "Times-Roman"))
+      gl2psPrintf("font-family=\"Times\">");
+    else if(!strcmp(prim->data.text->fontname, "Times-Bold"))
+      gl2psPrintf("font-family=\"Times\" font-weight=\"bold\">");
+    else if(!strcmp(prim->data.text->fontname, "Times-Italic"))
+      gl2psPrintf("font-family=\"Times\" font-style=\"italic\">");
+    else if(!strcmp(prim->data.text->fontname, "Times-BoldItalic"))
+      gl2psPrintf("font-family=\"Times\" font-style=\"italic\" font-weight=\"bold\">");
+    else if(!strcmp(prim->data.text->fontname, "Helvetica-Bold"))
+      gl2psPrintf("font-family=\"Helvetica\" font-weight=\"bold\">");
+    else if(!strcmp(prim->data.text->fontname, "Helvetica-Oblique"))
+      gl2psPrintf("font-family=\"Helvetica\" font-style=\"oblique\">");
+    else if(!strcmp(prim->data.text->fontname, "Helvetica-BoldOblique"))
+      gl2psPrintf("font-family=\"Helvetica\" font-style=\"oblique\" font-weight=\"bold\">");
+    else if(!strcmp(prim->data.text->fontname, "Courier-Bold"))
+      gl2psPrintf("font-family=\"Courier\" font-weight=\"bold\">");
+    else if(!strcmp(prim->data.text->fontname, "Courier-Oblique"))
+      gl2psPrintf("font-family=\"Courier\" font-style=\"oblique\">");
+    else if(!strcmp(prim->data.text->fontname, "Courier-BoldOblique"))
+      gl2psPrintf("font-family=\"Courier\" font-style=\"oblique\" font-weight=\"bold\">");
+    else
+      gl2psPrintf("font-family=\"%s\">", prim->data.text->fontname);
+    gl2psPrintf("%s</text>\n", prim->data.text->str);
     break;
   case GL2PS_SPECIAL :
     /* alignment contains the format for which the special output text
