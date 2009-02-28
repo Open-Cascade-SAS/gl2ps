@@ -1,7 +1,6 @@
-/* $Id: gl2ps.c,v 1.252 2009-02-27 21:30:19 geuzaine Exp $ */
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
- * Copyright (C) 1999-2007 Christophe Geuzaine <geuz@geuz.org>
+ * Copyright (C) 1999-2009 C. Geuzaine
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of either:
@@ -1691,20 +1690,20 @@ static void gl2psRescaleAndOffset()
         (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) * 
         (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]);
       if(!GL2PS_ZERO(area)){
-	dZdX = 
-	  ((prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) *
-	   (prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) -
-	   (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]) *
-	   (prim->verts[2].xyz[2] - prim->verts[1].xyz[2])) / area;
-	dZdY = 
-	  ((prim->verts[1].xyz[0] - prim->verts[0].xyz[0]) *
-	   (prim->verts[2].xyz[2] - prim->verts[1].xyz[2]) -
-	   (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) *
-	   (prim->verts[1].xyz[2] - prim->verts[0].xyz[2])) / area;
-	maxdZ = (GLfloat)sqrt(dZdX * dZdX + dZdY * dZdY);
+        dZdX = 
+          ((prim->verts[2].xyz[1] - prim->verts[1].xyz[1]) *
+           (prim->verts[1].xyz[2] - prim->verts[0].xyz[2]) -
+           (prim->verts[1].xyz[1] - prim->verts[0].xyz[1]) *
+           (prim->verts[2].xyz[2] - prim->verts[1].xyz[2])) / area;
+        dZdY = 
+          ((prim->verts[1].xyz[0] - prim->verts[0].xyz[0]) *
+           (prim->verts[2].xyz[2] - prim->verts[1].xyz[2]) -
+           (prim->verts[2].xyz[0] - prim->verts[1].xyz[0]) *
+           (prim->verts[1].xyz[2] - prim->verts[0].xyz[2])) / area;
+        maxdZ = (GLfloat)sqrt(dZdX * dZdX + dZdY * dZdY);
       }
       else{
-	maxdZ = 0.0F;
+        maxdZ = 0.0F;
       }
       dZ = factor * maxdZ + units;
       prim->verts[0].xyz[2] += dZ;

@@ -1,7 +1,7 @@
-%  $Id: gl2ps.tex,v 1.227 2009-02-27 21:25:56 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.228 2009-02-28 22:02:11 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
-%  Copyright (C) 1999-2007 Christophe Geuzaine <geuz@geuz.org>
+%  Copyright (C) 1999-2009 C. Geuzaine
 % 
 %  This program is free software; you can redistribute it and/or
 %  modify it under the terms of either:
@@ -59,7 +59,7 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 1.3.3, ? ? 2009}
+\date{Version 1.3.3, 28 February 2009}
 
 \maketitle
 
@@ -999,8 +999,9 @@ seem to be available anymore).
 \item[1.3.2] (Nov 5, 2006) Fixed bug in polygon offset computation;
   fixed landscape mode in SVG; fixed potential out-of-bounds array
   access in stippling pattern parser.
-\item[1.3.3] (, 2009) Fixed memory leak in PDF code; added
-  \dd{gl2psGetOptions}; nicer SVG rendering (crispEdges, font attributes).
+\item[1.3.3] (Feb 28, 2009) Fixed memory leak in PDF code; added
+  \dd{gl2psGetOptions}; nicer SVG rendering (crispEdges, font attributes);
+  fixed possible divisions by zero.
 \end{description}
 
 \end{document}
