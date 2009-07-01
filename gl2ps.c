@@ -5107,6 +5107,9 @@ static void gl2psPrintSVGPrimitive(void *data)
     gl2psSVGGetColorString(prim->verts[0].rgba, col);
     gl2psPrintf("<text fill=\"%s\" x=\"%g\" y=\"%g\" font-size=\"%d\" ",
                 col, xyz[0][0], xyz[0][1], prim->data.text->fontsize);
+    if(prim->data.text->angle)
+      gl2psPrintf("transform=\"rotate(%g, %g, %g)\" ",
+                  -prim->data.text->angle, xyz[0][0], xyz[0][1]);
     if(!strcmp(prim->data.text->fontname, "Times-Roman"))
       gl2psPrintf("font-family=\"Times\">");
     else if(!strcmp(prim->data.text->fontname, "Times-Bold"))
