@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.229 2009-03-08 19:12:55 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.230 2009-09-30 21:50:19 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2009 C. Geuzaine
@@ -28,7 +28,9 @@
 %  library in the file named "COPYING.GL2PS"; if not, I will be glad
 %  to provide one.
 % 
-%  For the latest info about gl2ps, see http://www.geuz.org/gl2ps/.
+%  For the latest info about gl2ps and a full list of contributors,
+%  see http://www.geuz.org/gl2ps/.
+%
 %  Please report all bugs and problems to <gl2ps@geuz.org>.
 
 \documentclass[10pt]{article}
@@ -59,7 +61,7 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 1.3.3, 28 February 2009}
+\date{Version 1.3.4, September 30 2009}
 
 \maketitle
 
@@ -92,7 +94,7 @@ the OpenGL window.</em></small></td>
 </center>
 <h2>Download</h2>
 The latest stable version of GL2PS is
-<a href="http://geuz.org/gl2ps/src/gl2ps-1.3.3.tgz">gl2ps-1.3.3.tgz</a>.
+<a href="http://geuz.org/gl2ps/src/gl2ps-1.3.4.tgz">gl2ps-1.3.4.tgz</a>.
 Older versions and nightly CVS snapshots are available 
 <a href="http://geuz.org/gl2ps/src/">here</a>.
 <p>
@@ -858,13 +860,15 @@ PostScript;
 \dd{gl2psSpecial} code;
 %
 \noemail{Alexander Danilov}{danilov@lanl.gov} for a polygon offset bug
-fix.
-
-%\noemail{Ben Fletcher}{ben.fletcher@dsto.defence.gov.au} for a
-%stippling pattern parser bug report.
-
-%\noemail{Jason Anderssen}{janderssen@exactal.com} for memory leak fix
-% in pdf code
+fix;
+%
+\noemail{Ben Fletcher}{ben.fletcher@dsto.defence.gov.au} for a
+stippling pattern parser bug report;
+%
+\noemail{Jason Anderssen}{janderssen@exactal.com} for memory leak fix
+in pdf code;
+%
+\noemail{Sylvestre Ledru}{sylvestre.ledru@scilab.org} for SVG patches.
 
 \section{Links}
 \label{sec:links}
@@ -1002,6 +1006,8 @@ seem to be available anymore).
 \item[1.3.3] (Feb 28, 2009) Fixed memory leak in PDF code; added
   \dd{gl2psGetOptions}; nicer SVG rendering (crispEdges, font attributes);
   fixed possible divisions by zero.
+\item[1.3.4] (Sep 30, 2009) Add support for rotated text in SVG output;
+  fixed MSVC warnings.
 \end{description}
 
 \end{document}
