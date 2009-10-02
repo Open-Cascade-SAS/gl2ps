@@ -125,9 +125,9 @@ if(PDFLATEX_COMPILER)
   find_program(TTH tth)
   if(TTH)
     add_custom_command(OUTPUT gl2ps.html DEPENDS gl2ps.tex gl2ps.pdf
-                       COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/gl2ps.tex 
-                       ${CMAKE_BINARY_DIR} COMMAND ${TTH} ARGS -w1 gl2ps.tex
-                       COMMAND ${CMAKE_COMMAND} -E remove gl2ps.tex)
+                       COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+                       ${CMAKE_SOURCE_DIR}/gl2ps.tex ${CMAKE_BINARY_DIR}/gl2ps.tex
+                       COMMAND ${TTH} ARGS -w1 gl2ps.tex)
     add_custom_target(html ALL DEPENDS gl2ps.html)
   endif(TTH)
 endif(PDFLATEX_COMPILER)
@@ -150,7 +150,7 @@ set(CPACK_STRIP_FILES TRUE)
 set(CPACK_SOURCE_PACKAGE_FILE_NAME gl2ps-${GL2PS_VERSION}-source)
 set(CPACK_SOURCE_GENERATOR TGZ)
 set(CPACK_SOURCE_IGNORE_FILES "${CMAKE_BINARY_DIR}" "/CVS/" "/.svn" "~$" 
-    "DS_Store$" "/tmp/" "/bin/" "/lib/" "gl2ps.tex")
+    "DS_Store$" "/tmp/" "/bin/" "/lib/")
 if(WIN32)
   set(CPACK_GENERATOR ZIP)
 else(WIN32)
