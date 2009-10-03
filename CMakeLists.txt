@@ -110,9 +110,9 @@ install(FILES gl2ps.h DESTINATION include)
 
 if(GLUT_FOUND)
   add_executable(gl2psTest WIN32 gl2psTest.c)
-  target_link_libraries(gl2psTest shared ${EXTERNAL_LIBRARIES})
+  target_link_libraries(gl2psTest lib ${EXTERNAL_LIBRARIES})
   add_executable(gl2psTestSimple WIN32 gl2psTestSimple.c)
-  target_link_libraries(gl2psTestSimple shared ${EXTERNAL_LIBRARIES})
+  target_link_libraries(gl2psTestSimple lib ${EXTERNAL_LIBRARIES})
 endif(GLUT_FOUND)
 
 find_package(LATEX)
