@@ -1,4 +1,4 @@
-%  $Id: gl2ps.tex,v 1.2 2009-10-02 23:32:24 geuzaine Exp $
+%  $Id: gl2ps.tex,v 1.3 2009-10-11 22:07:21 geuzaine Exp $
 %
 %  GL2PS, an OpenGL to PostScript Printing Library
 %  Copyright (C) 1999-2009 C. Geuzaine
@@ -63,7 +63,7 @@
 
 \title{GL2PS: an OpenGL to PostScript printing library}
 \author{Christophe Geuzaine}
-\date{Version 1.3.4, September 30 2009}
+\date{Version 1.3.5, October 12 2009}
 
 \maketitle
 
@@ -96,7 +96,7 @@ the OpenGL window.</em></small></td>
 </center>
 <h2>Download</h2>
 The latest stable version of GL2PS is
-<a href="http://geuz.org/gl2ps/src/gl2ps-1.3.4.tgz">gl2ps-1.3.4.tgz</a>.
+<a href="http://geuz.org/gl2ps/src/gl2ps-1.3.5.tgz">gl2ps-1.3.5.tgz</a>.
 Older versions and nightly CVS snapshots are available 
 <a href="http://geuz.org/gl2ps/src/">here</a>.
 <p>
@@ -870,18 +870,19 @@ stippling pattern parser bug report;
 \noemail{Jason Anderssen}{janderssen@exactal.com} for memory leak fix
 in pdf code;
 %
-\noemail{Sylvestre Ledru}{sylvestre.ledru@scilab.org} for SVG patches.
+\noemail{Sylvestre Ledru}{sylvestre.ledru@scilab.org} for SVG patches;
+%
+\noemail{Calixte Denizet}{Calixte.Denizet@ac-rennes.fr} for 64 bit patch.
 
 \section{Links}
 \label{sec:links}
 
-Projects similar to \dd{GL2PS} include: Mark Kilgard's original
-``rendereps'' tutorial
-(\url{http://www.opengl.org/resources/code/samples/mjktips/Feedback.html});
-Michael Sweet's GLP library
-(\url{http://www.easysw.com/~mike/opengl/}); the GLpr library from CEI
-international (\url{http://www.ceintl.com/}; this product does not
-seem to be available anymore).
+\dd{GL2PS} was inspired by Mark Kilgard's original ``rendereps'' tutorial
+(\url{http://www.opengl.org/resources/code/samples/mjktips/Feedback.html})
+and Michael Sweet's GLP library (\url{http://www.easysw.com/~mike/opengl/}).
+The (commercial) GLpr library from CEI (\url{http://www.ceintl.com/}) used
+to provide functionality similar to GL2PS but does not seem to be available
+anymore.
 
 %\noemail{Toby White}{tow@sdf.lonestar.org} maintains a Python wrapper for
 %\dd{GL2PS}, available at \url{http://tow.freeshell.org/software.html}.
@@ -1010,6 +1011,8 @@ seem to be available anymore).
   fixed possible divisions by zero.
 \item[1.3.4] (Sep 30, 2009) Added support for rotated text in SVG output;
   fixed MSVC warnings.
+\item[1.3.5] (Oct 12, 2009) Fixed PDF image output when compiled in 64 bit
+  mode; added cmake build file.
 \end{description}
 
 \special{html:<p>

@@ -4471,27 +4471,29 @@ static int gl2psPrintPDFPixmapStreamData(GL2PSimage *im,
                                                           size_t size), 
                                          int gray)
 {
-  int x, y;
+  int x, y, shift;
   GLfloat r, g, b, a;
 
   if(im->format != GL_RGBA && gray)
     return 0;
 
-  if(gray && gray !=8 && gray != 16)
+  if(gray && gray != 8 && gray != 16)
     gray = 8;
 
   gray /= 8;
   
+  shift = (sizeof(unsigned long) - 1) * 8;
+
   for(y = 0; y < im->height; ++y){
     for(x = 0; x < im->width; ++x){
       a = gl2psGetRGB(im, x, y, &r, &g, &b);
       if(im->format == GL_RGBA && gray){
-        (*action)((unsigned long)(a*255) << 24, gray);
+        (*action)((unsigned long)(a * 255) << shift, gray);
       }
       else{
-        (*action)((unsigned long)(r*255) << 24, 1);
-        (*action)((unsigned long)(g*255) << 24, 1);
-        (*action)((unsigned long)(b*255) << 24, 1);
+        (*action)((unsigned long)(r * 255) << shift, 1);
+        (*action)((unsigned long)(g * 255) << shift, 1);
+        (*action)((unsigned long)(b * 255) << shift, 1);
       }
     }
   }
