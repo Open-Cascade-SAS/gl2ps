@@ -58,13 +58,14 @@
 #  include <GL/glut.h>
 #endif
 
+static const char *format_string = "Postscript";
 static float rotation = -58.;
 static GLsizei window_w = 0; 
 static GLsizei window_h = 0;
 static GLboolean display_multi = GL_TRUE;
 static GLboolean blend = GL_FALSE;
 static GLboolean teapot = GL_FALSE;
-static char *pixmap[] = {
+static const char *pixmap[] = {
   "****************************************************************",
   "*..............................................................*",
   "*..................++++++++++++++++++++++++++..................*",
@@ -138,7 +139,7 @@ void triangles()
   glBegin(GL_TRIANGLES);
   
   glColor3f(1., 0., 0.);
-  glVertex3f(-1., 1., 0.);
+  glVertex3f(-1., 0.9, 0.);
   glColor4f(1., 1., 0., 0.1);
   glVertex3f(-1., 0., 0.);
   glColor4f(1., 0., 1., 1.0);
@@ -161,25 +162,25 @@ void extras()
   glPointSize(1.);
   gl2psPointSize(1.);
   glBegin(GL_POINTS);
-  glVertex3f(-1., 1.1, 0.);
+  glVertex3f(-1., 1.0, 0.);
   glEnd();
 
   glPointSize(3.);
   gl2psPointSize(3.);
   glBegin(GL_POINTS);
-  glVertex3f(-0.8, 1.1, 0.);
+  glVertex3f(-0.8, 1.0, 0.);
   glEnd();
 
   glPointSize(5.);
   gl2psPointSize(5.);
   glBegin(GL_POINTS);
-  glVertex3f(-0.6, 1.1, 0.);
+  glVertex3f(-0.6, 1.0, 0.);
   glEnd();
 
   glPointSize(7.);
   gl2psPointSize(7.);
   glBegin(GL_POINTS);
-  glVertex3f(-0.4, 1.1, 0.);
+  glVertex3f(-0.4, 1.0, 0.);
   glEnd();
 
   glLineWidth(1.);
@@ -193,8 +194,8 @@ void extras()
   glLineStipple(1, 0x087F);
   gl2psEnable(GL2PS_LINE_STIPPLE);
   glBegin(GL_LINES);
-  glVertex3f(-0.2, 1.15, 0.);
-  glVertex3f(0.2, 1.15, 0.);
+  glVertex3f(-0.2, 0.95, 0.);
+  glVertex3f(0.2, 0.95, 0.);
   glEnd();
   glDisable(GL_LINE_STIPPLE);
   gl2psDisable(GL2PS_LINE_STIPPLE);
@@ -211,8 +212,8 @@ void extras()
   /* glLineStipple(1, 0xAAAA); */
   gl2psEnable(GL2PS_LINE_STIPPLE);
   glBegin(GL_LINES);
-  glVertex3f(0.4, 1.15, 0.);
-  glVertex3f(0.8, 1.15, 0.);
+  glVertex3f(0.4, 0.95, 0.);
+  glVertex3f(0.8, 0.95, 0.);
   glEnd();
   glDisable(GL_LINE_STIPPLE);
   gl2psDisable(GL2PS_LINE_STIPPLE);
@@ -239,10 +240,10 @@ void objects()
   glPopMatrix();
 }
 
-void printstring(char *string, float angle)
+void printstring(const char *string, float angle)
 {
   unsigned int i;
-  char *fonts[] = 
+  const char *fonts[] = 
     { "Times-Roman", "Times-Bold", "Times-Italic", "Times-BoldItalic",
       "Helvetica", "Helvetica-Bold", "Helvetica-Oblique", "Helvetica-BoldOblique",
       "Courier", "Courier-Bold", "Courier-Oblique", "Courier-BoldOblique",
@@ -287,8 +288,11 @@ void text()
   printstring("Click and move the mouse to rotate the objects", 0.);
 
   glRasterPos2d(0, 0.75);
-  printstring("rotated", 45.);
+  printstring("rotated!", 45.);
 
+  glRasterPos2d(x, 1.15);
+  printstring(format_string, 0.);
+  
   gl2psSpecial(GL2PS_TEX, "% This should only be printed in LaTeX output!");
 }
 
@@ -336,8 +340,8 @@ void image(float x, float y, GLboolean opaque)
   /* Fill a pixmap (each pixel contains three floats defining an RGB
      color) */
   pixels = (opaque == GL_TRUE) 
-    ? (float*)malloc(3*w*h*sizeof(float)) 
-    : (float*)malloc(4*w*h*sizeof(float));
+    ? (float*)malloc(3 * w * h * sizeof(float)) 
+    : (float*)malloc(4 * w * h * sizeof(float));
 
   for(row = h-1; row >= 0; row--){
     for(col = 0; col < w; col++){
@@ -497,7 +501,7 @@ void reshape(int w, int h)
 }
 
 void writefile(int format, int sort, int options, int nbcol,
-               char *filename, const char *extension)
+               const char *filename, const char *extension)
 {
   FILE *fp;
   char file[256];
@@ -560,7 +564,8 @@ void keyboard(unsigned char key, int x, int y)
     else if(format == GL2PS_PDF) format = GL2PS_SVG;
     else if(format == GL2PS_SVG) format = GL2PS_PGF;
     else                         format = GL2PS_PS;
-    printf("Print format changed to '%s'\n", gl2psGetFormatDescription(format));
+    format_string = gl2psGetFormatDescription(format);
+    display();
     break;
   case 'b':
     blend = !blend;
