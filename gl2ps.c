@@ -167,6 +167,7 @@ typedef struct {
      written to the file or not, and 'format' indicates if it is
      visible or not */
   GLenum format, type;
+  GLfloat zoom_x, zoom_y;
   GLfloat *pixels;
 } GL2PSimage;
 
@@ -745,6 +746,8 @@ static GL2PSimage *gl2psCopyPixmap(GL2PSimage *im)
   image->height = im->height;
   image->format = im->format;
   image->type = im->type;
+  image->zoom_x = im->zoom_x;
+  image->zoom_y = im->zoom_y;
 
   switch(image->format){
   case GL_RGBA:
@@ -2322,6 +2325,8 @@ static void gl2psParseFeedbackBuffer(GLint used)
         node->image = (GL2PSimage*)gl2psMalloc(sizeof(GL2PSimage));
         node->image->type = 0;
         node->image->format = 0;
+        node->image->zoom_x = 1.0F;
+        node->image->zoom_y = 1.0F;
         node->next = NULL;
         
         if(gl2ps->imagemap_head == NULL)
@@ -2424,7 +2429,7 @@ static void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GL2PSimage *im)
 
   gl2psPrintf("gsave\n");
   gl2psPrintf("%.2f %.2f translate\n", x, y); 
-  gl2psPrintf("%d %d scale\n", width, height); 
+  gl2psPrintf("%.2f %.2f scale\n", width * im->zoom_x, height * im->zoom_y);
 
   if(greyscale){ /* greyscale */
     gl2psPrintf("/picstr %d string def\n", width); 
@@ -5800,7 +5805,7 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
                                    const void *pixels)
 {
   int size, i;
-  GLfloat pos[4], *piv;
+  GLfloat pos[4], *piv, zoom_x, zoom_y;
   GL2PSprimitive *prim;
   GLboolean valid;
 
@@ -5820,6 +5825,8 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
   if(GL_FALSE == valid) return GL2PS_SUCCESS; /* the primitive is culled */
 
   glGetFloatv(GL_CURRENT_RASTER_POSITION, pos);
+  glGetFloatv(GL_ZOOM_X, &zoom_x);
+  glGetFloatv(GL_ZOOM_Y, &zoom_y);
 
   prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
   prim->type = GL2PS_PIXMAP;
@@ -5838,6 +5845,8 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
   prim->data.image = (GL2PSimage*)gl2psMalloc(sizeof(GL2PSimage));
   prim->data.image->width = width;
   prim->data.image->height = height;
+  prim->data.image->zoom_x = zoom_x;
+  prim->data.image->zoom_y = zoom_y;
   prim->data.image->format = format;
   prim->data.image->type = type;
 
@@ -5851,7 +5860,7 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
       piv = (GLfloat*)pixels;
       for(i = 0; i < size; ++i, ++piv){
         prim->data.image->pixels[i] = *piv;
-        if(!((i+1)%3))
+        if(!((i + 1) % 3))
           ++piv;
       }   
     }
