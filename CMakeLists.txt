@@ -109,6 +109,9 @@ if(OPENGL_FOUND)
   add_library(shared SHARED gl2ps.c gl2ps.h)
   target_link_libraries(shared ${EXTERNAL_LIBRARIES})
   set_target_properties(shared PROPERTIES OUTPUT_NAME gl2ps)
+  set_target_properties(shared PROPERTIES
+                        VERSION ${GL2PS_MAJOR_VERSION}.${GL2PS_MINOR_VERSION}.${GL2PS_PATCH_VERSION}
+                        SOVERSION ${GL2PS_MAJOR_VERSION})
   if(MSVC)
     set_target_properties(shared PROPERTIES COMPILE_FLAGS "-DGL2PSDLL -DGL2PSDLL_EXPORTS")
   endif(MSVC)
