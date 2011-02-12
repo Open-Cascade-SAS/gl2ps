@@ -50,11 +50,11 @@
 #include <string.h>
 #include "gl2ps.h"
 
-void display()
+static void display(void)
 {
   unsigned int i;
-  int N = 50;
-  char *help = "Press 's' to save image or 'q' to quit";  
+  unsigned int N = 50;
+  const char *help = "Press 's' to save image or 'q' to quit";  
 
   glClearColor(0.3, 0.5, 0.8, 0.);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -91,11 +91,12 @@ void display()
   glFlush();
 }
 
-void keyboard(unsigned char key, int x, int y)
+static void keyboard(unsigned char key, int x, int y)
 {
   FILE *fp;
   int state = GL2PS_OVERFLOW, buffsize = 0;
 
+  (void) x; (void) y;  /* not used */
   switch(key){
   case 'q':
     exit(0);

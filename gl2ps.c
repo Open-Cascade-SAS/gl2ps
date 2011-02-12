@@ -441,7 +441,7 @@ static int gl2psPrintf(const char* fmt, ...)
   return ret;
 }
 
-static void gl2psPrintGzipHeader()
+static void gl2psPrintGzipHeader(void)
 {
 #if defined(GL2PS_HAVE_ZLIB)
   char tmp[10] = {'\x1f', '\x8b', /* magic numbers: 0x1f, 0x8b */
@@ -459,7 +459,7 @@ static void gl2psPrintGzipHeader()
 #endif  
 }
 
-static void gl2psPrintGzipFooter()
+static void gl2psPrintGzipFooter(void)
 {
 #if defined(GL2PS_HAVE_ZLIB)
   int n;
@@ -789,6 +789,7 @@ static void gl2psUserWritePNG(png_structp png_ptr, png_bytep data, png_size_t le
 
 static void gl2psUserFlushPNG(png_structp png_ptr)
 {
+  (void) png_ptr;  /* not used */
 }
 
 static void gl2psConvertPixmapToPNG(GL2PSimage *pixmap, GL2PSlist *png)
@@ -1363,12 +1364,12 @@ static void gl2psDivideQuad(GL2PSprimitive *quad,
 
 static int gl2psCompareDepth(const void *a, const void *b)
 {
-  GL2PSprimitive *q, *w;
+  const GL2PSprimitive *q, *w;
   GLfloat dq = 0.0F, dw = 0.0F, diff;
   int i;
   
-  q = *(GL2PSprimitive**)a;
-  w = *(GL2PSprimitive**)b;
+  q = *(const GL2PSprimitive* const*)a;
+  w = *(const GL2PSprimitive* const*)b;
 
   for(i = 0; i < q->numverts; i++){
     dq += q->verts[i].xyz[2]; 
@@ -1394,10 +1395,10 @@ static int gl2psCompareDepth(const void *a, const void *b)
 
 static int gl2psTrianglesFirst(const void *a, const void *b)
 {
-  GL2PSprimitive *q, *w;
+  const GL2PSprimitive *q, *w;
 
-  q = *(GL2PSprimitive**)a;
-  w = *(GL2PSprimitive**)b;
+  q = *(const GL2PSprimitive* const*)a;
+  w = *(const GL2PSprimitive* const*)b;
   return (q->type < w->type ? 1 : -1);
 }
 
@@ -1614,7 +1615,7 @@ static void gl2psTraverseBspTree(GL2PSbsptree *tree, GL2PSxyz eye, GLfloat epsil
   }
 }
 
-static void gl2psRescaleAndOffset()
+static void gl2psRescaleAndOffset(void)
 {
   GL2PSprimitive *prim;
   GLfloat minZ, maxZ, rangeZ, scaleZ;
@@ -3306,6 +3307,7 @@ static void gl2psPrintTeXFooter(void)
 
 static void gl2psPrintTeXBeginViewport(GLint viewport[4])
 {
+  (void) viewport;  /* not used */
   glRenderMode(GL_FEEDBACK);
   
   if(gl2ps->header){
@@ -5031,6 +5033,7 @@ static void gl2psPrintSVGPixmap(GLfloat x, GLfloat y, GL2PSimage *pixmap)
   gl2psPrintf("\"/>\n");
   gl2psListDelete(png);
 #else
+  (void) x; (void) y; (void) pixmap;  /* not used */
   gl2psMsg(GL2PS_WARNING, "GL2PS must be compiled with PNG support in "
            "order to embed images in SVG streams");
 #endif
@@ -5842,7 +5845,8 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
                                    const void *pixels)
 {
   int size, i;
-  GLfloat pos[4], *piv, zoom_x, zoom_y;
+  const GLfloat *piv;
+  GLfloat pos[4], zoom_x, zoom_y;
   GL2PSprimitive *prim;
   GLboolean valid;
 
@@ -5894,7 +5898,7 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
       prim->data.image->format = GL_RGB;
       size = height * width * 3;
       prim->data.image->pixels = (GLfloat*)gl2psMalloc(size * sizeof(GLfloat));
-      piv = (GLfloat*)pixels;
+      piv = (const GLfloat*)pixels;
       for(i = 0; i < size; ++i, ++piv){
         prim->data.image->pixels[i] = *piv;
         if(!((i + 1) % 3))
@@ -5939,7 +5943,7 @@ GL2PSDLL_API GLint gl2psDrawImageMap(GLsizei width, GLsizei height,
   glPassThrough((GLfloat)width);
   glPassThrough((GLfloat)height);
   for(i = 0; i < size; i += sizeoffloat){
-    float *value = (float*)imagemap;
+    const float *value = (const float*)imagemap;
     glPassThrough(*value);
     imagemap += sizeoffloat;
   }
