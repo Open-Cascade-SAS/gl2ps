@@ -54,7 +54,7 @@ static void display(void)
 {
   unsigned int i;
   unsigned int N = 50;
-  const char *help = "Press 's' to save image or 'q' to quit";  
+  const char *help = "Press 's' to save image or 'q' to quit";
 
   glClearColor(0.3, 0.5, 0.8, 0.);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -106,8 +106,8 @@ static void keyboard(unsigned char key, int x, int y)
     printf("Writing 'out.eps'... ");
     while(state == GL2PS_OVERFLOW){
       buffsize += 1024*1024;
-      gl2psBeginPage("test", "gl2psTestSimple", NULL, GL2PS_EPS, GL2PS_SIMPLE_SORT, 
-                     GL2PS_DRAW_BACKGROUND | GL2PS_USE_CURRENT_VIEWPORT, 
+      gl2psBeginPage("test", "gl2psTestSimple", NULL, GL2PS_EPS, GL2PS_SIMPLE_SORT,
+                     GL2PS_DRAW_BACKGROUND | GL2PS_USE_CURRENT_VIEWPORT,
                      GL_RGBA, 0, NULL, 0, 0, 0, buffsize, fp, "out.eps");
       display();
       state = gl2psEndPage();
