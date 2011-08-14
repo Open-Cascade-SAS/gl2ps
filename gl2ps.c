@@ -305,10 +305,12 @@ static void *gl2psMalloc(size_t size)
 
 static void *gl2psRealloc(void *ptr, size_t size)
 {
+  void *orig = ptr;
   if(!size) return NULL;
-  ptr = realloc(ptr, size);
+  ptr = realloc(orig, size);
   if(!ptr){
     gl2psMsg(GL2PS_ERROR, "Couldn't reallocate requested memory");
+    free(orig);
     return NULL;
   }
   return ptr;
