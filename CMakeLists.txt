@@ -116,7 +116,7 @@ if(OPENGL_FOUND)
     set_target_properties(shared PROPERTIES COMPILE_FLAGS "-DGL2PSDLL -DGL2PSDLL_EXPORTS")
   endif(MSVC)
 
-  install(TARGETS lib shared DESTINATION lib)
+  install(TARGETS lib shared DESTINATION lib${LIB_SUFFIX})
 endif(OPENGL_FOUND)
 
 if(WIN32)
