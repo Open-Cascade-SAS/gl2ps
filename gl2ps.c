@@ -1,4 +1,4 @@
-/* aa
+/*
  * GL2PS, an OpenGL to PostScript Printing Library
  * Copyright (C) 1999-2011 C. Geuzaine
  *
