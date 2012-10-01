@@ -843,7 +843,8 @@ static void gl2psConvertPixmapToPNG(GL2PSimage *pixmap, GL2PSlist *png)
 /* Helper routines for text strings */
 
 static GLint gl2psAddText(GLint type, const char *str, const char *fontname,
-                          GLshort fontsize, GLint alignment, GLfloat angle)
+                          GLshort fontsize, GLint alignment, GLfloat angle,
+                          GL2PSrgba color)
 {
   GLfloat pos[4];
   GL2PSprimitive *prim;
@@ -871,7 +872,10 @@ static GLint gl2psAddText(GLint type, const char *str, const char *fontname,
   prim->pattern = 0;
   prim->factor = 0;
   prim->width = 1;
-  glGetFloatv(GL_CURRENT_RASTER_COLOR, prim->verts[0].rgba);
+  if (color)
+    memcpy(prim->verts[0].rgba, color, 4 * sizeof(float));
+  else
+    glGetFloatv(GL_CURRENT_RASTER_COLOR, prim->verts[0].rgba);
   prim->data.text = (GL2PSstring*)gl2psMalloc(sizeof(GL2PSstring));
   prim->data.text->str = (char*)gl2psMalloc((strlen(str)+1)*sizeof(char));
   strcpy(prim->data.text->str, str);
@@ -3426,6 +3430,11 @@ static void gl2psPutPDFText(GL2PSstring *text, int cnt, GLfloat x, GLfloat y)
   }
 }
 
+static void gl2psPutPDFSpecial(GL2PSstring *text)
+{
+  gl2ps->streamlength += gl2psPrintf("%s\n", text->str);
+}
+
 static void gl2psPutPDFImage(GL2PSimage *image, int cnt, GLfloat x, GLfloat y)
 {
   gl2ps->streamlength += gl2psPrintf
@@ -3548,6 +3557,12 @@ static void gl2psPDFgroupListInit(void)
         gl2psListAdd(gl2ps->pdfgrouplist, &gro);
       }
       lastt = tmpt;
+      break;
+    case GL2PS_SPECIAL:
+      gl2psPDFgroupObjectInit(&gro);
+      gro.ptrlist = gl2psListCreate(1, 2, sizeof(GL2PSprimitive*));
+      gl2psListAdd(gro.ptrlist, &p);
+      gl2psListAdd(gl2ps->pdfgrouplist, &gro);
       break;
     default:
       break;
@@ -3790,6 +3805,11 @@ static void gl2psPDFgroupListWriteMainStream(void)
                         prim->verts[0].xyz[1]);
       }
       break;
+    case GL2PS_SPECIAL:
+      for(j = 0; j <= lastel; ++j){
+        prim = *(GL2PSprimitive**)gl2psListPointer(gro->ptrlist, j);
+        gl2psPutPDFSpecial(prim->data.text);
+      }
     default:
       break;
     }
@@ -5820,20 +5840,29 @@ GL2PSDLL_API GLint gl2psEndViewport(void)
   return res;
 }
 
+GL2PSDLL_API GLint gl2psTextOptColor(const char *str, const char *fontname,
+                                     GLshort fontsize, GLint alignment, GLfloat angle,
+                                     GL2PSrgba color)
+{
+  return gl2psAddText(GL2PS_TEXT, str, fontname, fontsize, alignment, angle,
+                      color);
+}
+
 GL2PSDLL_API GLint gl2psTextOpt(const char *str, const char *fontname,
                                 GLshort fontsize, GLint alignment, GLfloat angle)
 {
-  return gl2psAddText(GL2PS_TEXT, str, fontname, fontsize, alignment, angle);
+  return gl2psAddText(GL2PS_TEXT, str, fontname, fontsize, alignment, angle, NULL);
 }
 
 GL2PSDLL_API GLint gl2psText(const char *str, const char *fontname, GLshort fontsize)
 {
-  return gl2psAddText(GL2PS_TEXT, str, fontname, fontsize, GL2PS_TEXT_BL, 0.0F);
+  return gl2psAddText(GL2PS_TEXT, str, fontname, fontsize, GL2PS_TEXT_BL, 0.0F,
+                      NULL);
 }
 
 GL2PSDLL_API GLint gl2psSpecial(GLint format, const char *str)
 {
-  return gl2psAddText(GL2PS_SPECIAL, str, "", 0, format, 0.0F);
+  return gl2psAddText(GL2PS_SPECIAL, str, "", 0, format, 0.0F, NULL);
 }
 
 GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
@@ -6075,4 +6104,9 @@ GL2PSDLL_API const char *gl2psGetFormatDescription(GLint format)
     return gl2psbackends[format]->description;
   else
     return "Unknown format";
+}
+
+GL2PSDLL_API GLint gl2psGetFileFormat()
+{
+  return gl2ps->format;
 }

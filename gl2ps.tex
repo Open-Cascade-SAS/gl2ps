@@ -420,6 +420,11 @@ library is not initialized;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
 
+Note that gl2ps 1.3.8 introduces a variant of \dd{gl2psTextOpt}, called
+\dd{gl2psTextOptColor}, which takes one additional arguement of type
+\dd{GL2PSrgba}. This was introduced for systems which do not keep track of
+the current raster color in feedback mode.
+
 % -------------------------------------------------------------------------
 
 \subsection{\texttt{gl2psDrawPixels}}
