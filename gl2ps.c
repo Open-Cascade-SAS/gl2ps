@@ -421,15 +421,39 @@ static int gl2psPrintf(const char* fmt, ...)
   va_list args;
 
 #if defined(GL2PS_HAVE_ZLIB)
+  static char buf[1024];
+  char *bufptr = buf;
+  GLboolean freebuf = GL_FALSE;
   unsigned int oldsize = 0;
-  static char buf[1000];
+#if !defined(GL2PS_HAVE_NO_VSNPRINTF)
+  /* Try writing the string to a 1024 byte buffer. If it is too small to fit,
+     keep trying larger sizes until it does. */
+  size_t bufsize = sizeof(buf);
+#endif
   if(gl2ps->options & GL2PS_COMPRESS){
     va_start(args, fmt);
+#if defined(GL2PS_HAVE_NO_VSNPRINTF)
     ret = vsprintf(buf, fmt, args);
+#else
+    ret = vsnprintf(bufptr, bufsize, fmt, args);
+#endif
     va_end(args);
+#if !defined(GL2PS_HAVE_NO_VSNPRINTF)
+    while(ret >= (bufsize - 1) || ret < 0){
+      /* Too big. Allocate a new buffer. */
+      bufsize *= 2;
+      if(freebuf == GL_TRUE) gl2psFree(bufptr);
+      bufptr = (char *)gl2psMalloc(bufsize);
+      freebuf = GL_TRUE;
+      va_start(args, fmt);
+      ret = vsnprintf(bufptr, bufsize, fmt, args);
+      va_end(args);
+    }
+#endif
     oldsize = gl2ps->compress->srcLen;
     gl2ps->compress->start = (Bytef*)gl2psReallocCompress(oldsize + ret);
-    memcpy(gl2ps->compress->start+oldsize, buf, ret);
+    memcpy(gl2ps->compress->start + oldsize, bufptr, ret);
+    if(freebuf == GL_TRUE) gl2psFree(bufptr);
     ret = 0;
   }
   else{

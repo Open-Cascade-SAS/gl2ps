@@ -70,6 +70,19 @@ else(APPLE)
   set(GL2PS_OS "${CMAKE_SYSTEM_NAME}")
 endif(APPLE)
 
+include(CheckFunctionExists)
+check_function_exists(vsnprintf HAVE_VSNPRINTF)
+if(NOT HAVE_VSNPRINTF)
+  add_definitions(-DHAVE_NO_VSNPRINTF)
+endif(NOT HAVE_VSNPRINTF)
+
+include(CheckFunctionExists)
+check_function_exists(vsnprintf HAVE_VSNPRINTF)
+if(NOT HAVE_VSNPRINTF)
+message(FATAL_ERROR "Compiler does not support function 'vsnprintf'.")
+endif()
+
+
 find_package(OpenGL)
 if(OPENGL_FOUND)
   list(APPEND EXTERNAL_INCLUDES ${OPENGL_INCLUDE_DIR})
