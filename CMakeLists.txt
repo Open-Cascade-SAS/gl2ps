@@ -106,6 +106,11 @@ if(ENABLE_PNG)
   endif(PNG_FOUND)
 endif(ENABLE_PNG)
 
+find_library(MATH_LIBRARY m)
+if(MATH_LIBRARY)
+  list(APPEND EXTERNAL_LIBRARIES ${MATH_LIBRARY})
+endif(MATH_LIBRARY)
+
 include_directories(${EXTERNAL_INCLUDES})
 
 if(OPENGL_FOUND)
@@ -116,8 +121,8 @@ if(OPENGL_FOUND)
   target_link_libraries(shared ${EXTERNAL_LIBRARIES})
   set_target_properties(shared PROPERTIES OUTPUT_NAME gl2ps)
   set_target_properties(shared PROPERTIES
-                        VERSION ${GL2PS_MAJOR_VERSION}.${GL2PS_MINOR_VERSION}.${GL2PS_PATCH_VERSION}
-                        SOVERSION ${GL2PS_MAJOR_VERSION})
+    VERSION ${GL2PS_MAJOR_VERSION}.${GL2PS_MINOR_VERSION}.${GL2PS_PATCH_VERSION}
+    SOVERSION ${GL2PS_MAJOR_VERSION})
   if(MSVC)
     set_target_properties(shared PROPERTIES COMPILE_FLAGS "-DGL2PSDLL -DGL2PSDLL_EXPORTS")
   endif(MSVC)
