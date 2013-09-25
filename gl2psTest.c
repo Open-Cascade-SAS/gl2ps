@@ -282,7 +282,7 @@ void text()
   printstring("  b: to change the blending mode (transparency)", 0.);
   y -= dy;
   glRasterPos2d(x, y);
-  printstring("  q: to quit", 0.), 0.;
+  printstring("  q: to quit", 0.);
   y -= dy;
   glRasterPos2d(x, y);
   printstring("Click and move the mouse to rotate the objects", 0.);
