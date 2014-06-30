@@ -5447,7 +5447,12 @@ static void gl2psPrintPGFPrimitive(void *data)
             prim->verts[0].rgba[0], prim->verts[0].rgba[1],
             prim->verts[0].rgba[2], prim->data.text->str);
 
-    fprintf(gl2ps->stream, "}{}{\\pgfusepath{discard}}}\n");
+    fprintf(gl2ps->stream, "}{}{\\pgfusepath{discard}}}");
+
+    if(prim->data.text->angle)
+       fprintf(gl2ps->stream, "}");
+
+    fprintf(gl2ps->stream, "\n");
     break;
   case GL2PS_SPECIAL :
     /* alignment contains the format for which the special output text
