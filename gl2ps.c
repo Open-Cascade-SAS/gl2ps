@@ -1,6 +1,6 @@
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
- * Copyright (C) 1999-2012 C. Geuzaine
+ * Copyright (C) 1999-2015 C. Geuzaine
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of either:
@@ -2186,9 +2186,9 @@ static void gl2psBuildPolygonBoundary(GL2PSbsptree *tree)
  *********************************************************************/
 
 static void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
-                                  GL2PSvertex *verts, GLint offset, 
-                                  GLfloat ofactor, GLfloat ounits, 
-                                  GLushort pattern, GLint factor, 
+                                  GL2PSvertex *verts, GLint offset,
+                                  GLfloat ofactor, GLfloat ounits,
+                                  GLushort pattern, GLint factor,
                                   GLfloat width, char boundary)
 {
   GL2PSprimitive *prim;
@@ -2329,8 +2329,8 @@ static void gl2psParseFeedbackBuffer(GLint used)
         used -= 2;
         ounits = current[1];
         break;
-      case GL2PS_END_OFFSET_TOKEN : 
-        offset = 0; 
+      case GL2PS_END_OFFSET_TOKEN :
+        offset = 0;
         ofactor = 0.0;
         ounits = 0.0;
         break;
@@ -5099,7 +5099,7 @@ static void gl2psPrintSVGPixmap(GLfloat x, GLfloat y, GL2PSimage *pixmap)
   y -= pixmap->zoom_y * (GLfloat)pixmap->height;
   gl2psPrintf("<image x=\"%g\" y=\"%g\" width=\"%d\" height=\"%d\"\n",
               0., 0., pixmap->width, pixmap->height);
-  gl2psPrintf("transform=\"matrix(%g,0,0,%g,%g,%g)\"\n", 
+  gl2psPrintf("transform=\"matrix(%g,0,0,%g,%g,%g)\"\n",
               pixmap->zoom_x, pixmap->zoom_y, x, y);
   gl2psPrintf("xlink:href=\"data:image/png;base64,");
   for(i = 0; i < gl2psListNbr(png); i++){

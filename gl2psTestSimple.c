@@ -1,6 +1,6 @@
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
- * Copyright (C) 1999-2012 Christophe Geuzaine <geuz@geuz.org>
+ * Copyright (C) 1999-2015 Christophe Geuzaine <geuz@geuz.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of either:
@@ -68,15 +68,15 @@ static void display(void)
   glPopMatrix();
 
 
-  /* draw three triangles on the same zplane and use polygon offset 
-     to order the layers: the grey triangle should be drawn on the 
+  /* draw three triangles on the same zplane and use polygon offset
+     to order the layers: the grey triangle should be drawn on the
      middle layer */
   glEnable(GL_POLYGON_OFFSET_FILL);
   glPolygonOffset(1.0, 1.0);
   gl2psEnable(GL2PS_POLYGON_OFFSET_FILL);
   glColor3f(0.,0.,0.);
-  glBegin(GL_TRIANGLES); 
-  glVertex3f(0.6, 0.8, 0); 
+  glBegin(GL_TRIANGLES);
+  glVertex3f(0.6, 0.8, 0);
   glVertex3f(0.8, 0.8, 0);
   glVertex3f(0.7, 0.92, 0);
   glEnd();
@@ -84,8 +84,8 @@ static void display(void)
   glPolygonOffset(2.0, 2.0);
   gl2psEnable(GL2PS_POLYGON_OFFSET_FILL);
   glColor3f(1.,1.,1.);
-  glBegin(GL_TRIANGLES); 
-  glVertex3f(0.7, 0.8, 0); 
+  glBegin(GL_TRIANGLES);
+  glVertex3f(0.7, 0.8, 0);
   glVertex3f(0.9, 0.8, 0);
   glVertex3f(0.8, 0.92, 0);
   glEnd();
@@ -93,12 +93,12 @@ static void display(void)
   glPolygonOffset(1.5, 1.5);
   gl2psEnable(GL2PS_POLYGON_OFFSET_FILL);
   glColor3f(0.5,0.5,0.5);
-  glBegin(GL_TRIANGLES); 
-  glVertex3f(0.65, 0.86, 0); 
+  glBegin(GL_TRIANGLES);
+  glVertex3f(0.65, 0.86, 0);
   glVertex3f(0.85, 0.86, 0);
   glVertex3f(0.75, 0.98, 0);
   glEnd();
-	
+
   glDisable(GL_POLYGON_OFFSET_FILL);
   gl2psDisable(GL2PS_POLYGON_OFFSET_FILL);
 
