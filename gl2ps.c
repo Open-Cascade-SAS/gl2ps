@@ -5093,8 +5093,14 @@ static void gl2psPrintSVGPixmap(GLfloat x, GLfloat y, GL2PSimage *pixmap)
                         sizeof(unsigned char));
   gl2psConvertPixmapToPNG(pixmap, png);
   gl2psListEncodeBase64(png);
+
+  /* Use "transform" attribute to scale and translate the image from
+     the coordinates origin (0,0) */
+  y -= pixmap->zoom_y * (GLfloat)pixmap->height;
   gl2psPrintf("<image x=\"%g\" y=\"%g\" width=\"%d\" height=\"%d\"\n",
-              x, y - pixmap->height, pixmap->width, pixmap->height);
+              0., 0., pixmap->width, pixmap->height);
+  gl2psPrintf("transform=\"matrix(%g,0,0,%g,%g,%g)\"\n", 
+              pixmap->zoom_x, pixmap->zoom_y, x, y);
   gl2psPrintf("xlink:href=\"data:image/png;base64,");
   for(i = 0; i < gl2psListNbr(png); i++){
     gl2psListRead(png, i, &c);
