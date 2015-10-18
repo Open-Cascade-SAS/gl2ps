@@ -185,8 +185,8 @@ set(CPACK_PACKAGE_EXECUTABLE "gl2ps;gl2ps")
 set(CPACK_STRIP_FILES TRUE)
 set(CPACK_SOURCE_PACKAGE_FILE_NAME gl2ps-${GL2PS_VERSION}-source)
 set(CPACK_SOURCE_GENERATOR TGZ)
-set(CPACK_SOURCE_IGNORE_FILES "${CMAKE_BINARY_DIR}" "/CVS/" "/.svn" "~$" 
-    "DS_Store$" "/tmp/" "/bin/" "/lib/")
+set(CPACK_SOURCE_IGNORE_FILES "TODO.txt" "${CMAKE_BINARY_DIR}" "/CVS/"
+    "/.svn" "~$" "DS_Store$" "/tmp/" "/bin/" "/lib/")
 if(WIN32)
   set(CPACK_GENERATOR ZIP)
 else(WIN32)
