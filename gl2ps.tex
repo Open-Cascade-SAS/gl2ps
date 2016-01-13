@@ -899,7 +899,10 @@ rotated text in PDF output;
 \noemail{David Lonie}{david.lonie@kitware.com} for VTK patches;
 %
 \noemail{Pantxo Diribarne}{pantxo.diribarne@gmail.com} for polygon offset
-improvement and image scaling fix for SVG output.
+improvement and image scaling fix for SVG output;
+%
+\noemail{David Lonie}{david.lonie@kitware.com} for direct addition of promitives
+(for newer OpenGL APIs without feedback buffer).
 
 \section{Links}
 \label{sec:links}
@@ -1049,6 +1052,9 @@ anymore.
   gl2psPrintf; added \dd{gl2psTextOptColor}; minor fixes.
 \item[1.3.9] (Oct 17, 2015) Improved \dd{GL_POLYGON_OFFSET_FILL}; fixed scaling
   of images in SVG output.
+\item[1.3.10] Make it possible to add primitives directly, without parsing the
+  OpenGL feedback buffer, using \dd{gl2psAddPolyPrimitive}; \dd{gl2psBeginPage}
+  now accepts a buffersize of 0; new \dd{gl2psForceRasterPos}.
 \end{description}
 
 \end{document}
