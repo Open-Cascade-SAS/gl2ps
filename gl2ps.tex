@@ -293,6 +293,23 @@ determine the way primitives are handled:
   program. For PDF files the compression is done ``locally'' for each
   group of primitives, in accordance with the official PDF
   specification.
+\item[\dd{GL2PS_NO_OPENGL_CONTEXT}] GL2PS will not query an OpenGL
+  context for information, nor will it create/parse a feedback
+  buffer. This is required for newer OpenGL versions that have
+  deprecated the feedback render mode. Using GL2PS in this mode
+  requires all geometry to be added manually using
+  \dd{gl2psAddPolyPrimitive} (see \url{https://open.gl/feedback} for a
+  replacement to the deprecated OpenGL feedback
+  buffers). \dd{gl2psText}, \dd{gl2psTextOpt}, \dd{gl2psDrawPixels},
+  and \dd{gl2psSpecial} are still usable, but require the use of
+  \dd{gl2psForceRasterPos} to set the raster position.
+
+  This option is incompatible with \dd{GL2PS_DRAW_BACKGROUND} and
+  \dd{GL2PS_USE_CURRENT_VIEWPORT}, and requires \dd{GL2PS_NO_BLENDING}
+  to be set. The \dd{gl2psBeginPage} \dd{colormode} must be set to
+  \dd{GL_RGBA} if this option is enabled. If these restrictions are
+  not met, a runtime error will be reported and \dd{gl2psBeginPage} /
+  \dd{gl2psSetOptions} will return \dd{GL2PS_ERROR}.
 \end{description}
 
 \item[\dd{colormode}] Specifies the color mode: \dd{GL_RGBA} or
@@ -675,6 +692,7 @@ the background for selected viewports, by setting/unsetting
 \noindent\dd{gl2psSetOptions} and \dd{gl2psGetOptions} return:
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
+\item[\dd{GL2PS_ERROR}] if an error occurs;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
 
