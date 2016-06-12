@@ -3189,6 +3189,8 @@ static void gl2psPrintPostScriptBeginViewport(GLint viewport[4])
     gl2ps->header = GL_FALSE;
   }
 
+  gl2psResetPostScriptColor();
+
   gl2psPrintf("gsave\n"
               "1.0 1.0 scale\n");
 
