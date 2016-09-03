@@ -87,14 +87,16 @@
 #define GL2PS_BEGIN_STIPPLE_TOKEN  5
 #define GL2PS_END_STIPPLE_TOKEN    6
 #define GL2PS_POINT_SIZE_TOKEN     7
-#define GL2PS_LINE_WIDTH_TOKEN     8
-#define GL2PS_BEGIN_BLEND_TOKEN    9
-#define GL2PS_END_BLEND_TOKEN      10
-#define GL2PS_SRC_BLEND_TOKEN      11
-#define GL2PS_DST_BLEND_TOKEN      12
-#define GL2PS_IMAGEMAP_TOKEN       13
-#define GL2PS_DRAW_PIXELS_TOKEN    14
-#define GL2PS_TEXT_TOKEN           15
+#define GL2PS_LINE_CAP_TOKEN       8
+#define GL2PS_LINE_JOIN_TOKEN      9
+#define GL2PS_LINE_WIDTH_TOKEN     10
+#define GL2PS_BEGIN_BLEND_TOKEN    11
+#define GL2PS_END_BLEND_TOKEN      12
+#define GL2PS_SRC_BLEND_TOKEN      13
+#define GL2PS_DST_BLEND_TOKEN      14
+#define GL2PS_IMAGEMAP_TOKEN       15
+#define GL2PS_DRAW_PIXELS_TOKEN    16
+#define GL2PS_TEXT_TOKEN           17
 
 typedef enum {
   T_UNDEFINED    = -1,
@@ -162,7 +164,7 @@ typedef struct {
   GLshort type, numverts;
   GLushort pattern;
   char boundary, offset, culled;
-  GLint factor;
+  GLint factor, linecap, linejoin;
   GLfloat width, ofactor, ounits;
   GL2PSvertex *verts;
   union {
@@ -189,6 +191,7 @@ typedef struct{
 typedef struct {
   /* General */
   GLint format, sort, options, colorsize, colormode, buffersize;
+  GLint lastlinecap, lastlinejoin;
   char *title, *producer, *filename;
   GLboolean boundary, blending;
   GLfloat *feedback, lastlinewidth;
@@ -887,6 +890,9 @@ static GLint gl2psAddText(GLint type, const char *str, const char *fontname,
   prim->pattern = 0;
   prim->factor = 0;
   prim->width = 1;
+  prim->linecap = 0;
+  prim->linejoin = 0;
+
   if (color) {
     memcpy(prim->verts[0].rgba, color, 4 * sizeof(float));
   }
@@ -1038,6 +1044,12 @@ static void gl2psInitTriangle(GL2PStriangle *t)
 
 /* Miscellaneous helper routines */
 
+static void gl2psResetLineProperties(void)
+{
+  gl2ps->lastlinewidth = 0.;
+  gl2ps->lastlinecap = gl2ps->lastlinejoin = 0;
+}
+
 static GL2PSprimitive *gl2psCopyPrimitive(GL2PSprimitive *p)
 {
   GL2PSprimitive *prim;
@@ -1059,6 +1071,8 @@ static GL2PSprimitive *gl2psCopyPrimitive(GL2PSprimitive *p)
   prim->factor = p->factor;
   prim->culled = p->culled;
   prim->width = p->width;
+  prim->linecap = p->linecap;
+  prim->linejoin = p->linejoin;
   prim->verts = (GL2PSvertex*)gl2psMalloc(p->numverts*sizeof(GL2PSvertex));
   memcpy(prim->verts, p->verts, p->numverts * sizeof(GL2PSvertex));
 
@@ -1257,6 +1271,8 @@ static void gl2psCreateSplitPrimitive(GL2PSprimitive *parent, GL2PSplane plane,
   child->pattern = parent->pattern;
   child->factor = parent->factor;
   child->width = parent->width;
+  child->linecap = parent->linecap;
+  child->linejoin = parent->linejoin;
   child->numverts = numverts;
   child->verts = (GL2PSvertex*)gl2psMalloc(numverts * sizeof(GL2PSvertex));
 
@@ -1395,6 +1411,8 @@ static void gl2psDivideQuad(GL2PSprimitive *quad,
   (*t1)->pattern = (*t2)->pattern = quad->pattern;
   (*t1)->factor = (*t2)->factor = quad->factor;
   (*t1)->width = (*t2)->width = quad->width;
+  (*t1)->linecap = (*t2)->linecap = quad->linecap;
+  (*t1)->linejoin = (*t2)->linejoin = quad->linejoin;
   (*t1)->verts = (GL2PSvertex*)gl2psMalloc(3 * sizeof(GL2PSvertex));
   (*t2)->verts = (GL2PSvertex*)gl2psMalloc(3 * sizeof(GL2PSvertex));
   (*t1)->verts[0] = quad->verts[0];
@@ -1936,6 +1954,8 @@ static GL2PSprimitive *gl2psCreateSplitPrimitive2D(GL2PSprimitive *parent,
   child->pattern = parent->pattern;
   child->factor = parent->factor;
   child->width = parent->width;
+  child->linecap = parent->linecap;
+  child->linejoin = parent->linejoin;
   child->numverts = numverts;
   child->verts = (GL2PSvertex*)gl2psMalloc(numverts * sizeof(GL2PSvertex));
   for(i = 0; i < numverts; i++){
@@ -2127,6 +2147,8 @@ static void gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list)
       b->factor = prim->factor;
       b->culled = prim->culled;
       b->width = prim->width;
+      b->linecap = prim->linecap;
+      b->linejoin = prim->linejoin;
       b->boundary = 0;
       b->numverts = 2;
       b->verts = (GL2PSvertex*)gl2psMalloc(2 * sizeof(GL2PSvertex));
@@ -2196,7 +2218,8 @@ GL2PSDLL_API void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
                                         GL2PSvertex *verts, GLint offset,
                                         GLfloat ofactor, GLfloat ounits,
                                         GLushort pattern, GLint factor,
-                                        GLfloat width, char boundary)
+                                        GLfloat width, GLint linecap,
+                                        GLint linejoin,char boundary)
 {
   GL2PSprimitive *prim;
 
@@ -2212,6 +2235,8 @@ GL2PSDLL_API void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
   prim->pattern = pattern;
   prim->factor = factor;
   prim->width = width;
+  prim->linecap = linecap;
+  prim->linejoin = linejoin;
   prim->culled = 0;
 
   /* FIXME: here we should have an option to split stretched
@@ -2251,6 +2276,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
   GLushort pattern = 0;
   GLboolean boundary;
   GLint i, sizeoffloat, count, v, vtot, offset = 0, factor = 0, auxindex = 0;
+  GLint lcap = 0, ljoin = 0;
   GLfloat lwidth = 1.0F, psize = 1.0F, ofactor, ounits;
   GLfloat *current;
   GL2PSvertex vertices[3];
@@ -2272,7 +2298,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
       current += i;
       used    -= i;
       gl2psAddPolyPrimitive(GL2PS_POINT, 1, vertices, 0, 0.0, 0.0,
-                            pattern, factor, psize, 0);
+                            pattern, factor, psize, lcap, ljoin, 0);
       break;
     case GL_LINE_TOKEN :
     case GL_LINE_RESET_TOKEN :
@@ -2285,7 +2311,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
       current += i;
       used    -= i;
       gl2psAddPolyPrimitive(GL2PS_LINE, 2, vertices, 0, 0.0, 0.0,
-                            pattern, factor, lwidth, 0);
+                            pattern, factor, lwidth, lcap, ljoin, 0);
       break;
     case GL_POLYGON_TOKEN :
       count = (GLint)current[1];
@@ -2309,7 +2335,8 @@ static void gl2psParseFeedbackBuffer(GLint used)
           else
             flag = 0;
           gl2psAddPolyPrimitive(GL2PS_TRIANGLE, 3, vertices, offset, ofactor,
-                                ounits, pattern, factor, 1, flag);
+                                ounits, pattern, factor, 1, lcap, ljoin, 
+                                flag);
           vertices[1] = vertices[2];
         }
         else
@@ -2368,6 +2395,16 @@ static void gl2psParseFeedbackBuffer(GLint used)
         current += 2;
         used -= 2;
         psize = current[1];
+        break;
+      case GL2PS_LINE_CAP_TOKEN :
+        current += 2;
+        used -= 2;
+        lcap = current[1];
+        break;
+      case GL2PS_LINE_JOIN_TOKEN :
+        current += 2;
+        used -= 2;
+        ljoin = current[1];
         break;
       case GL2PS_LINE_WIDTH_TOKEN :
         current += 2;
@@ -2764,7 +2801,6 @@ static void gl2psPrintPostScriptHeader(void)
 
   gl2psPrintf("%%%%BeginProlog\n"
               "/gl2psdict 64 dict def gl2psdict begin\n"
-              "0 setlinecap 0 setlinejoin\n"
               "/tryPS3shading %s def %% set to false to force subdivision\n"
               "/rThreshold %g def %% red component subdivision threshold\n"
               "/gThreshold %g def %% green component subdivision threshold\n"
@@ -2775,7 +2811,9 @@ static void gl2psPrintPostScriptHeader(void)
   gl2psPrintf("/BD { bind def } bind def\n"
               "/C  { setrgbcolor } BD\n"
               "/G  { 0.082 mul exch 0.6094 mul add exch 0.3086 mul add neg 1.0 add setgray } BD\n"
-              "/W  { setlinewidth } BD\n");
+              "/W  { setlinewidth } BD\n"
+              "/LC  { setlinecap } BD\n"
+              "/LJ  { setlinejoin } BD\n");
 
   gl2psPrintf("/FC { findfont exch /SH exch def SH scalefont setfont } BD\n"
               "/SW { dup stringwidth pop } BD\n"
@@ -3050,6 +3088,8 @@ static void gl2psPrintPostScriptPrimitive(void *data)
     if(!gl2psSamePosition(gl2ps->lastvertex.xyz, prim->verts[0].xyz) ||
        !gl2psSameColor(gl2ps->lastrgba, prim->verts[0].rgba) ||
        gl2ps->lastlinewidth != prim->width ||
+       gl2ps->lastlinecap != prim->linecap ||
+       gl2ps->lastlinejoin != prim->linejoin ||
        gl2ps->lastpattern != prim->pattern ||
        gl2ps->lastfactor != prim->factor){
       /* End the current line if the new segment does not start where
@@ -3067,6 +3107,14 @@ static void gl2psPrintPostScriptPrimitive(void *data)
     if(gl2ps->lastlinewidth != prim->width){
       gl2ps->lastlinewidth = prim->width;
       gl2psPrintf("%g W\n", gl2ps->lastlinewidth);
+    }
+    if(gl2ps->lastlinecap != prim->linecap){
+      gl2ps->lastlinecap = prim->linecap;
+      gl2psPrintf("%d LC\n", gl2ps->lastlinecap);
+    }
+    if(gl2ps->lastlinejoin != prim->linejoin){
+      gl2ps->lastlinejoin = prim->linejoin;
+      gl2psPrintf("%d LJ\n", gl2ps->lastlinejoin);
     }
     gl2psPrintPostScriptDash(prim->pattern, prim->factor, "setdash");
     gl2psPrintPostScriptColor(prim->verts[0].rgba);
@@ -3190,6 +3238,7 @@ static void gl2psPrintPostScriptBeginViewport(GLint viewport[4])
   }
 
   gl2psResetPostScriptColor();
+  gl2psResetLineProperties();
 
   gl2psPrintf("gsave\n"
               "1.0 1.0 scale\n");
@@ -3378,6 +3427,8 @@ static void gl2psPrintTeXBeginViewport(GLint viewport[4])
   (void) viewport;  /* not used */
   glRenderMode(GL_FEEDBACK);
 
+  gl2psResetLineProperties();
+
   if(gl2ps->header){
     gl2psPrintTeXHeader();
     gl2ps->header = GL_FALSE;
@@ -3465,6 +3516,22 @@ static int gl2psPrintPDFLineWidth(GLfloat lw)
     return gl2psPrintf("%g w\n", lw);
 }
 
+static int gl2psPrintPDFLineCap(GLint lc)
+{
+  if(gl2ps->lastlinecap == lc)
+    return 0;
+  else 
+    return gl2psPrintf("%d J\n", lc);
+}
+
+static int gl2psPrintPDFLineJoin(GLint lj)
+{
+  if(gl2ps->lastlinejoin == lj)
+    return 0;
+  else
+    return gl2psPrintf("%d j\n", lj);
+}
+
 static void gl2psPutPDFText(GL2PSstring *text, int cnt, GLfloat x, GLfloat y)
 {
   GLfloat rad, crad, srad;
@@ -3541,6 +3608,8 @@ static void gl2psPDFgroupListInit(void)
   GLushort lastpattern = 0;
   GLint lastfactor = 0;
   GLfloat lastwidth = 1;
+  GLint lastlinecap = 0;
+  GLint lastlinejoin = 0;
   GL2PStriangle lastt, tmpt;
   int lastTriangleWasNotSimpleWithSameColor = 0;
 
@@ -3569,6 +3638,7 @@ static void gl2psPDFgroupListInit(void)
       break;
     case GL2PS_LINE:
       if(lasttype != p->type || lastwidth != p->width ||
+         lastlinecap != p->linecap || lastlinejoin != p->linejoin ||
          lastpattern != p->pattern || lastfactor != p->factor ||
          !gl2psSameColor(p->verts[0].rgba, lastrgba)){
         gl2psPDFgroupObjectInit(&gro);
@@ -3582,6 +3652,8 @@ static void gl2psPDFgroupListInit(void)
       lastpattern = p->pattern;
       lastfactor = p->factor;
       lastwidth = p->width;
+      lastlinecap = p->linecap;
+      lastlinejoin = p->linejoin;
       lastrgba[0] = p->verts[0].rgba[0];
       lastrgba[1] = p->verts[0].rgba[1];
       lastrgba[2] = p->verts[0].rgba[2];
@@ -3726,6 +3798,8 @@ static void gl2psPDFgroupListWriteMainStream(void)
          order to get nice stippling even when the individual segments
          are smaller than the stipple */
       gl2ps->streamlength += gl2psPrintPDFLineWidth(prim->width);
+      gl2ps->streamlength += gl2psPrintPDFLineCap(prim->linecap);
+      gl2ps->streamlength += gl2psPrintPDFLineJoin(prim->linejoin);
       gl2ps->streamlength += gl2psPrintPDFStrokeColor(prim->verts[0].rgba);
       gl2ps->streamlength += gl2psPrintPostScriptDash(prim->pattern, prim->factor, "d");
       /* start new path */
@@ -4845,6 +4919,8 @@ static void gl2psPrintPDFBeginViewport(GLint viewport[4])
 
   glRenderMode(GL_FEEDBACK);
 
+  gl2psResetLineProperties();
+
   if(gl2ps->header){
     gl2psPrintPDFHeader();
     gl2ps->header = GL_FALSE;
@@ -5129,6 +5205,7 @@ static void gl2psPrintSVGPrimitive(void *data)
   GL2PSxyz xyz[4];
   GL2PSrgba rgba[4];
   char col[32];
+  char lcap[7], ljoin[7];
   int newline;
 
   prim = *(GL2PSprimitive**)data;
@@ -5154,6 +5231,8 @@ static void gl2psPrintSVGPrimitive(void *data)
     if(!gl2psSamePosition(gl2ps->lastvertex.xyz, prim->verts[0].xyz) ||
        !gl2psSameColor(gl2ps->lastrgba, prim->verts[0].rgba) ||
        gl2ps->lastlinewidth != prim->width ||
+       gl2ps->lastlinecap != prim->linecap ||
+       gl2ps->lastlinejoin != prim->linejoin ||
        gl2ps->lastpattern != prim->pattern ||
        gl2ps->lastfactor != prim->factor){
       /* End the current line if the new segment does not start where
@@ -5169,12 +5248,38 @@ static void gl2psPrintSVGPrimitive(void *data)
     gl2ps->lastvertex = prim->verts[1];
     gl2psSetLastColor(prim->verts[0].rgba);
     gl2ps->lastlinewidth = prim->width;
+    gl2ps->lastlinecap = prim->linecap;
+    gl2ps->lastlinejoin = prim->linejoin;
     gl2ps->lastpattern = prim->pattern;
     gl2ps->lastfactor = prim->factor;
     if(newline){
       gl2psSVGGetColorString(rgba[0], col);
       gl2psPrintf("<polyline fill=\"none\" stroke=\"%s\" stroke-width=\"%g\" ",
                   col, prim->width);
+      switch (prim->linecap){
+      case GL2PS_LINE_CAP_BUTT:
+        sprintf (lcap, "%s", "butt");
+        break;
+      case GL2PS_LINE_CAP_ROUND:
+        sprintf (lcap, "%s", "round");
+        break;
+      case GL2PS_LINE_CAP_SQUARE:
+        sprintf (lcap, "%s", "square");
+        break;
+      }
+      switch (prim->linejoin){
+      case GL2PS_LINE_JOIN_MITER:
+        sprintf (ljoin, "%s", "miter");
+        break;
+      case GL2PS_LINE_JOIN_ROUND:
+        sprintf (ljoin, "%s", "round");
+        break;
+      case GL2PS_LINE_JOIN_BEVEL:
+        sprintf (ljoin, "%s", "bevel");
+        break;
+      }
+      gl2psPrintf("stroke-linecap=\"%s\" stroke-linejoin=\"%s\" ",
+                  lcap, ljoin);
       if(rgba[0][3] < 1.0F) gl2psPrintf("stroke-opacity=\"%g\" ", rgba[0][3]);
       gl2psPrintSVGDash(prim->pattern, prim->factor);
       gl2psPrintf("points=\"%g,%g ", xyz[0][0], xyz[0][1]);
@@ -5286,6 +5391,8 @@ static void gl2psPrintSVGBeginViewport(GLint viewport[4])
   int x = viewport[0], y = viewport[1], w = viewport[2], h = viewport[3];
 
   glRenderMode(GL_FEEDBACK);
+
+  gl2psResetLineProperties();
 
   if(gl2ps->header){
     gl2psPrintSVGHeader();
@@ -5451,6 +5558,34 @@ static void gl2psPrintPGFPrimitive(void *data)
       gl2ps->lastlinewidth = prim->width;
       fprintf(gl2ps->stream, "\\pgfsetlinewidth{%fpt}\n", gl2ps->lastlinewidth);
     }
+    if(gl2ps->lastlinecap != prim->linecap){
+      gl2ps->lastlinecap = prim->linecap;
+      switch (prim->linecap){
+      case GL2PS_LINE_CAP_BUTT:
+        fprintf(gl2ps->stream, "\\pgfset%s\n", "buttcap");
+        break;
+      case GL2PS_LINE_CAP_ROUND:
+        fprintf(gl2ps->stream, "\\pgfset%s\n", "roundcap");
+        break;
+      case GL2PS_LINE_CAP_SQUARE:
+        fprintf(gl2ps->stream, "\\pgfset%s\n", "rectcap");
+        break;
+      }
+    }
+    if(gl2ps->lastlinejoin != prim->linejoin){
+      gl2ps->lastlinejoin = prim->linejoin;
+      switch (prim->linejoin){
+      case GL2PS_LINE_JOIN_MITER:
+        fprintf(gl2ps->stream, "\\pgfset%s\n", "miterjoin");
+        break;
+      case GL2PS_LINE_JOIN_ROUND:
+        fprintf(gl2ps->stream, "\\pgfset%s\n", "roundjoin");
+        break;
+      case GL2PS_LINE_JOIN_BEVEL:
+        fprintf(gl2ps->stream, "\\pgfset%s\n", "beveljoin");
+        break;
+      }
+    } 
     gl2psPrintPGFDash(prim->pattern, prim->factor);
     fprintf(gl2ps->stream,
             "\\pgfpathmoveto{\\pgfpoint{%fpt}{%fpt}}\n"
@@ -5463,6 +5598,34 @@ static void gl2psPrintPGFPrimitive(void *data)
     if(gl2ps->lastlinewidth != 0){
       gl2ps->lastlinewidth = 0;
       fprintf(gl2ps->stream, "\\pgfsetlinewidth{0.01pt}\n");
+    }
+    if(gl2ps->lastlinecap != prim->linecap){
+      gl2ps->lastlinecap = prim->linecap;
+      switch (prim->linecap){
+      case GL2PS_LINE_CAP_BUTT:
+        fprintf(gl2ps->stream, "\\pgfset%s\n", "buttcap");
+        break;
+      case GL2PS_LINE_CAP_ROUND:
+        fprintf(gl2ps->stream, "\\pgfset%s\n", "roundcap");
+        break;
+      case GL2PS_LINE_CAP_SQUARE:
+        fprintf(gl2ps->stream, "\\pgfset%s\n", "rectcap");
+        break;
+      }
+    }
+    if(gl2ps->lastlinejoin != prim->linejoin){
+      gl2ps->lastlinejoin = prim->linejoin;
+      switch (prim->linejoin){
+      case GL2PS_LINE_JOIN_MITER:
+        fprintf(gl2ps->stream, "\\pgfset%s\n", "miterjoin");
+        break;
+      case GL2PS_LINE_JOIN_ROUND:
+        fprintf(gl2ps->stream, "\\pgfset%s\n", "roundjoin");
+        break;
+      case GL2PS_LINE_JOIN_BEVEL:
+        fprintf(gl2ps->stream, "\\pgfset%s\n", "beveljoin");
+        break;
+      }
     }
     gl2psPrintPGFColor(prim->verts[0].rgba);
     fprintf(gl2ps->stream,
@@ -5520,6 +5683,8 @@ static void gl2psPrintPGFBeginViewport(GLint viewport[4])
   int x = viewport[0], y = viewport[1], w = viewport[2], h = viewport[3];
 
   glRenderMode(GL_FEEDBACK);
+
+  gl2psResetLineProperties();
 
   if(gl2ps->header){
     gl2psPrintPGFHeader();
@@ -5821,6 +5986,8 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
     gl2ps->lastrgba[i] = -1.0F;
   }
   gl2ps->lastlinewidth = -1.0F;
+  gl2ps->lastlinecap = 0;
+  gl2ps->lastlinejoin = 0;
   gl2ps->lastpattern = 0;
   gl2ps->lastfactor = 0;
   gl2ps->imagetree = NULL;
@@ -5960,7 +6127,7 @@ GL2PSDLL_API GLint gl2psEndViewport(void)
   res = (gl2psbackends[gl2ps->format]->endViewport)();
 
   /* reset last used colors, line widths */
-  gl2ps->lastlinewidth = -1.0F;
+  gl2psResetLineProperties();
 
   return res;
 }
@@ -6195,6 +6362,26 @@ GL2PSDLL_API GLint gl2psPointSize(GLfloat value)
   if(!gl2ps) return GL2PS_UNINITIALIZED;
 
   glPassThrough(GL2PS_POINT_SIZE_TOKEN);
+  glPassThrough(value);
+
+  return GL2PS_SUCCESS;
+}
+
+GL2PSDLL_API GLint gl2psLineCap(GLint value)
+{
+  if(!gl2ps) return GL2PS_UNINITIALIZED;
+
+  glPassThrough(GL2PS_LINE_CAP_TOKEN);
+  glPassThrough(value);
+
+  return GL2PS_SUCCESS;
+}
+
+GL2PSDLL_API GLint gl2psLineJoin(GLint value)
+{
+  if(!gl2ps) return GL2PS_UNINITIALIZED;
+
+  glPassThrough(GL2PS_LINE_JOIN_TOKEN);
   glPassThrough(value);
 
   return GL2PS_SUCCESS;

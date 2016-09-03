@@ -104,9 +104,40 @@ static void display(void)
 
   glColor3f(0.1,0.1,0.1);
 
+  /* Draw 3 broken lines to show line cap an line join features (which have 
+     no opengl counterpart) */
+  glLineWidth(6.);
+  gl2psLineWidth (6.);
+
+  gl2psLineCap (GL2PS_LINE_CAP_BUTT);
+  gl2psLineJoin (GL2PS_LINE_JOIN_MITER);
+  glBegin(GL_LINE_STRIP);
+  glVertex3f(-0.9, 0.8, 0);
+  glVertex3f(-0.75, 0.98, 0);
+  glVertex3f(-0.6, 0.8, 0);
+  glEnd();
+
+  gl2psLineCap (GL2PS_LINE_CAP_ROUND);
+  gl2psLineJoin (GL2PS_LINE_JOIN_ROUND);
+  glBegin(GL_LINE_STRIP);
+  glVertex3f(-0.5, 0.8, 0);
+  glVertex3f(-0.35, 0.98, 0);
+  glVertex3f(-0.2, 0.8, 0);
+  glEnd();
+
+  gl2psLineCap (GL2PS_LINE_CAP_SQUARE);
+  gl2psLineJoin (GL2PS_LINE_JOIN_BEVEL);
+  glBegin(GL_LINE_STRIP);
+  glVertex3f(0.2, 0.8, 0);
+  glVertex3f(0.35, 0.98, 0);
+  glVertex3f(0.5, 0.8, 0);
+  glEnd();
+  
   /* draw a stippled line with many small segments (this tests the
      ability of gl2ps to render lines using as few strokes as
      possible) */
+  glLineWidth(1.);
+  gl2psLineWidth(1.);
   glEnable(GL_LINE_STIPPLE);
   glLineStipple(1, 0x087F);
   gl2psEnable(GL2PS_LINE_STIPPLE);

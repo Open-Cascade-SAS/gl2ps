@@ -91,7 +91,7 @@
 </center>
 <h2>Download</h2>
 The latest stable version of GL2PS is <a
-href="http://geuz.org/gl2ps/src/gl2ps-1.3.9.tgz">gl2ps-1.3.9.tgz</a>.  Older
+href="http://geuz.org/gl2ps/src/gl2ps-1.4.0.tgz">gl2ps-1.4.0.tgz</a>.  Older
 versions and nightly source snapshots are available <a
 href="http://geuz.org/gl2ps/src/">here</a>.  For read-only svn access use:
 '<code>svn co <a href="https://geuz.org/svn/gl2ps/trunk" data-tooltip=
@@ -149,7 +149,7 @@ under certain conditions) for static linking with closed-source software
 corrections, questions or suggestions should be e-mailed to the GL2PS
 mailing list \email{gl2ps@geuz.org}{gl2ps@geuz.org}.
 
-The interface consists of fifteen functions, all beginning with the
+The interface consists of seventeen functions, all beginning with the
 prefix \dd{gl2ps}. All the data structures and the symbolic constants
 peculiar to GL2PS begin with \dd{GL2PS}.
 
@@ -567,7 +567,8 @@ GLint gl2psDisable( GLint mode )
 
 % -------------------------------------------------------------------------
 
-\subsection{\texttt{gl2psPointSize} and \texttt{gl2psLineWidth}}
+\subsection{\texttt{gl2psPointSize}, \texttt{gl2psLineWidth},
+  \texttt{gl2psLineCap} and \texttt{gl2psLineJoin}}
 \label{sec:gl2psPointSize}
 
 \subsubsection{Specification}
@@ -580,21 +581,41 @@ GLint gl2psPointSize( GLfloat value )
 GLint gl2psLineWidth( GLfloat value )
 \end{verbatim}
 
+\begin{verbatim}
+GLint gl2psLineCap( GLint value )
+\end{verbatim}
+
+\begin{verbatim}
+GLint gl2psLineJoin( GLint value )
+\end{verbatim}
+
 \subsubsection{Description and arguments}
 
-\dd{gl2psPointSize} and \dd{gl2psLineSize} emulate the standard
+\dd{gl2psPointSize} and \dd{gl2psLineWidth} emulate the standard
 \dd{glPointSize} and the \dd{glLineWidth} functions. They are necessary
 since the point sizes and line widths are not saved in the OpenGL feedback
 buffer.
 
+\dd{gl2psLineCap} and \dd{gl2psLineJoin} let you choose respectively
+the shape of the lines ending and intersections (for line
+strips). As those features are not part of OpenGL line options, the
+output will look different from the corresponding OpenGL scene.
+
+For \dd{gl2psLineCap} allowed values are \dd{GL2PS_LINE_CAP_BUTT}
+(the default), \dd{GL2PS_LINE_CAP_ROUND} and \dd{GL2PS_LINE_CAP_SQUARE}. For
+\dd{gl2psLineJoin} allowed values are \dd{GL2PS_LINE_JOIN_MITER} 
+(the default), \dd{GL2PS_LINE_JOIN_ROUND} and \dd{GL2PS_LINE_JOIN_BEVEL}.
+
 \subsubsection{Return value}
 
-\noindent\dd{gl2psPointSize} and \dd{gl2psLineWidth} return:
+\noindent\dd{gl2psPointSize}, \dd{gl2psLineWidth}, \dd{gl2psLineCap}
+and \dd{gl2psLineJoin} return: 
 \begin{description}
 \item[\dd{GL2PS_UNINITIALIZED}] if the library is not initialized;
 \item[\dd{GL2PS_ERROR}] if an error occurred;
 \item[\dd{GL2PS_SUCCESS}] otherwise.
 \end{description}
+
 
 % -------------------------------------------------------------------------
 
@@ -917,8 +938,8 @@ rotated text in PDF output;
 \noemail{David Lonie}{david.lonie@kitware.com} for VTK patches;
 %
 \noemail{Pantxo Diribarne}{pantxo.diribarne@gmail.com} for polygon offset
-improvement, image scaling fix for SVG output, PostScript viewport color bug
-fix;
+improvement, image scaling fix for SVG and PDF output, PostScript viewport color
+bug fix, \dd{gl2psLineCap} and \dd{gl2psLineJoin};
 %
 \noemail{David Lonie}{david.lonie@kitware.com} for direct addition of promitives
 (for newer OpenGL APIs without feedback buffer).
@@ -1071,9 +1092,10 @@ anymore.
   gl2psPrintf; added \dd{gl2psTextOptColor}; minor fixes.
 \item[1.3.9] (Oct 17, 2015) Improved \dd{GL_POLYGON_OFFSET_FILL}; fixed scaling
   of images in SVG output.
-\item[1.3.10] Make it possible to add primitives directly, without parsing the
+\item[1.4.0] Make it possible to add primitives directly, without parsing the
   OpenGL feedback buffer, using \dd{gl2psAddPolyPrimitive}; \dd{gl2psBeginPage}
-  now accepts a buffersize of 0; new \dd{gl2psForceRasterPos}.
+  now accepts a buffersize of 0; new \dd{gl2psForceRasterPos}, \dd{gl2psLineCap}
+  and \dd{gl2psLineJoin}; fixed scaling of images in PDF output.
 \end{description}
 
 \end{document}
