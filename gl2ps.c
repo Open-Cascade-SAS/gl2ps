@@ -2335,7 +2335,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
           else
             flag = 0;
           gl2psAddPolyPrimitive(GL2PS_TRIANGLE, 3, vertices, offset, ofactor,
-                                ounits, pattern, factor, 1, lcap, ljoin, 
+                                ounits, pattern, factor, 1, lcap, ljoin,
                                 flag);
           vertices[1] = vertices[2];
         }
@@ -3520,7 +3520,7 @@ static int gl2psPrintPDFLineCap(GLint lc)
 {
   if(gl2ps->lastlinecap == lc)
     return 0;
-  else 
+  else
     return gl2psPrintf("%d J\n", lc);
 }
 
@@ -3571,7 +3571,8 @@ static void gl2psPutPDFImage(GL2PSimage *image, int cnt, GLfloat x, GLfloat y)
      "%d 0 0 %d %f %f cm\n"
      "/Im%d Do\n"
      "Q\n",
-     (int)image->width, (int)image->height, x, y, cnt);
+     (int)(image->zoom_x * image->width), (int)(image->zoom_y * image->height),
+     x, y, cnt);
 }
 
 static void gl2psPDFstacksInit(void)
@@ -5585,7 +5586,7 @@ static void gl2psPrintPGFPrimitive(void *data)
         fprintf(gl2ps->stream, "\\pgfset%s\n", "beveljoin");
         break;
       }
-    } 
+    }
     gl2psPrintPGFDash(prim->pattern, prim->factor);
     fprintf(gl2ps->stream,
             "\\pgfpathmoveto{\\pgfpoint{%fpt}{%fpt}}\n"
