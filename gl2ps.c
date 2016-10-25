@@ -5063,7 +5063,7 @@ static void gl2psPrintSVGHeader(void)
   }
 
   /* group all the primitives and disable antialiasing */
-  gl2psPrintf("<g shape-rendering=\"crispEdges\">\n");
+  gl2psPrintf("<g>\n");
 }
 
 static void gl2psPrintSVGSmoothTriangle(GL2PSxyz xyz[3], GL2PSrgba rgba[3])
@@ -5081,6 +5081,7 @@ static void gl2psPrintSVGSmoothTriangle(GL2PSxyz xyz[3], GL2PSrgba rgba[3])
     gl2psSVGGetColorString(rgba[0], col);
     gl2psPrintf("<polygon fill=\"%s\" ", col);
     if(rgba[0][3] < 1.0F) gl2psPrintf("fill-opacity=\"%g\" ", rgba[0][3]);
+    gl2psPrintf("shape-rendering=\"crispEdges\" ");
     gl2psPrintf("points=\"%g,%g %g,%g %g,%g\"/>\n", xyz[0][0], xyz[0][1],
                 xyz[1][0], xyz[1][1], xyz[2][0], xyz[2][1]);
   }
@@ -5412,11 +5413,12 @@ static void gl2psPrintSVGBeginViewport(GLint viewport[4])
       rgba[3] = 1.0F;
     }
     gl2psSVGGetColorString(rgba, col);
-    gl2psPrintf("<polygon fill=\"%s\" points=\"%d,%d %d,%d %d,%d %d,%d\"/>\n", col,
+    gl2psPrintf("<polygon fill=\"%s\" points=\"%d,%d %d,%d %d,%d %d,%d\" ", col,
                 x, gl2ps->viewport[3] - y,
                 x + w, gl2ps->viewport[3] - y,
                 x + w, gl2ps->viewport[3] - (y + h),
                 x, gl2ps->viewport[3] - (y + h));
+    gl2psPrintf("shape-rendering=\"crispEdges\"/>\n");
   }
 
   gl2psPrintf("<clipPath id=\"cp%d%d%d%d\">\n", x, y, w, h);
