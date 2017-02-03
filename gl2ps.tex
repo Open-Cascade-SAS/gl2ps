@@ -942,7 +942,9 @@ improvement, image scaling fix for SVG and PDF output, PostScript viewport color
 bug fix, \dd{gl2psLineCap} and \dd{gl2psLineJoin};
 %
 \noemail{David Lonie}{david.lonie@kitware.com} for direct addition of promitives
-(for newer OpenGL APIs without feedback buffer).
+(for newer OpenGL APIs without feedback buffer);
+%
+\normail{Dan Lipsa}{dan.lipsa@kitware.com} for bug fixes in PDF output.
 
 \section{Links}
 \label{sec:links}
@@ -1095,7 +1097,8 @@ anymore.
 \item[1.4.0] Make it possible to add primitives directly, without parsing the
   OpenGL feedback buffer, using \dd{gl2psAddPolyPrimitive}; \dd{gl2psBeginPage}
   now accepts a buffersize of 0; new \dd{gl2psForceRasterPos}, \dd{gl2psLineCap}
-  and \dd{gl2psLineJoin}; fixed scaling of images in PDF output.
+  and \dd{gl2psLineJoin}; fixed scaling of images in PDF output; fixed bug
+  leading to corrupted PDF output.
 \end{description}
 
 \end{document}
