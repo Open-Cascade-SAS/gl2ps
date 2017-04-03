@@ -876,7 +876,7 @@ static GLint gl2psAddText(GLint type, const char *str, const char *fontname,
   }
 
   prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
-  prim->type = type;
+  prim->type = (GLshort)type;
   prim->boundary = 0;
   prim->numverts = 1;
   prim->verts = (GL2PSvertex*)gl2psMalloc(sizeof(GL2PSvertex));
@@ -2229,7 +2229,7 @@ GL2PSDLL_API void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
   prim->verts = (GL2PSvertex*)gl2psMalloc(numverts * sizeof(GL2PSvertex));
   memcpy(prim->verts, verts, numverts * sizeof(GL2PSvertex));
   prim->boundary = boundary;
-  prim->offset = offset;
+  prim->offset = (char)offset;
   prim->ofactor = ofactor;
   prim->ounits = ounits;
   prim->pattern = pattern;
@@ -2370,7 +2370,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
         break;
       case GL2PS_BEGIN_BOUNDARY_TOKEN : boundary = GL_TRUE; break;
       case GL2PS_END_BOUNDARY_TOKEN : boundary = GL_FALSE; break;
-      case GL2PS_END_STIPPLE_TOKEN : pattern = factor = 0; break;
+      case GL2PS_END_STIPPLE_TOKEN : pattern = 0; factor = 0; break;
       case GL2PS_BEGIN_BLEND_TOKEN : gl2ps->blending = GL_TRUE; break;
       case GL2PS_END_BLEND_TOKEN : gl2ps->blending = GL_FALSE; break;
       case GL2PS_BEGIN_STIPPLE_TOKEN :
@@ -2519,7 +2519,7 @@ static void gl2psPrintPostScriptPixmap(GLfloat x, GLfloat y, GL2PSimage *im)
 {
   GLuint nbhex, nbyte, nrgb, nbits;
   GLuint row, col, ibyte, icase;
-  GLfloat dr, dg, db, fgrey;
+  GLfloat dr = 0., dg = 0., db = 0., fgrey;
   unsigned char red = 0, green = 0, blue = 0, b, grey;
   GLuint width = (GLuint)im->width;
   GLuint height = (GLuint)im->height;
@@ -4592,8 +4592,8 @@ static int gl2psPrintPDFShaderMask(int obj, int childobj)
                   (int)gl2ps->viewport[2], (int)gl2ps->viewport[3]);
 
   len = (childobj>0)
-    ? strlen("/TrSh sh\n") + (int)log10((double)childobj)+1
-    : strlen("/TrSh0 sh\n");
+    ? (int)strlen("/TrSh sh\n") + (int)log10((double)childobj)+1
+    : (int)strlen("/TrSh0 sh\n");
 
   offs += fprintf(gl2ps->stream,
                   "/Length %d\n"
