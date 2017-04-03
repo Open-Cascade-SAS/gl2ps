@@ -1,6 +1,6 @@
 /*
  * GL2PS, an OpenGL to PostScript Printing Library
- * Copyright (C) 1999-2015 Christophe Geuzaine <geuz@geuz.org>
+ * Copyright (C) 1999-2017 Christophe Geuzaine <geuz@geuz.org>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of either:
@@ -104,7 +104,7 @@ static void display(void)
 
   glColor3f(0.1,0.1,0.1);
 
-  /* Draw 3 broken lines to show line cap an line join features (which have 
+  /* Draw 3 broken lines to show line cap an line join features (which have
      no opengl counterpart) */
   glLineWidth(6.);
   gl2psLineWidth (6.);
@@ -132,7 +132,7 @@ static void display(void)
   glVertex3f(0.35, 0.98, 0);
   glVertex3f(0.5, 0.8, 0);
   glEnd();
-  
+
   /* draw a stippled line with many small segments (this tests the
      ability of gl2ps to render lines using as few strokes as
      possible) */
