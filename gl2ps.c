@@ -164,7 +164,7 @@ typedef struct {
   GLshort type, numverts;
   GLushort pattern;
   char boundary, offset, culled;
-  GLint factor, linecap, linejoin;
+  GLint factor, linecap, linejoin, sortid;
   GLfloat width, ofactor, ounits;
   GL2PSvertex *verts;
   union {
@@ -598,6 +598,15 @@ static void gl2psListSort(GL2PSlist *list,
   if(!list)
     return;
   qsort(list->array, list->n, list->size, fcmp);
+}
+
+/* Must be a list of GL2PSprimitives. */
+static void gl2psListAssignSortIds(GL2PSlist *list)
+{
+  GLint i;
+  for(i = 0; i < gl2psListNbr(list); i++){
+    (*(GL2PSprimitive**)gl2psListPointer(list, i))->sortid = i;
+  }
 }
 
 static void gl2psListAction(GL2PSlist *list, void (*action)(void *data))
@@ -1458,7 +1467,8 @@ static int gl2psCompareDepth(const void *a, const void *b)
     return 1;
   }
   else{
-    return 0;
+    /* Ensure that initial ordering is preserved when depths match. */
+    return q->sortid < w->sortid ? -1 : 1;
   }
 }
 
@@ -5885,6 +5895,7 @@ static GLint gl2psPrintPrimitives(void)
     gl2psListReset(gl2ps->primitives);
     break;
   case GL2PS_SIMPLE_SORT :
+    gl2psListAssignSortIds(gl2ps->primitives);
     gl2psListSort(gl2ps->primitives, gl2psCompareDepth);
     if(gl2ps->options & GL2PS_OCCLUSION_CULL){
       gl2psListActionInverse(gl2ps->primitives, gl2psAddInImageTree);
