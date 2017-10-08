@@ -1,0 +1,46 @@
+#  GL2PS, an OpenGL to PostScript Printing Library
+#  Copyright (C) 1999-2017 C. Geuzaine
+
+variables:
+  EXTRA_VERSION: "-git"
+
+# -----------------------
+# Builds for all branches
+# -----------------------
+
+linux64_docker:
+  image: onelab/ubuntu16.04
+  script:
+    - mkdir build
+    - cd build
+    - cmake -DGL2PS_EXTRA_VERSION=$EXTRA_VERSION ..
+    - make -j 4
+  tags:
+    - linux64
+
+windows64_msvc:
+  script:
+    - md build
+    - cd build
+    - cmake -DGL2PS_EXTRA_VERSION=$EXTRA_VERSION ..
+    - msbuild package.vcxproj
+  tags:
+    - windows64
+
+# ----------------------------------------------
+# Official source snapshots (master branch only)
+# ----------------------------------------------
+
+source_official:
+  only:
+    - master
+  script:
+    - mkdir build
+    - cd build
+    - /usr/local/bin/cmake -DGL2PS_EXTRA_VERSION=$EXTRA_VERSION ..
+    - make
+    - make package_source
+    - PKG=`ls gl2ps-*.tar*`; scp -o StrictHostKeyChecking=no -i /home/gitlab-runner/.ssh/id_rsa ${PKG} geuzaine@geuz.org:.www/gl2ps/src/${PKG/\.tar\.gz/\.tgz}
+  tags:
+    - linux64
+    - official
