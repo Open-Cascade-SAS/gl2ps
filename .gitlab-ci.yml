@@ -17,7 +17,8 @@ linux64_docker:
     - make -j 4
   tags:
     - linux64
-
+    - docker
+    
 windows64_msvc:
   script:
     - md build
@@ -26,7 +27,8 @@ windows64_msvc:
     - msbuild package.vcxproj
   tags:
     - windows64
-
+    - official
+    
 # ----------------------------------------------
 # Official source snapshots (master branch only)
 # ----------------------------------------------
