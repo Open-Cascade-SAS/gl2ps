@@ -2,7 +2,7 @@
 #  Copyright (C) 1999-2017 C. Geuzaine
 
 variables:
-  EXTRA_VERSION: "-git"
+  EXTRA_VERSION: "-git-$CI_COMMIT_SHA"
 
 # -----------------------
 # Builds for all branches
