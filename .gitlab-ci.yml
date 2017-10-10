@@ -23,7 +23,7 @@ windows64_msvc:
   script:
     - md build
     - cd build
-    - cmake -DGL2PS_EXTRA_VERSION=$EXTRA_VERSION ..
+    - cmake -DGL2PS_EXTRA_VERSION=%EXTRA_VERSION% ..
     - msbuild package.vcxproj
   tags:
     - windows64
