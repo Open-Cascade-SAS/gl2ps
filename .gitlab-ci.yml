@@ -3,7 +3,6 @@
 
 variables:
   EXTRA_VERSION: "-git-$CI_COMMIT_SHA"
-  EXTRA_VERSION2: "-git-${CI_COMMIT_SHA:0:8}"
 
 # -----------------------
 # Builds for all branches
@@ -12,8 +11,7 @@ variables:
 linux64_docker:
   image: onelab/ubuntu16.04
   script:
-    - echo $EXTRA_VERSION
-    - echo $EXTRA_VERSION2
+    - echo ${EXTRA_VERSION:0:13}
     - mkdir build
     - cd build
     - cmake -DGL2PS_EXTRA_VERSION=$EXTRA_VERSION ..
