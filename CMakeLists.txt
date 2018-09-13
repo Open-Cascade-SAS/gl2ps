@@ -142,7 +142,9 @@ if(OPENGL_FOUND)
     set_target_properties(shared PROPERTIES PREFIX "" IMPORT_PREFIX ""
       IMPORT_SUFFIX ".lib" COMPILE_FLAGS "-DGL2PSDLL -DGL2PSDLL_EXPORTS")
   endif(WIN32 OR CYGWIN)
-  install(TARGETS lib shared DESTINATION lib${LIB_SUFFIX})
+  install(TARGETS lib shared RUNTIME DESTINATION bin
+                             LIBRARY DESTINATION lib${LIB_SUFFIX}
+                             ARCHIVE DESTINATION lib${LIB_SUFFIX})
 endif(OPENGL_FOUND)
 
 if(WIN32)
