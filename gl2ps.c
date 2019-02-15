@@ -6204,6 +6204,29 @@ GL2PSDLL_API GLint gl2psEndViewport(void)
   return res;
 }
 
+GL2PSDLL_API GLint gl2psSorting(GLint mode)
+{
+  GLint res;
+
+  if(!gl2ps) return GL2PS_UNINITIALIZED;
+
+  switch(mode){
+  case GL2PS_NO_SORT :
+  case GL2PS_SIMPLE_SORT :
+  case GL2PS_BSP_SORT :
+    gl2ps->sort = mode;
+    res = GL2PS_SUCCESS;
+    break;
+  default :
+    gl2psMsg(GL2PS_ERROR, "Unknown sorting algorithm: %d", mode);
+    gl2psFree(gl2ps);
+    gl2ps = NULL;
+    res = GL2PS_ERROR;
+  }
+
+  return res;
+}
+
 GL2PSDLL_API GLint gl2psTextOptColor(const char *str, const char *fontname,
                                      GLshort fontsize, GLint alignment, GLfloat angle,
                                      GL2PSrgba color)

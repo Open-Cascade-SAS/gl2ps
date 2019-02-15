@@ -231,6 +231,7 @@ GL2PSDLL_API GLint gl2psLineCap(GLint value);
 GL2PSDLL_API GLint gl2psLineJoin(GLint value);
 GL2PSDLL_API GLint gl2psLineWidth(GLfloat value);
 GL2PSDLL_API GLint gl2psBlendFunc(GLenum sfactor, GLenum dfactor);
+GL2PSDLL_API GLint gl2psSorting(GLint mode);
 
 /* referenced in the documentation, but not fully documented */
 GL2PSDLL_API GLint gl2psForceRasterPos(GL2PSvertex *vert);
