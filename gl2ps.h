@@ -33,8 +33,8 @@
  * Please report all bugs and problems to <gl2ps@geuz.org>.
  */
 
-#ifndef __GL2PS_H__
-#define __GL2PS_H__
+#ifndef GL2PS_H
+#define GL2PS_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,7 +47,9 @@
 #    pragma warning(disable:4127)
 #    pragma warning(disable:4996)
 #  endif
-#  define NOMINMAX
+#  if !defined(NOMINMAX)
+#    define NOMINMAX
+#  endif
 #  include <windows.h>
 #  undef NOMINMAX
 #  if defined(GL2PSDLL)
@@ -254,4 +256,4 @@ GL2PSDLL_API GLint gl2psGetFileFormat();
 }
 #endif
 
-#endif /* __GL2PS_H__ */
+#endif /* GL2PS_H */
