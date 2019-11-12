@@ -4087,6 +4087,7 @@ static int gl2psPDFgroupListWriteXObjectResources(void)
       if(GL_RGBA == p->data.image->format)  /* reserve one object for image mask */
         gl2ps->objects_stack++;
       offs += fprintf(gl2ps->stream, "/Im%d %d 0 R\n", gro->imno, gro->imobjno);
+      break;
     case GL2PS_TRIANGLE:
       if(gro->trgroupno >=0)
         offs += fprintf(gl2ps->stream, "/TrG%d %d 0 R\n", gro->trgroupno, gro->trgroupobjno);
