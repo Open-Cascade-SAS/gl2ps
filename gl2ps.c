@@ -1496,7 +1496,7 @@ static GLint gl2psFindRoot(GL2PSlist *primitives, GL2PSprimitive **root)
   GLint maxp;
 
   if(!gl2psListNbr(primitives)){
-    gl2psMsg(GL2PS_ERROR, "Cannot fint root in empty primitive list");
+    gl2psMsg(GL2PS_ERROR, "Cannot find root in empty primitive list");
     return 0;
   }
 
