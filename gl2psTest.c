@@ -517,9 +517,9 @@ void writefile(int format, int sort, int options, int nbcol,
   viewport[2] = window_w;
   viewport[3] = window_h;
 
-  fp = fopen(file, "wb");
+  fp = (format != GL2PS_EMF) ? fopen(file, "wb") : (FILE* )NULL;
 
-  if(!fp){
+  if(!fp && format != GL2PS_EMF){
     printf("Unable to open file %s for writing\n", file);
     exit(1);
   }
@@ -536,7 +536,9 @@ void writefile(int format, int sort, int options, int nbcol,
     state = gl2psEndPage();
   }
 
-  fclose(fp);
+  if(fp != NULL){
+    fclose(fp);
+  }
 
   printf("Done!\n");
   fflush(stdout);
@@ -563,6 +565,7 @@ void keyboard(unsigned char key, int x, int y)
     else if(format == GL2PS_TEX) format = GL2PS_PDF;
     else if(format == GL2PS_PDF) format = GL2PS_SVG;
     else if(format == GL2PS_SVG) format = GL2PS_PGF;
+    else if(format == GL2PS_PGF) format = GL2PS_EMF;
     else                         format = GL2PS_PS;
     format_string = gl2psGetFormatDescription(format);
     display();

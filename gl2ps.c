@@ -50,6 +50,10 @@
 #include <png.h>
 #endif
 
+#if defined(GL2PS_HAVE_LIBEMF)
+#include <libEMF/emf.h>
+#endif
+
 /*********************************************************************
  *
  * Private definitions, data structures and prototypes
@@ -161,6 +165,7 @@ struct GL2PSimagemap_ {
 };
 
 typedef struct {
+  GL2PSplane plane;
   GLshort type, numverts;
   GLushort pattern;
   char boundary, offset, culled;
@@ -229,6 +234,12 @@ typedef struct {
   /* for image map list */
   GL2PSimagemap *imagemap_head;
   GL2PSimagemap *imagemap_tail;
+
+  /* EMF Specific */
+#if defined(GL2PS_EMF)
+  HDC metaDC;
+#endif
+
 } GL2PScontext;
 
 typedef struct {
@@ -861,6 +872,8 @@ static void gl2psConvertPixmapToPNG(GL2PSimage *pixmap, GL2PSlist *png)
 /* Helper routines for text strings */
 
 static GL2PSprimitive *gl2psCreatePrimitive();
+static void gl2psGetPlane(GL2PSprimitive *prim, GL2PSplane plane);
+
 static GLint gl2psAddText(GLint type, const char *str, const char *fontname,
                           GLshort fontsize, GLint alignment, GLfloat angle,
                           GL2PSrgba color, GLboolean setblpos,
@@ -869,6 +882,7 @@ static GLint gl2psAddText(GLint type, const char *str, const char *fontname,
   GLfloat pos[4];
   GL2PSprimitive *prim;
   GLboolean valid;
+  GL2PSplane plane;
 
   if(!gl2ps || !str || !fontname) return GL2PS_UNINITIALIZED;
 
@@ -931,6 +945,7 @@ static GLint gl2psAddText(GLint type, const char *str, const char *fontname,
   prim->data.text->fontsize = fontsize;
   prim->data.text->alignment = alignment;
   prim->data.text->angle = angle;
+  gl2psGetPlane(prim, plane);
 
   gl2ps->forcerasterpos = GL_FALSE;
 
@@ -1063,6 +1078,7 @@ static void gl2psInitTriangle(GL2PStriangle *t)
 static GL2PSprimitive *gl2psCreatePrimitive()
 {
   GL2PSprimitive *prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
+  memset(prim->plane, 0, sizeof(GL2PSplane));
   return prim;
 }
 
@@ -1082,6 +1098,7 @@ static GL2PSprimitive *gl2psCopyPrimitive(GL2PSprimitive *p)
   }
 
   prim = gl2psCreatePrimitive();
+  memcpy(prim->plane, p->plane, sizeof(GL2PSplane));
 
   prim->type = p->type;
   prim->numverts = p->numverts;
@@ -1170,11 +1187,23 @@ static void gl2psGetNormal(GLfloat *a, GLfloat *b, GLfloat *c)
     c[0] = c[1] = 0.0F;
     c[2] = 1.0F;
   }
+  if(c[2] < 0){
+    c[0] = -c[0];
+    c[1] = -c[1];
+    c[2] = -c[2];
+  }
 }
 
 static void gl2psGetPlane(GL2PSprimitive *prim, GL2PSplane plane)
 {
   GL2PSxyz v = {0.0F, 0.0F, 0.0F}, w = {0.0F, 0.0F, 0.0F};
+
+  if(!GL2PS_ZERO(prim->plane[0]) ||
+     !GL2PS_ZERO(prim->plane[1]) ||
+     !GL2PS_ZERO(prim->plane[2]) ||
+     !GL2PS_ZERO(prim->plane[3])){
+    memcpy(plane, prim->plane, sizeof(GL2PSplane));
+  }
 
   switch(prim->type){
   case GL2PS_TRIANGLE :
@@ -1234,6 +1263,8 @@ static void gl2psGetPlane(GL2PSprimitive *prim, GL2PSplane plane)
     plane[2] = 1.0F;
     break;
   }
+
+  memcpy(prim->plane, plane, sizeof(GL2PSplane));
 }
 
 static void gl2psCutEdge(GL2PSvertex *a, GL2PSvertex *b, GL2PSplane plane,
@@ -1424,6 +1455,8 @@ static void gl2psDivideQuad(GL2PSprimitive *quad,
 {
   *t1 = gl2psCreatePrimitive();
   *t2 = gl2psCreatePrimitive();
+  memcpy((*t1)->plane, quad->plane, sizeof(GL2PSplane));
+  memcpy((*t2)->plane, quad->plane, sizeof(GL2PSplane));
   (*t1)->type = (*t2)->type = GL2PS_TRIANGLE;
   (*t1)->numverts = (*t2)->numverts = 3;
   (*t1)->culled = (*t2)->culled = quad->culled;
@@ -1509,6 +1542,10 @@ static GLint gl2psFindRoot(GL2PSlist *primitives, GL2PSprimitive **root)
     }
     for(i = 0; i < maxp; i++){
       prim1 = *(GL2PSprimitive**)gl2psListPointer(primitives, i);
+      if(prim1->type != GL2PS_TRIANGLE) {
+        continue;
+      }
+
       gl2psGetPlane(prim1, plane);
       count = 0;
       for(j = 0; j < gl2psListNbr(primitives); j++){
@@ -1955,6 +1992,7 @@ static GL2PSprimitive *gl2psCreateSplitPrimitive2D(GL2PSprimitive *parent,
 {
   GLint i;
   GL2PSprimitive *child = gl2psCreatePrimitive();
+  memcpy(child->plane, parent->plane, sizeof(GL2PSplane));
 
   if(parent->type == GL2PS_IMAGEMAP){
     child->type = GL2PS_IMAGEMAP;
@@ -2150,6 +2188,7 @@ static void gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list)
   GL2PSprimitive *b;
   GLshort i;
   GL2PSxyz c;
+  GL2PSplane plane;
 
   c[0] = c[1] = c[2] = 0.0F;
   for(i = 0; i < prim->numverts; i++){
@@ -2175,6 +2214,7 @@ static void gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list)
       b->boundary = 0;
       b->numverts = 2;
       b->verts = (GL2PSvertex*)gl2psMalloc(2 * sizeof(GL2PSvertex));
+      gl2psGetPlane(b, plane);
 
 #if 0 /* FIXME: need to work on boundary offset... */
       v[0] = c[0] - prim->verts[i].xyz[0];
@@ -2245,6 +2285,7 @@ GL2PSDLL_API void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
                                         GLint linejoin,char boundary)
 {
   GL2PSprimitive *prim;
+  GL2PSplane plane;
 
   prim = gl2psCreatePrimitive();
   prim->type = type;
@@ -2261,6 +2302,7 @@ GL2PSDLL_API void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
   prim->linecap = linecap;
   prim->linejoin = linejoin;
   prim->culled = 0;
+  gl2psGetPlane(prim, plane);
 
   /* FIXME: here we should have an option to split stretched
      tris/quads to enhance SIMPLE_SORT */
@@ -2305,6 +2347,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
   GL2PSvertex vertices[3];
   GL2PSprimitive *prim;
   GL2PSimagemap *node;
+  GL2PSplane plane;
 
   current = gl2ps->feedback;
   boundary = gl2ps->boundary = GL_FALSE;
@@ -2447,6 +2490,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
         prim->pattern = 0;
         prim->factor = 0;
         prim->width = 1;
+        gl2psGetPlane(prim, plane);
 
         node = (GL2PSimagemap*)gl2psMalloc(sizeof(GL2PSimagemap));
         node->image = (GL2PSimage*)gl2psMalloc(sizeof(GL2PSimage));
@@ -5822,6 +5866,375 @@ static GL2PSbackend gl2psPGF = {
   "PGF Latex Graphics"
 };
 
+
+/*********************************************************************
+ *
+ * EMF routines
+ *
+ *********************************************************************/
+
+static const GLfloat EMF_UNIT = 40;
+
+#if defined(_WIN32)
+
+#define HAVE_GRADIENT_FILL
+#define GRADIENT_FILL_TRIANGLE  0x00000002
+
+/* available since Win2000 */
+WINGDIAPI BOOL WINAPI GradientFill(
+  HDC hdc,
+  PTRIVERTEX pVertex,
+  ULONG nVertex,
+  PVOID pMesh,
+  ULONG nMesh,
+  ULONG ulMode
+);
+#else
+  /* this macro definition within libEMF seems to be broken */
+  #undef RGB
+  #define RGB(r,g,b) ((COLORREF)(((BYTE)(r)|((WORD)((BYTE)(g))<<8))|(((DWORD)(BYTE)(b))<<16)))
+#endif
+
+#if defined(GL2PS_EMF)
+COLORREF gl2psWinColor(GLfloat v[4])
+{
+  return RGB(v[0] * 255, v[1] * 255, v[2] * 255);
+}
+#endif
+
+static void gl2psPrintEMFImagemap(GLfloat x, GLfloat y,
+                                  GLsizei width, GLsizei height,
+                                  GL2PSrgba color,
+                                  GLfloat *imagemap)
+{
+#if defined(GL2PS_EMF)
+  BITMAPINFO info;
+  BITMAPINFOHEADER head;
+  unsigned char* bits = gl2psMalloc(width * height * 4);
+  GLint i, j, ind, bit, bwid = (width - 1) / 8 + 1;
+
+  head.biSize = sizeof(BITMAPINFOHEADER);
+  head.biWidth  = width;
+  head.biHeight = height;
+  head.biPlanes = 1;
+  head.biBitCount = 32;
+  head.biCompression = BI_RGB;
+  head.biSizeImage = 0;
+  head.biXPelsPerMeter = 0;
+  head.biYPelsPerMeter = 0;
+  head.biClrUsed = 0;
+  head.biClrImportant = 0;
+
+  info.bmiHeader = head;
+
+  ind = 0;
+  for(i = 0; i < height; ++i){
+    for(j = 0; j < width; ++j, ind += 4){
+      bit = bwid * 8 * (height - 1 - i) + j;
+      if((unsigned char)(imagemap[bit / 8]) & (1 << (7 - (bit % 8)))){
+        bits[ind    ] = (GLint)(color[2] * 255);  /*b*/
+        bits[ind + 1] = (GLint)(color[1] * 255);  /*g*/
+        bits[ind + 2] = (GLint)(color[0] * 255);  /*r*/
+        bits[ind + 3] = (GLint)(color[3] * 255);  /*alpha*/
+      }else{
+        bits[ind    ] = 0;  /*b*/
+        bits[ind + 1] = 0;  /*g*/
+        bits[ind + 2] = 0;  /*r*/
+        bits[ind + 3] = 0;  /*alpha*/
+      }
+    }
+  }
+
+  SetDIBitsToDevice(gl2ps->metaDC, (GLint)(x * EMF_UNIT), (GLint)(y * EMF_UNIT),
+                    width, height, 0, 0, 0, height, bits, &info, DIB_RGB_COLORS);
+#endif
+}
+
+static void gl2psPrintEMFPrimitive(void *data)
+{
+#if defined(GL2PS_EMF)
+  GL2PSprimitive *prim;
+  prim = *(GL2PSprimitive**)data;
+
+  if((gl2ps->options & GL2PS_OCCLUSION_CULL) && prim->culled)
+    return;
+
+  if(gl2ps->lastlinewidth != prim->width)
+    gl2ps->lastlinewidth = prim->width;
+
+  switch(prim->type){
+  case GL2PS_PIXMAP:
+    break;
+  case GL2PS_IMAGEMAP:
+    if(prim->data.image->type != GL2PS_IMAGEMAP_WRITTEN)
+      gl2psPrintEMFImagemap(prim->data.image->pixels[0],
+                            prim->data.image->pixels[1],
+                            prim->data.image->width,
+                            prim->data.image->height,
+                            prim->verts[0].rgba,
+                            prim->data.image->pixels + 2);
+    prim->data.image->type = GL2PS_IMAGEMAP_WRITTEN;
+    break;
+  case GL2PS_TEXT:{
+    COLORREF color = gl2psWinColor(prim->verts[0].rgba);
+    GLfloat x, y, size;
+    HFONT font;
+    HGDIOBJ old1, old2;
+    LOGBRUSH data;
+    HBRUSH brush;
+
+    size = prim->data.text->fontsize;
+    size = size * EMF_UNIT;
+
+    font = CreateFont((GLint)size, 0, 0, 0, FW_NORMAL, 0, 0, 0,
+                      ANSI_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS,
+                      PROOF_QUALITY, FF_DONTCARE | DEFAULT_PITCH,
+                      prim->data.text->fontname);
+
+    data.lbStyle = BS_SOLID;
+    data.lbColor = color;
+    brush = CreateBrushIndirect(&data);
+
+    x = prim->verts[0].xyz[0] * EMF_UNIT;
+    y = prim->verts[0].xyz[1] * EMF_UNIT;
+
+    old1 = SelectObject(gl2ps->metaDC, font);
+    old2 = SelectObject(gl2ps->metaDC, brush);
+
+    SetBkMode(gl2ps->metaDC, TRANSPARENT);
+    /* switch(prim->data.text->alignment) */
+    SetTextAlign(gl2ps->metaDC, TA_BASELINE);
+
+    BeginPath(gl2ps->metaDC);
+      TextOut(gl2ps->metaDC, (long)x, (long)y,
+              prim->data.text->str,
+              strlen(prim->data.text->str));
+    EndPath(gl2ps->metaDC);
+    FillPath(gl2ps->metaDC);
+
+    SelectObject(gl2ps->metaDC, old2);
+    SelectObject(gl2ps->metaDC, old1);
+    DeleteObject(font);
+    DeleteObject(brush);
+    break;
+  }
+  case GL2PS_POINT:
+  case GL2PS_LINE:{
+    COLORREF color = gl2psWinColor(prim->verts[0].rgba);
+    GLfloat  wpen  = prim->width > 1 ? prim->width : 1.0f;
+    HPEN     pen   = CreatePen(PS_SOLID, (GLint)wpen, color);
+    GLint ind = 1;
+    HGDIOBJ old;
+    GLfloat x, y;
+
+    old = SelectObject(gl2ps->metaDC, pen);
+
+    x = prim->verts[0].xyz[0] * EMF_UNIT;
+    y = prim->verts[0].xyz[1] * EMF_UNIT;
+
+    MoveToEx(gl2ps->metaDC, (long)x, (long)y, NULL);
+
+    if(prim->type == GL2PS_POINT)
+      ind = 0;
+
+    x = prim->verts[ind].xyz[0] * EMF_UNIT;
+    y = prim->verts[ind].xyz[1] * EMF_UNIT;
+    LineTo(gl2ps->metaDC, (long)x, (long)y);
+
+    SelectObject(gl2ps->metaDC, old);
+    DeleteObject(pen);
+    break;
+  }
+  case GL2PS_TRIANGLE:{
+  #if defined(HAVE_GRADIENT_FILL)
+    if(gl2psVertsSameColor(prim)){
+  #endif
+      POINT pp[3];
+      GLint i;
+
+      COLORREF color = gl2psWinColor(prim->verts[0].rgba);
+      HBRUSH brush = CreateSolidBrush(color);
+      HPEN   pen   = CreatePen(PS_SOLID,
+                               gl2ps->lastlinewidth > 1 ?
+                               (GLint)gl2ps->lastlinewidth : 1,
+                               color);
+
+      HGDIOBJ old1 = SelectObject(gl2ps->metaDC, brush),
+              old2 = SelectObject(gl2ps->metaDC, pen);
+
+      for(i = 0; i < 3; ++i){
+        GLfloat xx, yy;
+
+        xx = prim->verts[i].xyz[0] * EMF_UNIT;
+        yy = prim->verts[i].xyz[1] * EMF_UNIT;
+
+        pp[i].x = (long)xx;
+        pp[i].y = (long)yy;
+      }
+
+      Polygon(gl2ps->metaDC, pp, 3);
+
+      SelectObject(gl2ps->metaDC, old2);
+      SelectObject(gl2ps->metaDC, old1);
+
+      DeleteObject(brush);
+      DeleteObject(pen);
+  #if defined(HAVE_GRADIENT_FILL)
+    }
+    else
+    {
+      TRIVERTEX vv[3];
+      GRADIENT_TRIANGLE gr;
+      GLint i;
+
+      for(i=0; i < 3; ++i){
+        GLfloat xx, yy;
+        GLfloat rgba[4];
+        GLint j;
+
+        xx = prim->verts[i].xyz[0] * EMF_UNIT;
+        yy = prim->verts[i].xyz[1] * EMF_UNIT;
+
+        for(j = 0; j < 4; ++j)
+          rgba[j] = prim->verts[i].rgba[j] * (0xff00);
+
+        vv[i].x = (long)xx;
+        vv[i].y = (long)yy;
+        vv[i].Red   = (unsigned short)rgba[0];
+        vv[i].Green = (unsigned short)rgba[1];
+        vv[i].Blue  = (unsigned short)rgba[2];
+        vv[i].Alpha = (unsigned short)rgba[3];
+      }
+
+      gr.Vertex1 = 0;
+      gr.Vertex2 = 1;
+      gr.Vertex3 = 2;
+
+      /* available since Win2000 */
+      GradientFill(gl2ps->metaDC, vv, 3, &gr, 1, GRADIENT_FILL_TRIANGLE);
+    }
+  #endif
+    break;
+  }
+  case GL2PS_QUADRANGLE:
+    gl2psMsg(GL2PS_WARNING, "There should not be any quad left to print");
+    break;
+  default:
+    gl2psMsg(GL2PS_ERROR, "Unknown type of primitive to print");
+    break;
+  }
+#endif
+}
+
+static void gl2psPrintEMFHeader(void)
+{
+#if defined(GL2PS_EMF)
+  HDC screen_dc, bit_dc;
+  RECT r;
+  GLfloat x = (GLfloat)gl2ps->viewport[0],
+          y = (GLfloat)gl2ps->viewport[1],
+          w = (GLfloat)gl2ps->viewport[2],
+          h = (GLfloat)gl2ps->viewport[3];
+  GLfloat rgba[4];
+  GLint index;
+  GLfloat ll, rr, tt, bb;
+
+  ll =   x     * EMF_UNIT;
+  rr = (x + w) * EMF_UNIT;
+  tt =   y     * EMF_UNIT;
+  bb = (y + h) * EMF_UNIT;
+
+  r.left   = (long)ll;
+  r.right  = (long)rr;
+  r.top    = (long)tt;
+  r.bottom = (long)bb;
+
+  screen_dc = GetDC(NULL);
+#if !defined(GL2PS_HAVE_LIBEMF)
+  bit_dc = CreateCompatibleDC(screen_dc);
+#else
+  /* dummy within libEMF */
+  bit_dc = screen_dc;
+#endif
+
+  gl2ps->metaDC = CreateEnhMetaFile(bit_dc, gl2ps->filename, &r, "");
+
+	SetMapMode(gl2ps->metaDC, MM_HIMETRIC);
+	SetWindowOrgEx(gl2ps->metaDC, 0, r.bottom, NULL);
+
+  if(gl2ps->options & GL2PS_DRAW_BACKGROUND){
+    HBRUSH brush;
+    if(gl2ps->colormode == GL_RGBA || gl2ps->colorsize == 0)
+      glGetFloatv(GL_COLOR_CLEAR_VALUE, rgba);
+    else
+    {
+      glGetIntegerv(GL_INDEX_CLEAR_VALUE, &index);
+      rgba[0] = gl2ps->colormap[index][0];
+      rgba[1] = gl2ps->colormap[index][1];
+      rgba[2] = gl2ps->colormap[index][2];
+      rgba[3] = 0.0F;
+    }
+
+    brush = CreateSolidBrush(RGB(rgba[0] * 255,
+                                 rgba[1] * 255,
+                                 rgba[2] * 255));
+
+  /* FillRect not available within libEMF */
+  #if !defined(GL2PS_HAVE_LIBEMF)
+    FillRect(gl2ps->metaDC, &r, brush);
+  #else
+    {
+      INT polygonsNb = 4;
+      POINT polygons[4] = {
+        {  r.left, r.top },
+        { r.right, r.top },
+        { r.right, r.bottom },
+        {  r.left, r.bottom }
+      };
+
+      SelectObject(gl2ps->metaDC, brush);
+      PolyPolygon(gl2ps->metaDC, polygons, &polygonsNb, 1);
+    }
+  #endif
+    DeleteObject(brush);
+  }
+
+  ReleaseDC(NULL, screen_dc);
+  DeleteDC(bit_dc);
+#endif
+}
+
+static void gl2psPrintEMFFooter(void)
+{
+#if defined(GL2PS_EMF)
+  DeleteEnhMetaFile(CloseEnhMetaFile(gl2ps->metaDC));
+#endif
+}
+
+static void gl2psPrintEMFBeginViewport(GLint viewport[4])
+{
+}
+
+static GLint gl2psPrintEMFEndViewport(void)
+{
+  return 0;
+}
+
+static void gl2psPrintEMFFinalPrimitive(void)
+{
+}
+
+static GL2PSbackend gl2psEMF = {
+  gl2psPrintEMFHeader,
+  gl2psPrintEMFFooter,
+  gl2psPrintEMFBeginViewport,
+  gl2psPrintEMFEndViewport,
+  gl2psPrintEMFPrimitive,
+  gl2psPrintEMFFinalPrimitive,
+  "emf",
+  "Windows EMF"
+};
+
 /*********************************************************************
  *
  * General primitive printing routine
@@ -5838,6 +6251,9 @@ static GL2PSbackend *gl2psbackends[] = {
   &gl2psPDF, /* 3 */
   &gl2psSVG, /* 4 */
   &gl2psPGF  /* 5 */
+#if defined(GL2PS_EMF)
+  ,&gl2psEMF  /* 6 */
+#endif
 };
 
 static void gl2psComputeTightBoundingBox(void *data)
@@ -6017,6 +6433,17 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
     return GL2PS_ERROR;
   }
 
+#if defined(GL2PS_EMF)
+  if(format == GL2PS_EMF){
+    if(filename == NULL || *filename == '\0'){
+      gl2psMsg(GL2PS_ERROR, "Bad filename");
+      gl2psFree(gl2ps);
+      gl2ps = NULL;
+      return GL2PS_ERROR;
+    }
+    gl2ps->stream = NULL;
+  }else
+#endif
   if(stream){
     gl2ps->stream = stream;
   }
@@ -6186,7 +6613,9 @@ GL2PSDLL_API GLint gl2psEndPage(void)
   if(res != GL2PS_OVERFLOW)
     (gl2psbackends[gl2ps->format]->printFooter)();
 
-  fflush(gl2ps->stream);
+  if(gl2ps->stream) {
+    fflush(gl2ps->stream);
+  }
 
   gl2psListDelete(gl2ps->primitives);
   gl2psListDelete(gl2ps->auxprimitives);
@@ -6301,6 +6730,7 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
   GLfloat pos[4], zoom_x, zoom_y;
   GL2PSprimitive *prim;
   GLboolean valid;
+  GL2PSplane plane;
 
   if(!gl2ps || !pixels) return GL2PS_UNINITIALIZED;
 
@@ -6368,6 +6798,7 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
   prim->data.image->zoom_y = zoom_y;
   prim->data.image->format = format;
   prim->data.image->type = type;
+  gl2psGetPlane(prim, plane);
 
   gl2ps->forcerasterpos = GL_FALSE;
 

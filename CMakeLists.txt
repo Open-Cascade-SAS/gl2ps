@@ -49,6 +49,7 @@ project(gl2ps C)
 
 option(ENABLE_ZLIB "Enable compression using ZLIB" ON)
 option(ENABLE_PNG "Enable PNG support" ON)
+option(ENABLE_LIBEMF "Enable EMF export using libEMF" ON)
 
 set(GL2PS_MAJOR_VERSION 1)
 set(GL2PS_MINOR_VERSION 4)
@@ -122,10 +123,23 @@ if(ENABLE_PNG)
   endif(PNG_FOUND)
 endif(ENABLE_PNG)
 
+if(ENABLE_LIBEMF)
+  find_package(EMF)
+  if(EMF_FOUND)
+    add_definitions(-DHAVE_LIBEMF)
+    list(APPEND EXTERNAL_LIBRARIES ${EMF_LIBRARIES})
+    list(APPEND EXTERNAL_INCLUDES ${EMF_INCLUDE_DIR})
+  endif(EMF_FOUND)
+endif(ENABLE_LIBEMF)
+
 find_library(MATH_LIBRARY m)
 if(MATH_LIBRARY)
   list(APPEND EXTERNAL_LIBRARIES ${MATH_LIBRARY})
 endif(MATH_LIBRARY)
+
+if(WIN32 OR CYGWIN)
+  list(APPEND EXTERNAL_LIBRARIES "Msimg32.lib")
+endif()
 
 include_directories(${EXTERNAL_INCLUDES})
 

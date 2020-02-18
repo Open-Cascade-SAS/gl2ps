@@ -85,6 +85,12 @@
 #  define GL2PS_HAVE_NO_VSNPRINTF
 #endif
 
+/* Has libEMF for EMF export support on POSIX systems */
+
+#if defined(HAVE_LIBEMF)
+#  define GL2PS_HAVE_LIBEMF
+#endif
+
 /* Version number */
 
 #define GL2PS_MAJOR_VERSION 1
@@ -106,6 +112,9 @@
 #define GL2PS_PDF 3
 #define GL2PS_SVG 4
 #define GL2PS_PGF 5
+#if defined(GL2PS_HAVE_LIBEMF) || defined(_WIN32)
+#  define GL2PS_EMF 6
+#endif
 
 /* Sorting algorithms */
 
