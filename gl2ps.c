@@ -860,6 +860,7 @@ static void gl2psConvertPixmapToPNG(GL2PSimage *pixmap, GL2PSlist *png)
 
 /* Helper routines for text strings */
 
+static GL2PSprimitive *gl2psCreatePrimitive();
 static GLint gl2psAddText(GLint type, const char *str, const char *fontname,
                           GLshort fontsize, GLint alignment, GLfloat angle,
                           GL2PSrgba color, GLboolean setblpos,
@@ -885,7 +886,7 @@ static GLint gl2psAddText(GLint type, const char *str, const char *fontname,
     glGetFloatv(GL_CURRENT_RASTER_POSITION, pos);
   }
 
-  prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
+  prim = gl2psCreatePrimitive();
   prim->type = (GLshort)type;
   prim->boundary = 0;
   prim->numverts = setblpos ? 2 : 1;
@@ -1059,6 +1060,12 @@ static void gl2psInitTriangle(GL2PStriangle *t)
 
 /* Miscellaneous helper routines */
 
+static GL2PSprimitive *gl2psCreatePrimitive()
+{
+  GL2PSprimitive *prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
+  return prim;
+}
+
 static void gl2psResetLineProperties(void)
 {
   gl2ps->lastlinewidth = 0.;
@@ -1074,7 +1081,7 @@ static GL2PSprimitive *gl2psCopyPrimitive(GL2PSprimitive *p)
     return NULL;
   }
 
-  prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
+  prim = gl2psCreatePrimitive();
 
   prim->type = p->type;
   prim->numverts = p->numverts;
@@ -1403,8 +1410,8 @@ static GLint gl2psSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane,
   }
 
   if(type == GL2PS_SPANNING){
-    *back = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
-    *front = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
+    *back = gl2psCreatePrimitive();
+    *front = gl2psCreatePrimitive();
     gl2psCreateSplitPrimitive(prim, plane, *back, out, out0, out1);
     gl2psCreateSplitPrimitive(prim, plane, *front, in, in0, in1);
   }
@@ -1415,8 +1422,8 @@ static GLint gl2psSplitPrimitive(GL2PSprimitive *prim, GL2PSplane plane,
 static void gl2psDivideQuad(GL2PSprimitive *quad,
                             GL2PSprimitive **t1, GL2PSprimitive **t2)
 {
-  *t1 = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
-  *t2 = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
+  *t1 = gl2psCreatePrimitive();
+  *t2 = gl2psCreatePrimitive();
   (*t1)->type = (*t2)->type = GL2PS_TRIANGLE;
   (*t1)->numverts = (*t2)->numverts = 3;
   (*t1)->culled = (*t2)->culled = quad->culled;
@@ -1947,7 +1954,7 @@ static GL2PSprimitive *gl2psCreateSplitPrimitive2D(GL2PSprimitive *parent,
                                                    GL2PSvertex *vertx)
 {
   GLint i;
-  GL2PSprimitive *child = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
+  GL2PSprimitive *child = gl2psCreatePrimitive();
 
   if(parent->type == GL2PS_IMAGEMAP){
     child->type = GL2PS_IMAGEMAP;
@@ -2154,7 +2161,7 @@ static void gl2psAddBoundaryInList(GL2PSprimitive *prim, GL2PSlist *list)
 
   for(i = 0; i < prim->numverts; i++){
     if(prim->boundary & (GLint)pow(2., i)){
-      b = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
+      b = gl2psCreatePrimitive();
       b->type = GL2PS_LINE;
       b->offset = prim->offset;
       b->ofactor = prim->ofactor;
@@ -2239,7 +2246,7 @@ GL2PSDLL_API void gl2psAddPolyPrimitive(GLshort type, GLshort numverts,
 {
   GL2PSprimitive *prim;
 
-  prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
+  prim = gl2psCreatePrimitive();
   prim->type = type;
   prim->numverts = numverts;
   prim->verts = (GL2PSvertex*)gl2psMalloc(numverts * sizeof(GL2PSvertex));
@@ -2428,7 +2435,7 @@ static void gl2psParseFeedbackBuffer(GLint used)
         lwidth = current[1];
         break;
       case GL2PS_IMAGEMAP_TOKEN :
-        prim = (GL2PSprimitive *)gl2psMalloc(sizeof(GL2PSprimitive));
+        prim = gl2psCreatePrimitive();
         prim->type = GL2PS_IMAGEMAP;
         prim->boundary = 0;
         prim->numverts = 4;
@@ -6324,7 +6331,7 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
     glGetFloatv(GL_ZOOM_Y, &zoom_y);
   }
 
-  prim = (GL2PSprimitive*)gl2psMalloc(sizeof(GL2PSprimitive));
+  prim = gl2psCreatePrimitive();
   prim->type = GL2PS_PIXMAP;
   prim->boundary = 0;
   prim->numverts = 1;
