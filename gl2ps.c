@@ -6144,6 +6144,19 @@ GL2PSDLL_API GLint gl2psBeginPage(const char *title, const char *producer,
 
   if ((gl2ps->options & GL2PS_NO_OPENGL_CONTEXT) == GL2PS_NONE) {
     gl2ps->feedback = (GLfloat*)gl2psMalloc(gl2ps->buffersize * sizeof(GLfloat));
+    if(gl2ps->feedback == NULL){
+      gl2psListDelete(gl2ps->primitives);
+      gl2psFreeImagemap(gl2ps->imagemap_head);
+      gl2psFree(gl2ps->colormap);
+      gl2psFree(gl2ps->title);
+      gl2psFree(gl2ps->producer);
+      gl2psFree(gl2ps->filename);
+      gl2psFree(gl2ps->feedback);
+      gl2psFree(gl2ps);
+      gl2ps = NULL;
+      return GL2PS_ERROR;
+    }
+
     glFeedbackBuffer(gl2ps->buffersize, GL_3D_COLOR, gl2ps->feedback);
     glRenderMode(GL_FEEDBACK);
   }
@@ -6316,6 +6329,9 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
   prim->boundary = 0;
   prim->numverts = 1;
   prim->verts = (GL2PSvertex*)gl2psMalloc(sizeof(GL2PSvertex));
+  if(prim->verts == NULL){
+    return GL2PS_ERROR;
+  }
   prim->verts[0].xyz[0] = pos[0] + xorig;
   prim->verts[0].xyz[1] = pos[1] + yorig;
   prim->verts[0].xyz[2] = pos[2];
@@ -6336,6 +6352,9 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
     glGetFloatv(GL_CURRENT_RASTER_COLOR, prim->verts[0].rgba);
   }
   prim->data.image = (GL2PSimage*)gl2psMalloc(sizeof(GL2PSimage));
+  if(prim->data.image == NULL){
+    return GL2PS_ERROR;
+  }
   prim->data.image->width = width;
   prim->data.image->height = height;
   prim->data.image->zoom_x = zoom_x;
@@ -6352,6 +6371,9 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
       prim->data.image->format = GL_RGB;
       size = height * width * 3;
       prim->data.image->pixels = (GLfloat*)gl2psMalloc(size * sizeof(GLfloat));
+      if(prim->data.image->pixels == NULL){
+        return GL2PS_ERROR;
+      }
       piv = (const GLfloat*)pixels;
       for(i = 0; i < size; ++i, ++piv){
         prim->data.image->pixels[i] = *piv;
@@ -6362,6 +6384,9 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
     else{
       size = height * width * 4;
       prim->data.image->pixels = (GLfloat*)gl2psMalloc(size * sizeof(GLfloat));
+      if(prim->data.image->pixels == NULL){
+        return GL2PS_ERROR;
+      }
       memcpy(prim->data.image->pixels, pixels, size * sizeof(GLfloat));
     }
     break;
@@ -6369,6 +6394,9 @@ GL2PSDLL_API GLint gl2psDrawPixels(GLsizei width, GLsizei height,
   default:
     size = height * width * 3;
     prim->data.image->pixels = (GLfloat*)gl2psMalloc(size * sizeof(GLfloat));
+    if(prim->data.image->pixels == NULL){
+      return GL2PS_ERROR;
+    }
     memcpy(prim->data.image->pixels, pixels, size * sizeof(GLfloat));
     break;
   }
